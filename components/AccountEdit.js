@@ -2,6 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, View } from "react-native";
 
 const AccountEdit = () => {
+    console.log("AccountEdit");
     return(
         <View style={styles.container}>
             <Text>Account Edit</Text>

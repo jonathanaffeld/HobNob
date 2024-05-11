@@ -5,6 +5,7 @@ import HomeIcon from '@mui/icons-material/Home';
 import PlaceIcon from '@mui/icons-material/Place';
 
 const BottomBar = () => {
+    console.log("BottomBar");
     return (
         <View style={styles.container}>
             <Text>Bottom Bar</Text>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
@@ -22,47 +22,38 @@ const App = () => (
                 <Stack.Screen
                     name="Login"
                     component={Login}
-                    options={{ }}
                 />
                 <Stack.Screen
                     name="SignUp"
                     component={SignUp}
-                    options={{ }}
                 />
                 <Stack.Screen
                     name="Home"
                     component={Home}
-                    options={{ }}
                 />
                 <Stack.Screen
                     name="Account"
                     component={Account}
-                    options={{ }}
                 />
                 <Stack.Screen
                     name="AccountEdit"
                     component={AccountEdit}
-                    options={{ }}
                 />
                 <Stack.Screen
                     name="Discover"
                     component={Discover}
-                    options={{ }}
                 />
                 <Stack.Screen
                     name="Entry"
                     component={Entry}
-                    options={{ }}
                 />
                 <Stack.Screen
                     name="EntryCreate"
                     component={EntryCreate}
-                    options={{ }}
                 />
                 <Stack.Screen
                     name="EntryEdit"
                     component={EntryEdit}
-                    options={{ }}
                 />
             </Stack.Navigator>
         </NavigationContainer>

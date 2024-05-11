@@ -2,6 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, View } from "react-native";
 
 const EntryPreview = () => {
+    console.log("EntryPreview");
     return(
         <View style={styles.container}>
             <Text>Entry Preview</Text>
