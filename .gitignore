@@ -35,7 +35,7 @@ local.properties
 #
 node_modules/
 npm-debug.log
-package.json
+package-lock.json
 yarn-error.log
 
 # BUCK
@@ -61,5 +61,5 @@ buck-out/
 /ios/Pods/
 
 # Expo
-.expo/*
+.expo
 web-build/
