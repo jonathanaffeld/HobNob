@@ -35,6 +35,7 @@ local.properties
 #
 node_modules/
 npm-debug.log
+package.json
 yarn-error.log
 
 # BUCK
