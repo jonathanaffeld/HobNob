@@ -16,56 +16,55 @@ import EntryEdit from './components/EntryEdit';
 const Stack = createNativeStackNavigator();
 
 const App = () => (
-    <View style={styles.container}>
-        <NavigationContainer>
-            <Stack.Navigator>
-                <Stack.Screen
-                    name="Login"
-                    component={Login}
-                />
-                <Stack.Screen
-                    name="SignUp"
-                    component={SignUp}
-                />
-                <Stack.Screen
-                    name="Home"
-                    component={Home}
-                />
-                <Stack.Screen
-                    name="Account"
-                    component={Account}
-                />
-                <Stack.Screen
-                    name="AccountEdit"
-                    component={AccountEdit}
-                />
-                <Stack.Screen
-                    name="Discover"
-                    component={Discover}
-                />
-                <Stack.Screen
-                    name="Entry"
-                    component={Entry}
-                />
-                <Stack.Screen
-                    name="EntryCreate"
-                    component={EntryCreate}
-                />
-                <Stack.Screen
-                    name="EntryEdit"
-                    component={EntryEdit}
-                />
-            </Stack.Navigator>
-        </NavigationContainer>
-    </View>
+    <NavigationContainer>
+        <Stack.Navigator>
+            <Stack.Screen
+                name="Login"
+                component={Login}
+                options={{ headerShown: false }}
+            />
+            <Stack.Screen
+                name="SignUp"
+                component={SignUp}
+                options={{ headerShown: false }}
+            />
+            <Stack.Screen
+                name="Home"
+                component={Home}
+                options={{ headerShown: false }}
+            />
+            <Stack.Screen
+                name="Account"
+                component={Account}
+                options={{ headerShown: false }}
+            />
+            <Stack.Screen
+                name="AccountEdit"
+                component={AccountEdit}
+                options={{ headerShown: false }}
+            />
+            <Stack.Screen
+                name="Discover"
+                component={Discover}
+                options={{ headerShown: false }}
+            />
+            <Stack.Screen
+                name="Entry"
+                component={Entry}
+                options={{ headerShown: false }}
+            />
+            <Stack.Screen
+                name="EntryCreate"
+                component={EntryCreate}
+                options={{ headerShown: false }}
+            />
+            <Stack.Screen
+                name="EntryEdit"
+                component={EntryEdit}
+                options={{ headerShown: false }}
+            />
+        </Stack.Navigator>
+    </NavigationContainer>
 );
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        alignItems: "center",
-        justifyContent: "center",
-    }
-});
 
 export default App;
