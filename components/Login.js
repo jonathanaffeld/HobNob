@@ -12,23 +12,24 @@ const Login = ({ navigation }) => {
     const [password, setPassword] = useState("");
 
     const submit = () => {
-        if (username == '' || password == '') {
-            Alert.alert(
-                "Error",
-                "Incorrect Username or Password",
-                [
-                    {
-                        text: "Back",
-                        style: "cancel",
-                    },
-                ]
-            );
-        }
-        else {
-            navigation.navigate("Home", {
-                username: username
-            })
-        }
+        // if (username == '' || password == '') {
+        //     Alert.alert(
+        //         "Error",
+        //         "Incorrect Username or Password",
+        //         [
+        //             {
+        //                 text: "Back",
+        //                 style: "cancel",
+        //             },
+        //         ]
+        //     );
+        // }
+        // else {
+        //     navigation.navigate("Home", {
+        //         username: username
+        //     })
+        // }
+        Alert.alert("Uhoh", "This feature isn't enabled yet")
     }
 
     const signup = () => {
@@ -62,9 +63,13 @@ const Login = ({ navigation }) => {
                 <Pressable style={styles.loginButton} onPress={submit}>
                     <Text style={styles.submit}>Submit</Text>
                 </Pressable>
-                <Pressable style={styles.signupContainer} onPress={signup}>
-                    <Text style={styles.signupText}>New? Create your HobNob account here.</Text>
-                </Pressable>
+                <View style={styles.signupContainer}>
+                    <Text style={styles.signupText}>New? Create your HobNob account</Text>
+                    <Pressable onPress={signup}>
+                        <Text style={styles.signupLink}> here</Text>
+                    </Pressable>
+                    <Text style={styles.signupText}>.</Text>
+                </View>
             </View>
         </LinearGradient>
     );
@@ -90,6 +95,7 @@ const styles = StyleSheet.create({
         marginTop: screenHeight * 0.05
     },
     logoLetter: {
+        fontFamily: "Dongle-Bold",
         fontSize: screenHeight * 0.028,
         fontWeight: "bold"
     },
@@ -104,7 +110,7 @@ const styles = StyleSheet.create({
         width: screenWidth * 0.3,
         resizeMode: "contain",
         marginTop: screenHeight * 0.025,
-        marginBottom: screenHeight * 0.05
+        marginBottom: screenHeight * 0.025
     },
     input: {
         width: screenWidth * 0.75,
@@ -118,13 +124,13 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.5,
         shadowRadius: 5,
+        fontFamily: "Dongle-Regular",
         fontSize: screenHeight * 0.032,
-        fontWeight: "light"
+        fontWeight: "regular"
     },
     loginButton: {
         width: screenWidth * 0.3,
         height: screenWidth * 0.08,
-        fontWeight: "light",
         backgroundColor: "#77678C",
         borderRadius: 20,
         alignItems: "center",
@@ -134,9 +140,15 @@ const styles = StyleSheet.create({
     submit: {
         color: "#FFFFFF",
         fontFamily: "Dongle-Light",
+        fontWeight: "light"
     },
     signupContainer: {
         marginTop: screenHeight * 0.05,
+        flexDirection: "row"
+    },
+    signupLink: {
+        fontWeight: "bold",
+        color: "#e74c3c",
     }
 });
 
