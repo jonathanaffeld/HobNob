@@ -176,7 +176,13 @@ const Home = ({ navigation }) => {
                       <Text style={styles.initials}>{initial}</Text>
                     </View>
                   ))}
-                  {/* {eventData.attendeesInitial}*/}
+                  {/* {eventData && eventData.attendeesInitial && 
+      eventData.attendeesInitial.slice(0, 4).map((initial, index) => (
+        <View key={index} style={styles.circle}>
+          <Text style={styles.initials}>{initial}</Text>
+        </View>
+      ))
+    } */}
                 </View>
               </View>
               <View style={styles.parentContainer3}>
