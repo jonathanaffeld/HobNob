@@ -1,20 +1,20 @@
-import React from 'react';
+import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 
 const Prompts = () => {
-    return(
-        <View style={styles.container}>
-            <Text>Home</Text>
-        </View>
-    );
-}
+  return (
+    <View style={styles.container}>
+      <Text>Prompts</Text>
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        alignItems: "center",
-        justifyContent: "center",
-    }
+  container: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
 });
 
 export default Prompts;
