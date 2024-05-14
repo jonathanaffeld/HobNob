@@ -1,11 +1,10 @@
 import React from 'react';
 import { StyleSheet, Text, View } from "react-native";
 
-const EntryCreate = () => {
-    console.log("EntryCreate");
+const Prompts = () => {
     return(
         <View style={styles.container}>
-            <Text>Entry Create</Text>
+            <Text>Home</Text>
         </View>
     );
 }
@@ -18,4 +17,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default EntryCreate;
+export default Prompts;

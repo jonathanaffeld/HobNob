@@ -12,7 +12,6 @@ const screenWidth = Dimensions.get("window").width;
 const screenHeight = Dimensions.get("window").height;
 
 const Home = () => {
-  console.log("Preview");
   const initials = ["AB", "CD", "EF", "LM", "+34"];
   return (
     <LinearGradient

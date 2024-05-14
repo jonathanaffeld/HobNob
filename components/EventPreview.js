@@ -1,11 +1,10 @@
 import React from 'react';
 import { StyleSheet, Text, View } from "react-native";
 
-const BottomBar = () => {
-    console.log("BottomBar");
-    return (
+const EventPreview = () => {
+    return(
         <View style={styles.container}>
-            <Text>Bottom Bar</Text>
+            <Text>Event Preview</Text>
         </View>
     );
 }
@@ -18,4 +17,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default BottomBar;
+export default EventPreview;

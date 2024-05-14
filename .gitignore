@@ -1,6 +1,7 @@
 # OSX
 #
 .DS_Store
+.env
 
 # Xcode
 #
@@ -63,3 +64,4 @@ buck-out/
 # Expo
 .expo
 web-build/
+app.json
