@@ -1,18 +1,45 @@
 import React from "react";
-import { Dimensions, StyleSheet, Text, View, Image } from "react-native";
+import {
+  Dimensions,
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  Pressable,
+  ScrollView,
+} from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import HobNobLogo from "../assets/images/HobNobLogo.png";
-import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import Icon from "react-native-vector-icons/EvilIcons"; // Import EvilIcons
-import neelroy from "/Users/leonmacalister/HobNob/assets/images/NeelRoy.jpeg";
-import upcomingEvents from "/Users/leonmacalister/HobNob/assets/images/Group 3.png";
-import barpic from "/Users/leonmacalister/HobNob/assets/images/Bar.png";
+import neelroy from "/Users/leonmacalister/HobNob-1/assets/images/NeelRoy.jpeg";
+import upcomingEvents from "/Users/leonmacalister/HobNob-1/assets/images/Group 3.png";
+import barpic from "/Users/leonmacalister/HobNob-1/assets/images/Bar.png";
+import { useNavigation } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 const screenWidth = Dimensions.get("window").width;
 const screenHeight = Dimensions.get("window").height;
 
-const Home = () => {
+const Home = ({ navigation }) => {
   const initials = ["AB", "CD", "EF", "LM", "+34"];
+
+  const handleEventPreview = () => {
+    navigation.navigate("Event");
+  };
+  const handleProfile = () => {
+    navigation.navigate("Profile");
+  };
+  const handleDiscover = () => {
+    navigation.navigate("Discover");
+  };
+  const handlePrompts = () => {
+    navigation.navigate("Prompts");
+  };
+  const handleEventEdit = () => {
+    navigation.navigate("EventEdit");
+  };
+  const handleEventCreate = () => {
+    navigation.navigate("EventCreate");
+  };
   return (
     <LinearGradient
       colors={["#A8D0F5", "#D0B4F4"]}
@@ -38,65 +65,110 @@ const Home = () => {
         </View>
         <View style={styles.spacer}></View>
         <View style={styles.rightChild}>
-          <Icon name="plus" size={35} color="#000" fill="#000" />
+          <Pressable onPress={handleEventCreate}>
+            <Icon name="plus" size={35} color="#000" fill="#000" />
+          </Pressable>
         </View>
       </View>
       <View style={styles.profileContainer}>
-        <Image source={neelroy} style={styles.profilePic}></Image>
-        <Text style={styles.usernameFont}>@neelroy</Text>
+        <Pressable onPress={handleProfile} style={styles.profilebutton}>
+          <Image source={neelroy} style={styles.profilePic}></Image>
+
+          <Text style={styles.usernameFont}>@neelroy</Text>
+        </Pressable>
       </View>
       <View style={styles.upcomingEventsContainer}>
         <Image source={upcomingEvents} style={styles.upcomingEvents}></Image>
       </View>
       <View style={styles.eventContainer}>
-        <View style={styles.event}>
-          <View style={styles.parentContainer}>
-            <View style={styles.eventTopLeft}>
-              <Image source={barpic} style={styles.barpic}></Image>
-            </View>
-            <View style={styles.eventTopRight}>
-              <View style={styles.nestedChild}>
-                <Text style={styles.fontBold}>Happy Hour and Pool</Text>
-                <Text style={styles.fontNormal}>St. Stephen's Green</Text>
-              </View>
-              <View style={styles.nestedChild}>
-                <Text style={styles.fontSmall}>
-                  <Icon name="location" size={10} color="#000" fill="#000" />
-                  223 Castro St, Mountain View, CA
-                </Text>
-                <Text style={styles.fontSmall}>
-                  May 18th, 2024; 8:30-10:30 pm
-                </Text>
-              </View>
-            </View>
-          </View>
-          <View style={styles.parentContainer2}>
-            <Text style={styles.label}>Going:</Text>
-            <View style={styles.circleContainer}>
-              {initials.map((initial, index) => (
-                <View key={index} style={styles.circle}>
-                  <Text style={styles.initials}>{initial}</Text>
+        <ScrollView
+          horizontal={true}
+          pagingEnabled={true}
+          showsHorizontalScrollIndicator={true}
+          style={{ height: "100%" }}
+        >
+          <Pressable onPress={handleEventPreview}>
+            <LinearGradient
+              colors={["#FFFFFF", "#A9DFBF"]}
+              style={styles.event}
+            >
+              <View style={styles.parentContainer}>
+                <View style={styles.eventTopLeft}>
+                  <Image source={barpic} style={styles.barpic}></Image>
                 </View>
-              ))}
-            </View>
-          </View>
-          <View style={styles.parentContainer3}>
-            <Text style={styles.fontNormal}>
-              Discounted drinks and free pool, all are very welcome to partake
-              and mingle!
-            </Text>
-          </View>
-        </View>
+                <View style={styles.eventTopRight}>
+                  <View style={styles.nestedChild}>
+                    <Text style={styles.fontBold}>HAPPY HOUR AND POOL</Text>
+
+                    <Text style={styles.fontNormal}>
+                      <Icon
+                        name="location"
+                        size={15}
+                        color="black"
+                        fill="true"
+                      />
+                      St. Stephen's Green, Mt. View
+                    </Text>
+                  </View>
+                  <View style={styles.nestedChild1}>
+                    <Text style={styles.fontSmall}>
+                      May 18th, 8:30-10:30 pm
+                    </Text>
+                  </View>
+                </View>
+              </View>
+              <View style={styles.parentContainer2}>
+                <Text style={styles.label}>Going:</Text>
+                <View style={styles.circleContainer}>
+                  {initials.map((initial, index) => (
+                    <View key={index} style={styles.circle}>
+                      <Text style={styles.initials}>{initial}</Text>
+                    </View>
+                  ))}
+                </View>
+              </View>
+              <View style={styles.parentContainer3}>
+                <Text style={styles.fontNormal}>
+                  Discounted drinks and free pool, all are very welcome to
+                  partake and mingle!
+                </Text>
+              </View>
+            </LinearGradient>
+          </Pressable>
+          {/* Event 2 */}
+          <LinearGradient
+            colors={["#FFFFFF", "#D4AF37"]}
+            style={styles.event}
+          ></LinearGradient>
+          {/* Event 3 */}
+          <LinearGradient
+            colors={["#FFFFFF", "#E5E4E2"]}
+            style={styles.event}
+          ></LinearGradient>
+          {/* Event 4 */}
+          <LinearGradient
+            colors={["#FFFFFF", "#A9DFBF"]}
+            style={styles.event}
+          ></LinearGradient>
+        </ScrollView>
       </View>
       <View style={styles.scroller}>
-        <Text style={styles.fontNormal}> 1 of 4 </Text>
+        <Text style={styles.fontNormal1}> You have 4 logged events! </Text>
       </View>
       <View style={styles.bottomBar}>
         <View style={styles.bar}>
-          <Icon name="sc-telegram" size={40} color="#000" />
-          <Icon name="bell" size={40} color="#000" />
-          <Icon name="location" size={40} color="#000" />
-          <Icon name="user" size={40} color="#000" />
+          <Pressable onPress={handleEventEdit}>
+            <Icon name="sc-telegram" size={40} color="#000" />
+          </Pressable>
+          <Pressable onPress={handlePrompts}>
+            <Icon name="bell" size={40} color="#000" />
+          </Pressable>
+          <Pressable onPress={handleDiscover}>
+            <Icon name="location" size={40} color="#000" />
+          </Pressable>
+          <Pressable onPress={handleProfile}>
+            <Icon name="user" size={40} color="#000" />
+          </Pressable>
         </View>
       </View>
     </LinearGradient>
@@ -114,6 +186,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#A8D0F5",
   },
+  profilebutton: {
+    width: "100%",
+    height: "100%",
+    justifyContent: "center",
+    alignItems: "center",
+  },
   profileContainer: {
     alignItems: "center", // Centers the image horizontally
     justifyContent: "center", // Centers the image vertically
@@ -124,7 +202,8 @@ const styles = StyleSheet.create({
     alignItems: "center", // Centers the image horizontally
     justifyContent: "flex-end", // Centers the image vertically
     width: "90%",
-    height: "8%",
+    height: "6%",
+    marginBottom: "2%",
   },
   eventContainer: {
     alignItems: "center", // Centers the image horizontally
@@ -188,9 +267,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     width: "100%", // Align children horizontally
     height: "30%",
-    justifyContent: "center",
+    justifyContent: "flex-start",
     alignItems: "center",
-    padding: "1%",
+    padding: "2%",
   },
   eventTopLeft: {
     height: "80%",
@@ -212,16 +291,22 @@ const styles = StyleSheet.create({
     alignItems: "flex-start",
   },
   nestedChild: {
-    flex: 1, // Each child takes equal part of their parent's height
-    justifyContent: "center", // Center content vertically
-    alignItems: "flex-start", // Center content horizontally
-    marginBottom: 10, // Adds bottom margin to the first nested child
+    height: "55%",
+    width: "100%",
+    justifyContent: "space-evenly", // Center content vertically
+    borderBottomColor: "black",
+    borderBottomWidth: 1,
+  },
+  nestedChild1: {
+    height: "45%",
+    width: "100%",
+    justifyContent: "space-evenly", // Center content vertically
   },
   profilePic: {
     width: "40%", // Specify the width
     height: "65%", // Specify the height
     borderRadius: "100%", // Half the width/height to make the image circular
-    borderWidth: 0.5, // Optional, adds a border
+    borderWidth: 1.5, // Optional, adds a border
     borderColor: "#000", // Optional, sets the border color
   },
   upcomingEvents: {
@@ -259,23 +344,27 @@ const styles = StyleSheet.create({
   },
   logoLetter: {
     fontFamily: "Dongle-Bold",
-    fontSize: screenHeight * 0.03,
+    fontSize: screenHeight * 0.04,
     fontWeight: "bold",
   },
   fontBold: {
     fontFamily: "Dongle-Bold",
-    fontSize: screenHeight * 0.015,
+    fontSize: screenHeight * 0.025,
     fontWeight: "bold",
   },
   fontNormal: {
     fontFamily: "Dongle-Bold",
-    fontSize: screenHeight * 0.015,
-    width: "100%",
+    fontSize: screenHeight * 0.019,
+  },
+  fontNormal1: {
+    fontFamily: "Dongle",
+    fontSize: screenHeight * 0.025,
+    color: "black",
   },
   fontSmall: {
     justifyContent: "center",
-    fontFamily: "Dongle-Bold",
-    fontSize: screenHeight * 0.01,
+    fontFamily: "Dongle",
+    fontSize: screenHeight * 0.02,
   },
   usernameFont: {
     marginTop: "1.5%",
