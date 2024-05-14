@@ -1,11 +1,10 @@
 import React from 'react';
 import { StyleSheet, Text, View } from "react-native";
 
-const EntryEdit = () => {
-    console.log("EntryEdit");
+const Name = () => {
     return(
         <View style={styles.container}>
-            <Text>Entry Edit</Text>
+            <Text>Name</Text>
         </View>
     );
 }
@@ -18,4 +17,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default EntryEdit;
+export default Name;

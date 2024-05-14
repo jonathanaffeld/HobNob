@@ -5,13 +5,16 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 import Login from './components/Login';
 import SignUp from './components/SignUp';
+import Name from './components/Name';
+import Photo from './components/Photo';
+import Prompts from './components/Prompts';
 import Home from './components/Home';
 import Account from './components/Account';
 import AccountEdit from './components/AccountEdit';
 import Discover from './components/Discover';
-import Entry from './components/Entry';
-import EntryCreate from './components/EntryCreate';
-import EntryEdit from './components/EntryEdit';
+import Event from './components/Event';
+import EventCreate from './components/EventCreate';
+import EventEdit from './components/EventEdit';
 
 const Stack = createNativeStackNavigator();
 
@@ -26,6 +29,21 @@ const App = () => (
             <Stack.Screen
                 name="SignUp"
                 component={SignUp}
+                options={{ headerShown: false }}
+            />
+            <Stack.Screen
+                name="Name"
+                component={Name}
+                options={{ headerShown: false }}
+            />
+            <Stack.Screen
+                name="Photo"
+                component={Photo}
+                options={{ headerShown: false }}
+            />
+            <Stack.Screen
+                name="Prompts"
+                component={Prompts}
                 options={{ headerShown: false }}
             />
             <Stack.Screen
@@ -49,18 +67,18 @@ const App = () => (
                 options={{ headerShown: false }}
             />
             <Stack.Screen
-                name="Entry"
-                component={Entry}
+                name="Event"
+                component={Event}
                 options={{ headerShown: false }}
             />
             <Stack.Screen
-                name="EntryCreate"
-                component={EntryCreate}
+                name="EventCreate"
+                component={EventCreate}
                 options={{ headerShown: false }}
             />
             <Stack.Screen
-                name="EntryEdit"
-                component={EntryEdit}
+                name="EventEdit"
+                component={EventEdit}
                 options={{ headerShown: false }}
             />
         </Stack.Navigator>

@@ -1,11 +1,10 @@
 import React from 'react';
 import { StyleSheet, Text, View } from "react-native";
 
-const EntryPreview = () => {
-    console.log("EntryPreview");
+const EventEdit = () => {
     return(
         <View style={styles.container}>
-            <Text>Entry Preview</Text>
+            <Text>Event Edit</Text>
         </View>
     );
 }
@@ -18,4 +17,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default EntryPreview;
+export default EventEdit;

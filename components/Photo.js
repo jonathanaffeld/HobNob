@@ -1,10 +1,10 @@
 import React from 'react';
 import { StyleSheet, Text, View } from "react-native";
 
-const Home = () => {
+const Photo = () => {
     return(
         <View style={styles.container}>
-            <Text>Home</Text>
+            <Text>Photo</Text>
         </View>
     );
 }
@@ -17,4 +17,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default Home;
+export default Photo;

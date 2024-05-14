@@ -1,11 +1,10 @@
 import React from 'react';
 import { StyleSheet, Text, View } from "react-native";
 
-const Entry = () => {
-    console.log("Entry");
+const Event = () => {
     return(
         <View style={styles.container}>
-            <Text>Entry</Text>
+            <Text>Event</Text>
         </View>
     );
 }
@@ -18,4 +17,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default Entry;
+export default Event;

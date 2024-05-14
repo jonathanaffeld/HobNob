@@ -1,20 +1,200 @@
-import React from 'react';
-import { StyleSheet, Text, View } from "react-native";
+import React, { useState } from 'react';
+import { Dimensions, StyleSheet, Text, TextInput, View, Image, Pressable, Alert, ActivityIndicator } from "react-native";
+import { LinearGradient } from 'expo-linear-gradient';
+import { useFonts } from "expo-font";
+import { supabase } from '../supabase'
+import HobNobLogo from "../assets/images/HobNobLogo.png"
+import CreateAccountText from "../assets/images/CreateAccountText.png"
 
-const SignUp = () => {
-    console.log("SignUp");
-    return(
-        <View style={styles.container}>
-            <Text>Sign Up</Text>
-        </View>
-    );
+const screenWidth = Dimensions.get('window').width;
+const screenHeight = Dimensions.get('window').height;
+
+const SignUp = ({ navigation }) => {
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [confirm_password, setConfirmPassword] = useState("");
+    const [loading, setLoading] = useState(false);
+
+    const handleContinue = async () => {
+        if (!email) {
+            Alert.alert("Uhoh", "Email cannot be empty!")
+            return;
+        }
+        if (!password) {
+            Alert.alert("Uhoh", "Password cannot be empty!")
+            return;
+        }
+        if (!confirm_password) {
+            Alert.alert("Uhoh", "Please confirm your password!")
+            return;
+        }
+        if (password !== confirm_password) {
+            Alert.alert("Uhoh", "Passwords do not match!")
+            return;
+        }
+
+        setLoading(true);
+        
+        const { data, error } = await supabase.auth.signUp({
+            email: email,
+            password: password,
+            options: {
+                data: {
+                    finishedSignUp: false
+                }
+            }
+        });
+        setLoading(false);
+
+        if (error) {
+            Alert.alert("Uhoh", error.message);
+            return;
+        }
+
+        navigation.navigate("Name")
+    }
+
+    const handleLogin = () => {
+        navigation.navigate("Login");
+    }
+
+    const [fontsLoaded] = useFonts({
+        "Dongle-Bold": require("../assets/fonts/Dongle-Bold.ttf"),
+        "Dongle-Regular": require("../assets/fonts/Dongle-Regular.ttf"),
+        "Dongle-Light": require("../assets/fonts/Dongle-Light.ttf"),
+    });
+
+    if (!fontsLoaded) {
+        return <ActivityIndicator size="large" />;
+    }
+
+    return (
+        <LinearGradient colors={['#A8D0F5', '#D0B4F4']} style={styles.signUpContainer}>
+            <View style={styles.logoContainer}>
+                <Image style={styles.logo} source={HobNobLogo} />
+                <Text style={styles.logoText}>HobNob.</Text>
+            </View>
+            <View style={styles.textContainer}>
+                <Image style={styles.createAccountText} source={CreateAccountText} />
+                <TextInput 
+                    style={styles.input} 
+                    onChangeText={setEmail} 
+                    value={email} 
+                    placeholder='Email'
+                    autoCapitalize='none'
+                    autoCorrect={false}
+                />
+                <TextInput 
+                    style={styles.input} 
+                    onChangeText={setPassword} 
+                    value={password} 
+                    placeholder='Password'
+                    autoCapitalize='none'
+                    autoCorrect={false}
+                    secureTextEntry={true}
+                />
+                <TextInput 
+                    style={styles.input} 
+                    onChangeText={setConfirmPassword} 
+                    value={confirm_password} 
+                    placeholder='Confirm Password'
+                    autoCapitalize='none'
+                    autoCorrect={false}
+                    secureTextEntry={true}
+                />
+                {loading ? 
+                <ActivityIndicator style={styles.loading} /> :
+                <Pressable style={styles.signUpButton} onPress={handleContinue}>
+                    <Text style={styles.continue}>Continue</Text>
+                </Pressable>
+                }
+                <View style={styles.loginContainer}>
+                    <Text style={styles.loginText}>Already have an account?</Text>
+                    <Pressable onPress={handleLogin}>
+                        <Text style={styles.loginLink}> Log In</Text>
+                    </Pressable>
+                    <Text style={styles.loginText}>.</Text>
+                </View>
+            </View>
+        </LinearGradient>
+      )
 }
 
 const styles = StyleSheet.create({
-    container: {
+    signUpContainer: {
+        flex: 3,
+        alignItems: "center",
+        backgroundColor: "#A8D0F5"
+    },
+    logoContainer: {
         flex: 1,
         alignItems: "center",
+        justifyContent: "center"
+    },
+    logo: {
+        width: screenWidth * 0.5,
+        resizeMode: "contain",
+        marginTop: screenHeight * 0.1
+    },
+    logoText: {
+        fontFamily: "Dongle-Bold",
+        fontSize: screenHeight * 0.05,
+    },
+    textContainer: {
+        flex: 2,
+        alignItems: "center",
+    },
+    createAccountText: {
+        height: screenHeight * 0.125,
+        resizeMode: "contain",
+    },
+    input: {
+        width: screenWidth * 0.75,
+        height: screenHeight * 0.06,
+        backgroundColor: "#FFFFFF",
+        opacity: 0.75,
+        margin: screenWidth * 0.025,
+        paddingLeft: screenWidth * 0.05,
+        borderRadius: 20,
+        shadowColor: '#000000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.5,
+        shadowRadius: 5,
+        fontFamily: "Dongle-Regular",
+        fontSize: screenHeight * 0.05,
+        resizeMode: "contain",
+    },
+    signUpButton: {
+        width: screenWidth * 0.3,
+        height: screenHeight * 0.05,
+        backgroundColor: "#77678C",
+        borderRadius: 20,
+        alignItems: "center",
         justifyContent: "center",
+        marginTop: screenHeight * 0.025
+    },
+    continue: {
+        color: "#FFFFFF",
+        fontFamily: "Dongle-Light",
+        fontSize: screenHeight * 0.04
+    },
+    loginContainer: {
+        marginTop: screenHeight * 0.05,
+        flexDirection: "row"
+    },
+    loginText: {
+        fontFamily: "Dongle-Light",
+        fontSize: screenHeight * 0.03,
+    },
+    loginLink: {
+        color: "#e74c3c",
+        fontFamily: "Dongle-Bold",
+        fontSize: screenHeight * 0.03,
+    },
+    loading: {
+        size: "large",
+        justifyContent: "center",
+        alignItems: "center"
     }
 });
 
