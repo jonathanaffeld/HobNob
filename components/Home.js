@@ -1,4 +1,3 @@
-import React from "react";
 import {
   Dimensions,
   StyleSheet,
@@ -8,19 +7,64 @@ import {
   Pressable,
   ScrollView,
 } from "react-native";
+import { React, useState, useEffect } from "react"; // Correct import for useState and useEffect
+
 import { LinearGradient } from "expo-linear-gradient";
 import Icon from "react-native-vector-icons/EvilIcons"; // Import EvilIcons
 import neelroy from "/Users/leonmacalister/HobNob-1/assets/images/NeelRoy.jpeg";
 import upcomingEvents from "/Users/leonmacalister/HobNob-1/assets/images/Group 3.png";
 import barpic from "/Users/leonmacalister/HobNob-1/assets/images/Bar.png";
-import { useNavigation } from "@react-navigation/native";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import BottomBar from "/Users/leonmacalister/HobNob-1/components/BottomBar.js"; // Import the BottomBar component
 
 const screenWidth = Dimensions.get("window").width;
 const screenHeight = Dimensions.get("window").height;
 
 const Home = ({ navigation }) => {
   const initials = ["AB", "CD", "EF", "LM", "+34"];
+  const [eventData, setEventData] = useState(null);
+
+  useEffect(() => {
+    const fetchEventData = async () => {
+      try {
+        let { data, error } = await supabase
+          .from("events")
+          .select("*")
+          .eq("id", 1) // You should replace '1' with the event ID you want to query
+          .single();
+
+        if (error) {
+          throw error;
+        }
+        setEventData(data);
+      } catch (error) {
+        console.error("Error fetching event data:", error.message);
+      }
+    };
+
+    fetchEventData();
+  }, []);
+  const [profileData, setProfileData] = useState(null);
+
+  useEffect(() => {
+    const fetchProfileData = async () => {
+      try {
+        let { data, error } = await supabase
+          .from("profiles") // Assuming your table name is 'profiles'
+          .select("username, name, profile_picture, location") // Selecting specific fields
+          .eq("id", 1) // Replace '1' with the profile ID you want to query
+          .single();
+
+        if (error) {
+          throw error;
+        }
+        setProfileData(data);
+      } catch (error) {
+        console.error("Error fetching profile data:", error.message);
+      }
+    };
+
+    fetchProfileData();
+  }, []);
 
   const handleEventPreview = () => {
     navigation.navigate("Event");
@@ -28,18 +72,20 @@ const Home = ({ navigation }) => {
   const handleProfile = () => {
     navigation.navigate("Profile");
   };
+  const handleEventCreate = () => {
+    navigation.navigate("EventCreate");
+  };
   const handleDiscover = () => {
     navigation.navigate("Discover");
   };
   const handlePrompts = () => {
     navigation.navigate("Prompts");
   };
+
   const handleEventEdit = () => {
     navigation.navigate("EventEdit");
   };
-  const handleEventCreate = () => {
-    navigation.navigate("EventCreate");
-  };
+
   return (
     <LinearGradient
       colors={["#A8D0F5", "#D0B4F4"]}
@@ -73,8 +119,10 @@ const Home = ({ navigation }) => {
       <View style={styles.profileContainer}>
         <Pressable onPress={handleProfile} style={styles.profilebutton}>
           <Image source={neelroy} style={styles.profilePic}></Image>
+          {/* {profileData.profile_picture}*/}
 
           <Text style={styles.usernameFont}>@neelroy</Text>
+          {/* {profileData.username}*/}
         </Pressable>
       </View>
       <View style={styles.upcomingEventsContainer}>
@@ -99,6 +147,7 @@ const Home = ({ navigation }) => {
                 <View style={styles.eventTopRight}>
                   <View style={styles.nestedChild}>
                     <Text style={styles.fontBold}>HAPPY HOUR AND POOL</Text>
+                    {/* {eventData.title}*/}
 
                     <Text style={styles.fontNormal}>
                       <Icon
@@ -109,11 +158,13 @@ const Home = ({ navigation }) => {
                       />
                       St. Stephen's Green, Mt. View
                     </Text>
+                    {/* {eventData.location}*/}
                   </View>
                   <View style={styles.nestedChild1}>
                     <Text style={styles.fontSmall}>
                       May 18th, 8:30-10:30 pm
                     </Text>
+                    {/* {eventData.time}*/}
                   </View>
                 </View>
               </View>
@@ -125,6 +176,7 @@ const Home = ({ navigation }) => {
                       <Text style={styles.initials}>{initial}</Text>
                     </View>
                   ))}
+                  {/* {eventData.attendeesInitial}*/}
                 </View>
               </View>
               <View style={styles.parentContainer3}>
@@ -132,6 +184,7 @@ const Home = ({ navigation }) => {
                   Discounted drinks and free pool, all are very welcome to
                   partake and mingle!
                 </Text>
+                {/* {eventData.description}*/}
               </View>
             </LinearGradient>
           </Pressable>
@@ -155,22 +208,7 @@ const Home = ({ navigation }) => {
       <View style={styles.scroller}>
         <Text style={styles.fontNormal1}> You have 4 logged events! </Text>
       </View>
-      <View style={styles.bottomBar}>
-        <View style={styles.bar}>
-          <Pressable onPress={handleEventEdit}>
-            <Icon name="sc-telegram" size={40} color="#000" />
-          </Pressable>
-          <Pressable onPress={handlePrompts}>
-            <Icon name="bell" size={40} color="#000" />
-          </Pressable>
-          <Pressable onPress={handleDiscover}>
-            <Icon name="location" size={40} color="#000" />
-          </Pressable>
-          <Pressable onPress={handleProfile}>
-            <Icon name="user" size={40} color="#000" />
-          </Pressable>
-        </View>
-      </View>
+      <BottomBar />
     </LinearGradient>
   );
 };
