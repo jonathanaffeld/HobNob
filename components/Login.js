@@ -55,7 +55,11 @@ const Login = ({ navigation }) => {
     });
 
     if (!fontsLoaded) {
-        return <ActivityIndicator size="large" />;
+        return (
+            <LinearGradient colors={['#A8D0F5', '#D0B4F4']} style={styles.loginContainer}>
+                <ActivityIndicator size="large" />
+            </LinearGradient>
+        );
     }
 
     return(

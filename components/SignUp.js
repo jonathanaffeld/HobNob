@@ -34,7 +34,6 @@ const SignUp = ({ navigation }) => {
         }
 
         setLoading(true);
-        
         const { data, error } = await supabase.auth.signUp({
             email: email,
             password: password,
@@ -65,7 +64,11 @@ const SignUp = ({ navigation }) => {
     });
 
     if (!fontsLoaded) {
-        return <ActivityIndicator size="large" />;
+        return (
+            <LinearGradient colors={['#A8D0F5', '#D0B4F4']} style={styles.loginContainer}>
+                <ActivityIndicator size="large" />
+            </LinearGradient>
+        );
     }
 
     return (
@@ -104,7 +107,7 @@ const SignUp = ({ navigation }) => {
                 />
                 {loading ? 
                 <ActivityIndicator style={styles.loading} /> :
-                <Pressable style={styles.signUpButton} onPress={handleContinue}>
+                <Pressable style={styles.continueButton} onPress={handleContinue}>
                     <Text style={styles.continue}>Continue</Text>
                 </Pressable>
                 }
@@ -164,7 +167,7 @@ const styles = StyleSheet.create({
         fontSize: screenHeight * 0.05,
         resizeMode: "contain",
     },
-    signUpButton: {
+    continueButton: {
         width: screenWidth * 0.3,
         height: screenHeight * 0.05,
         backgroundColor: "#77678C",
