@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useFonts } from "expo-font";
 import { Dimensions, StyleSheet, Text, TextInput, View, Image, Pressable, Alert } from "react-native";
 import { LinearGradient } from 'expo-linear-gradient';
 import HobNobLogo from "../assets/images/HobNobLogo.png"
@@ -35,25 +36,20 @@ const Login = ({ navigation }) => {
     const signup = () => {
         navigation.navigate("SignUp")
     }
+    const [fontsLoaded] = useFonts({
+        "Dongle-Bold": require("../assets/fonts/Dongle-Bold.ttf"),
+        "Dongle-Light": require("../assets/fonts/Dongle-Light.ttf"),
+      });
+      if (!fontsLoaded) {
+        return <Text>Loading...</Text>;
+      }
 
     return(
         <LinearGradient colors={['#A8D0F5', '#D0B4F4']} style={styles.loginContainer}>
             <View style={styles.logoContainer}>
                 <Image style={styles.logo} source={HobNobLogo} />
                 <View style={styles.logoTextContainer}>
-                    <Text style={styles.logoLetter}>H</Text>
-                    <Text style={styles.logoSpace}> </Text>
-                    <Text style={styles.logoLetter}>o</Text>
-                    <Text style={styles.logoSpace}> </Text>
-                    <Text style={styles.logoLetter}>b</Text>
-                    <Text style={styles.logoSpace}> </Text>
-                    <Text style={styles.logoLetter}>N</Text>
-                    <Text style={styles.logoSpace}> </Text>
-                    <Text style={styles.logoLetter}>o</Text>
-                    <Text style={styles.logoSpace}> </Text>
-                    <Text style={styles.logoLetter}>b</Text>
-                    <Text style={styles.logoSpace}> </Text>
-                    <Text style={styles.logoLetter}>.</Text>
+                    <Text style={styles.customFontStyle}> HobNob. </Text>
                 </View>
             </View>
             <View style={styles.textContainer}>
@@ -76,6 +72,15 @@ const Login = ({ navigation }) => {
 }
 
 const styles = StyleSheet.create({
+    customFontStyle: {
+        fontFamily: 'Dongle-Bold',
+        fontSize: 50,
+      },
+    signupText: {
+        fontFamily: 'Dongle-Light',
+        fontSize: 25,
+    },
+      
     loginContainer: {
         flex: 3,
         alignItems: "center",
@@ -147,8 +152,9 @@ const styles = StyleSheet.create({
         flexDirection: "row"
     },
     signupLink: {
-        fontWeight: "bold",
+        fontFamily: "Dongle-Bold",
         color: "#e74c3c",
+        fontSize: 25,
     }
 });
 
