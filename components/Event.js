@@ -103,74 +103,65 @@ const Event = () => {
 
       <View style={styles.eventContainer}>
         <LinearGradient colors={["#FFFFFF", "#A9DFBF"]} style={styles.event}>
-          <ScrollView>
-            <View style={styles.parentContainer}>
-              <Text style={styles.fontBold}>HAPPY HOUR AND POOL</Text>
-              {/* {eventData.title}*/}
-              <View style={styles.info}>
-                <View style={styles.eventTopLeft}>
-                  <Image source={barpic} style={styles.barpic}></Image>
-                  {/* {eventData.image}*/}
+          <View style={styles.parentContainer}>
+            <Text style={styles.fontBold}>HAPPY HOUR AND POOL</Text>
+            {/* {eventData.title}*/}
+            <View style={styles.info}>
+              <View style={styles.eventTopLeft}>
+                <Image source={barpic} style={styles.barpic}></Image>
+                {/* {eventData.image}*/}
+              </View>
+              <View style={styles.eventTopRight}>
+                <View style={styles.nestedChild}>
+                  <Text style={styles.fontNormal}>
+                    <Icon name="location" size={15} color="black" fill="true" />
+                    St. Stephen's Green, Mt. View, California
+                  </Text>
+                  {/* {eventData.location}*/}
                 </View>
-                <View style={styles.eventTopRight}>
-                  <View style={styles.nestedChild}>
-                    <Text style={styles.fontNormal}>
-                      <Icon
-                        name="location"
-                        size={15}
-                        color="black"
-                        fill="true"
-                      />
-                      St. Stephen's Green, Mt. View, California
-                    </Text>
-                    {/* {eventData.location}*/}
-                  </View>
-                  <View style={styles.nestedChild1}>
-                    <Text style={styles.fontSmall}>
-                      May 18th, 8:30-10:30 pm
-                    </Text>
-                  </View>
+                <View style={styles.nestedChild1}>
+                  <Text style={styles.fontSmall}>May 18th, 8:30-10:30 pm</Text>
                 </View>
               </View>
-              <View style={styles.going}>
-                <Text style={styles.label}>Attendees:</Text>
-              </View>
+            </View>
+            <View style={styles.going}>
+              <Text style={styles.label}>Attendees:</Text>
+            </View>
 
-              <View style={styles.parentContainer2}>
-                <View style={styles.circleContainer}>
-                  {initials.map((initial, index) => (
-                    <View key={index} style={styles.circle}>
-                      <Text style={styles.initials}>{initial}</Text>
-                    </View>
-                  ))}
-                  {/* {eventData && eventData.attendeesInitials && 
+            <View style={styles.parentContainer2}>
+              <View style={styles.circleContainer}>
+                {initials.map((initial, index) => (
+                  <View key={index} style={styles.circle}>
+                    <Text style={styles.initials}>{initial}</Text>
+                  </View>
+                ))}
+                {/* {eventData && eventData.attendeesInitials && 
       eventData.attendeesInitials.slice(0, 13).map((initial, index) => (
         <View key={index} style={styles.circle}>
           <Text style={styles.initials}>{initial}</Text>
         </View>
       ))
     }*/}
-                </View>
               </View>
             </View>
+          </View>
 
-            <View style={styles.parentContainer3}>
-              <Text style={styles.fontNormal1}>
-                Discounted drinks and free pool, all are very welcome to partake
-                and mingle! Discounted drinks include Guinness, VB and Great
-                Northerns. This event was created by the owner who will be
-                fascillitating the event.
-              </Text>
-              {/* {eventData.description}*/}
-            </View>
-            <View style={styles.parentContainer4}>
-              <Icon name="exclamation" size={45} color="brown" fill="true" />
+          <View style={styles.parentContainer3}>
+            <Text style={styles.fontNormal1}>
+              Discounted drinks and free pool, all are very welcome to partake
+              and mingle! Discounted drinks include Guinness, VB and Great
+              Northerns. This event was created by the owner who will be
+              fascillitating the event.
+            </Text>
+            {/* {eventData.description}*/}
+          </View>
+          <View style={styles.parentContainer4}>
+            <Icon name="exclamation" size={45} color="brown" fill="true" />
 
-              <Text style={styles.fontAlert}>
-                4 other attendees are also from Boise!
-              </Text>
-            </View>
-          </ScrollView>
+            <Text style={styles.fontAlert}>
+              4 other attendees are also from Boise!
+            </Text>
+          </View>
         </LinearGradient>
       </View>
 
@@ -231,8 +222,8 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     width: "100%", // Align children horizontally
     height: "60%",
-    justifyContent: "flex-start",
-    alignItems: "center", // Centers children vertically in the container
+    justifyContent: "center",
+    alignItems: "flex-start", // Centers children vertically in the container
   },
   parentContainer2: {
     flexDirection: "row",
@@ -318,6 +309,7 @@ const styles = StyleSheet.create({
   nestedChild: {
     height: "50%",
     width: "100%",
+    paddingVertical: "5%",
     justifyContent: "center",
     borderBottomColor: "black",
     borderBottomWidth: 1,
@@ -325,6 +317,7 @@ const styles = StyleSheet.create({
   nestedChild1: {
     height: "50%",
     width: "100%",
+    paddingTop: "3%",
   },
   profilePic: {
     width: "40%", // Specify the width
@@ -372,7 +365,7 @@ const styles = StyleSheet.create({
   },
   fontBold: {
     fontFamily: "Dongle-Bold",
-    fontSize: screenHeight * 0.035,
+    fontSize: screenHeight * 0.025,
     fontWeight: "bold",
   },
   fontNormal: {
@@ -381,18 +374,18 @@ const styles = StyleSheet.create({
   },
   fontNormal1: {
     fontFamily: "Dongle",
-    fontSize: screenHeight * 0.019,
+    fontSize: screenHeight * 0.016,
     color: "black",
   },
   fontAlert: {
     fontFamily: "Dongle",
-    fontSize: screenHeight * 0.023,
+    fontSize: screenHeight * 0.016,
     color: "brown",
   },
   fontSmall: {
     justifyContent: "center",
     fontFamily: "Dongle",
-    fontSize: screenHeight * 0.02,
+    fontSize: screenHeight * 0.018,
   },
   usernameFont: {
     fontFamily: "Dongle-Bold",

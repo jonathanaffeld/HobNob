@@ -176,7 +176,13 @@ const Home = ({ navigation }) => {
                       <Text style={styles.initials}>{initial}</Text>
                     </View>
                   ))}
-                  {/* {eventData.attendeesInitial}*/}
+                  {/* {eventData && eventData.attendeesInitial && 
+      eventData.attendeesInitial.slice(0, 4).map((initial, index) => (
+        <View key={index} style={styles.circle}>
+          <Text style={styles.initials}>{initial}</Text>
+        </View>
+      ))
+    } */}
                 </View>
               </View>
               <View style={styles.parentContainer3}>
@@ -246,7 +252,7 @@ const styles = StyleSheet.create({
   eventContainer: {
     alignItems: "center", // Centers the image horizontally
     justifyContent: "center", // Centers the image vertically
-    width: "90%",
+    width: "80%",
     height: "35%",
     marginBottom: "1%",
   },
@@ -258,7 +264,7 @@ const styles = StyleSheet.create({
     justifyContent: "top", // Aligns children to the center vertically
     flexDirection: "column", // Arranges children in a column
     shadowColor: "#000", // Shadow color
-    width: "95%",
+    width: "85%",
     height: "90%",
     shadowOffset: { width: 0, height: 2 }, // Shadow offset
     shadowOpacity: 0.25, // Shadow opacity
@@ -332,8 +338,6 @@ const styles = StyleSheet.create({
     height: "55%",
     width: "100%",
     justifyContent: "space-evenly", // Center content vertically
-    borderBottomColor: "black",
-    borderBottomWidth: 1,
   },
   nestedChild1: {
     height: "45%",
@@ -382,27 +386,28 @@ const styles = StyleSheet.create({
   },
   logoLetter: {
     fontFamily: "Dongle-Bold",
-    fontSize: screenHeight * 0.04,
+    fontSize: screenHeight * 0.035,
     fontWeight: "bold",
   },
   fontBold: {
     fontFamily: "Dongle-Bold",
-    fontSize: screenHeight * 0.025,
+    fontSize: screenHeight * 0.016,
     fontWeight: "bold",
+    marginBottom: "4%",
   },
   fontNormal: {
     fontFamily: "Dongle-Bold",
-    fontSize: screenHeight * 0.019,
+    fontSize: screenHeight * 0.014,
   },
   fontNormal1: {
     fontFamily: "Dongle",
-    fontSize: screenHeight * 0.025,
+    fontSize: screenHeight * 0.014,
     color: "black",
   },
   fontSmall: {
     justifyContent: "center",
     fontFamily: "Dongle",
-    fontSize: screenHeight * 0.02,
+    fontSize: screenHeight * 0.015,
   },
   usernameFont: {
     marginTop: "1.5%",
