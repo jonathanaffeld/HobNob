@@ -12,7 +12,9 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
+import {supabase} from '../supabase';
 import Icon from "react-native-vector-icons/EvilIcons"; // Import EvilIcons
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 import { useNavigation } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -30,25 +32,50 @@ const EventCreate = ({navigation}) => {
     const [description, setDescription] = useState('');
     const [title, setTitle] = useState('');
     const [loc, setLoc] = useState('');
-    const [start, setStart] = useState('');
-    const [end, setEnd] = useState('');
+
+    const [dateStart, setDateStart] = useState(new Date());
+    const [dateEnd, setDateEnd] = useState(new Date());
+    const [timeStart, setTimeStart] = useState(new Date());
+    const [timeEnd, setTimeEnd] = useState(new Date());
     
 
     const handleSubmit = async () => {
-        if (!email) {
-            Alert.alert("Uhoh", "Email cannot be empty!")
+        if (!description) {
+            Alert.alert("Uhoh", "Description cannot be empty!")
             return;
         }
-        if (!password) {
-            Alert.alert("Uhoh", "Password cannot be empty!")
+        if (!title) {
+            Alert.alert("Uhoh", "Title cannot be empty!")
+            return;
+        }
+        if (!loc) {
+            Alert.alert("Uhoh", "Location cannot be empty!")
             return;
         }
 
+
+        const startDateTime = new Date(dateStart.getFullYear(), dateStart.getMonth(), 
+        dateStart.getDate(), timeStart.getHours(), timeStart.getMinutes());
+        const endDateTime = new Date(dateEnd.getFullYear(), dateEnd.getMonth(), 
+        dateEnd.getDate(), timeEnd.getHours(), timeEnd.getMinutes());
+
+        if (startDateTime >= endDateTime) {
+            Alert.alert("Uhoh", "Start date/time must be before end date/time!");
+            return;
+        }
+
+        const startDateTimeTz = startDateTime.toISOString();
+        const endDateTimeTz = endDateTime.toISOString();
+
         setLoading(true);
-        const { data, error } = await supabase.auth.signInWithPassword({
-            email: email,
-            password: password,
-        })
+        //owner: supabase.auth.user().id
+
+        const { data, error } = await supabase
+        .from('events')
+        .insert([
+            { start_time: startDateTimeTz, end_time: endDateTimeTz, title: title, 
+                description: description, location:loc , image_url: null, participants: [], owner: null},
+        ]);
         setLoading(false);
         
         if (error) {
@@ -56,26 +83,42 @@ const EventCreate = ({navigation}) => {
             return;
         }
 
-        if (data.user.user_metadata.finishedSignUp) {
-            navigation.navigate("Home");
-        }
-        else {
-            navigation.navigate("Name");
-        }
+        // If there's no error go to... Discover page? idk can change later
+        navigation.navigate("Discover");
+
     }
 
     const handleProfile = () => {
         navigation.navigate("Profile");
       };
-      const handleDiscover = () => {
+    const handleDiscover = () => {
         navigation.navigate("Discover");
-      };
-      const handlePrompts = () => {
+    };
+    const handlePrompts = () => {
         navigation.navigate("Prompts");
-      };
-      const handleEventEdit = () => {
+    };
+    const handleEventEdit = () => {
         navigation.navigate("EventEdit");
+    };
+    const onChangeStart = (event, selectedDate) => {
+        const currentDate = selectedDate || dateStart;
+        setDateStart(currentDate);
+    };
+    const onChangeEnd = (event, selectedDate) => {
+        const currentDate = selectedDate || dateEnd;
+        setDateEnd(currentDate);
+    };
+    const onChangeStartTime = (event, selectedTime) => {
+        const currentTime = selectedTime || timeStart;
+        setTimeStart(currentTime);
       };
+      
+      const onChangeEndTime = (event, selectedTime) => {
+        const currentTime = selectedTime || timeEnd;
+        setTimeEnd(currentTime);
+      };
+
+
 
 
     return(
@@ -121,30 +164,33 @@ const EventCreate = ({navigation}) => {
                     autoCapitalize='none'
                     placeholderTextColor="gray"
                 />
-                <TextInput 
-                    style={styles.photo} 
-                   
-                    placeholder='Photo' 
-                    autoCapitalize='none'
-                    autoCorrect={false}
-                    placeholderTextColor="gray"
+                
+                <DateTimePicker
+                    value={dateStart}
+                    mode="date"
+                    display="default"
+                    onChange={onChangeStart}
                 />
-                <TextInput 
-                    style={styles.input} 
-                    onChangeText={setStart} 
-                    value={start} 
-                    placeholder='Start Date & Time' 
-                    autoCapitalize='none'
-                    placeholderTextColor="gray"
+                <DateTimePicker
+                    value={timeStart}
+                    mode="time"
+                    display="default"
+                    onChange={onChangeStartTime}
                 />
-                <TextInput 
-                    style={styles.input} 
-                    onChangeText={setEnd} 
-                    value={end} 
-                    placeholder='End Date & Time' 
-                    autoCapitalize='none'
-                    placeholderTextColor="gray"
+                
+                <DateTimePicker
+                    value={dateEnd}
+                    mode="date"
+                    display="default"
+                    onChange={onChangeEnd}
+                    minimumDate={dateStart}
                 />
+                <DateTimePicker
+  value={timeEnd}
+  mode="time"
+  display="default"
+  onChange={onChangeEndTime}
+/>
                 {loading ? 
                 <ActivityIndicator /> :
                 <Pressable style={styles.loginButton} onPress={handleSubmit}>

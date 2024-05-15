@@ -22,6 +22,8 @@ const Stack = createNativeStackNavigator();
 const App = () => (
   <NavigationContainer>
     <Stack.Navigator>
+      
+      
       <Stack.Screen
         name="Home"
         component={Home}
