@@ -8,7 +8,7 @@ import {
   ScrollView,
 } from "react-native";
 import { React, useState, useEffect } from "react"; // Correct import for useState and useEffect
-
+import {supabase} from '../supabase';
 import { LinearGradient } from "expo-linear-gradient";
 import Icon from "react-native-vector-icons/EvilIcons"; // Import EvilIcons
 import neelroy from "../assets/images/NeelRoy.jpeg";
@@ -23,26 +23,26 @@ const Home = ({ navigation }) => {
   const initials = ["AB", "CD", "EF", "LM", "+34"];
   const [eventData, setEventData] = useState(null);
 
-  useEffect(() => {
-    const fetchEventData = async () => {
-      try {
-        let { data, error } = await supabase
-          .from("events")
-          .select("*")
-          .eq("id", 1) // You should replace '1' with the event ID you want to query
-          .single();
+  // useEffect(() => {
+  //   const fetchEventData = async () => {
+  //     try {
+  //       let { data, error } = await supabase
+  //         .from("events")
+  //         .select("*")
+  //         .eq("id", 1) // You should replace '1' with the event ID you want to query
+  //         .single();
 
-        if (error) {
-          throw error;
-        }
-        setEventData(data);
-      } catch (error) {
-        console.error("Error fetching event data:", error.message);
-      }
-    };
+  //       if (error) {
+  //         throw error;
+  //       }
+  //       setEventData(data);
+  //     } catch (error) {
+  //       console.error("Error fetching event data:", error.message);
+  //     }
+  //   };
 
-    fetchEventData();
-  }, []);
+  //   fetchEventData();
+  // }, []);
   const [profileData, setProfileData] = useState(null);
 
   useEffect(() => {

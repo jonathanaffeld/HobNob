@@ -22,24 +22,26 @@ const Event = () => {
   const [eventData, setEventData] = useState(null);
 
   useEffect(() => {
+    /*
     const fetchEventData = async () => {
       try {
-        let { data, error } = await supabase
-          .from("events")
-          .select("*")
-          .eq("id", 1) // You should replace '1' with the event ID you want to query
-          .single();
+      let { data, error } = await supabase
+        .from("events")
+        .select("*")
+        .eq("id", 1) // You should replace '1' with the event ID you want to query
+        .single();
 
-        if (error) {
-          throw error;
-        }
-        setEventData(data);
+      if (error) {
+        throw error;
+      }
+      setEventData(data);
       } catch (error) {
-        console.error("Error fetching event data:", error.message);
+      console.error("Error fetching event data:", error.message);
       }
     };
 
     fetchEventData();
+    */
   }, []);
   const initials = [
     "AB",
