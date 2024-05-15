@@ -1,21 +1,21 @@
-import React from 'react';
+import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 
 const Discover = () => {
-    console.log("Discover");
-    return(
-        <View style={styles.container}>
-            <Text>Discover</Text>
-        </View>
-    );
-}
+  console.log("Discover");
+  return (
+    <View style={styles.container}>
+      <Text>Discover Events</Text>
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        alignItems: "center",
-        justifyContent: "center",
-    }
+  container: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
 });
 
 export default Discover;

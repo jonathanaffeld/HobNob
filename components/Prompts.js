@@ -15,8 +15,6 @@ const Prompts = ({ route, navigation }) => {
     const [response1, setResponse1] = useState("");
     const [prompt2, setPrompt2] = useState("");
     const [response2, setResponse2] = useState("");
-    const [isFocus1, setIsFocus1] = useState(false);
-    const [isFocus2, setIsFocus2] = useState(false);
     const [finished_sign_up, setFinishedSignUp] = useState(false);
     const [mounting, setMounting] = useState(false);
     const [loading, setLoading] = useState(false);
