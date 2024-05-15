@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Dimensions, StyleSheet, Text, TextInput, View, Image, Pressable, Alert, ActivityIndicator } from "react-native";
+import { Dimensions, StyleSheet, Text, TextInput, Pressable, Alert, ActivityIndicator, View } from "react-native";
 import { LinearGradient } from 'expo-linear-gradient';
 import { useFonts } from "expo-font";
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import { supabase } from '../supabase'
 
 const screenWidth = Dimensions.get('window').width;
@@ -44,6 +45,12 @@ const Name = ({ route, navigation }) => {
         }
         fetchData();
     }, [user_id]);
+
+    const handleBack = async () => {
+        if (finished_sign_up) {
+            navigation.navigate("Account", { user_id: user_id });
+        }
+    }
 
     const handleClick = async () => {
         if (!first_name) {
@@ -90,6 +97,16 @@ const Name = ({ route, navigation }) => {
 
     return (
         <LinearGradient colors={['#A8D0F5', '#D0B4F4']} style={styles.namesContainer}>
+            {
+                finished_sign_up &&
+                <Pressable style={styles.backButton} onPress={handleBack}>
+                    <Ionicons 
+                        name='caret-back-circle' 
+                        size={screenWidth * 0.1}
+                        color='#77678C'
+                    />
+                </Pressable>
+            }
             <Text style={styles.titleText}>What's your name?</Text>
             <TextInput 
                 style={styles.input} 
@@ -107,13 +124,15 @@ const Name = ({ route, navigation }) => {
                 autoCapitalize='words'
                 autoCorrect={false}
             />
-            {
-                loading ? 
-                <ActivityIndicator style={styles.loading} /> :
-                <Pressable style={styles.button} onPress={handleClick}>
-                    <Text style={styles.buttonText}>{finished_sign_up ? "Save" : "Continue"}</Text>
-                </Pressable>
-            }
+            <View style={styles.lowerContainer}>
+                {
+                    loading ? 
+                    <ActivityIndicator style={styles.loading} /> :
+                    <Pressable style={styles.button} onPress={handleClick}>
+                        <Text style={styles.buttonText}>{finished_sign_up ? "Save" : "Continue"}</Text>
+                    </Pressable>
+                }
+            </View>
         </LinearGradient>
       )
 }
@@ -123,6 +142,11 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: "center",
         justifyContent: "center",
+    },
+    backButton: {
+        position: 'absolute',
+        top: 75,
+        left: 25
     },
     titleText: {
         fontFamily: "Dongle-Regular",
@@ -144,6 +168,13 @@ const styles = StyleSheet.create({
         fontSize: screenHeight * 0.05,
         resizeMode: "contain",
     },
+    lowerContainer: {
+        width: screenWidth * 0.3,
+        height: screenHeight * 0.05,
+        alignItems: "center",
+        justifyContent: "center",
+        marginTop: screenHeight * 0.025
+    },
     button: {
         width: screenWidth * 0.3,
         height: screenHeight * 0.05,
@@ -151,7 +182,6 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         alignItems: "center",
         justifyContent: "center",
-        marginTop: screenHeight * 0.025
     },
     buttonText: {
         color: "#FFFFFF",

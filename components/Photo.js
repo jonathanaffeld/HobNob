@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Dimensions, StyleSheet, Text, TextInput, View, Image, Pressable, Alert, ActivityIndicator, Button } from "react-native";
+import { Dimensions, StyleSheet, Text, View, Image, Pressable, Alert, ActivityIndicator } from "react-native";
 import { LinearGradient } from 'expo-linear-gradient';
 import { useFonts } from "expo-font";
 import * as ImagePicker from 'expo-image-picker';
-import Icon from 'react-native-vector-icons/FontAwesome';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import { decode } from 'base64-arraybuffer';
 import { supabase } from '../supabase'
 
@@ -42,6 +43,15 @@ const Photo = ({ route, navigation }) => {
         }
         fetchData();
     }, [user_id]);
+
+    const handleBack = async () => {
+        if (finished_sign_up) {
+            navigation.navigate("Account", { user_id: user_id });
+        }
+        else {
+            navigation.navigate("Name", { user_id: user_id })
+        }
+    }
 
     const pickImage = async () => {
         const cameraRollPermission = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -146,7 +156,8 @@ const Photo = ({ route, navigation }) => {
             supabase
                 .storage
                 .from('profile-photos')
-                .upload(`${user_id}/${user_id}`, arrayBuffer, {
+                .upload(`${user_id}/${user_id}.png`, arrayBuffer, {
+                    contentType: 'image/png',
                     upsert: true
                 })
                 .then((upload_response) => {
@@ -196,7 +207,14 @@ const Photo = ({ route, navigation }) => {
 
     return (
         <LinearGradient colors={['#A8D0F5', '#D0B4F4']} style={styles.namesContainer}>
-            <Text style={styles.titleText}>Select a Profile Photo</Text>
+            <Pressable style={styles.backButton} onPress={handleBack}>
+                <Ionicons 
+                    name='caret-back-circle' 
+                    size={screenWidth * 0.1}
+                    color='#77678C'
+                />
+            </Pressable>
+            <Text style={styles.titleText}>Select a Profile Photo!</Text>
             <View style={styles.imageContainer}>
                 {
                     image ?
@@ -205,16 +223,15 @@ const Photo = ({ route, navigation }) => {
                 }
                 <View style={styles.iconContainer}>
                     <Pressable onPress={pickImage}>
-                        <Icon 
+                        <FontAwesome 
                             name='image' 
                             size={screenWidth * 0.1} 
                             color='#000000'
                             style={styles.icon1}
-                            
                         />
                     </Pressable>
                     <Pressable onPress={takeImage}>
-                        <Icon 
+                        <FontAwesome 
                             name='camera' 
                             size={screenWidth * 0.1}
                             color='#000000'
@@ -223,13 +240,15 @@ const Photo = ({ route, navigation }) => {
                     </Pressable>
                 </View>
             </View>
-            {
-                loading ? 
-                <ActivityIndicator style={styles.loading} /> :
-                <Pressable style={styles.button} onPress={handleClick}>
-                    <Text style={styles.buttonText}>{finished_sign_up ? "Save" : "Continue"}</Text>
-                </Pressable>
-            }
+            <View style={styles.lowerContainer}>
+                {
+                    loading ? 
+                    <ActivityIndicator style={styles.loading} /> :
+                    <Pressable style={styles.button} onPress={handleClick}>
+                        <Text style={styles.buttonText}>{finished_sign_up ? "Save" : "Continue"}</Text>
+                    </Pressable>
+                }
+            </View>
         </LinearGradient>
     );
 }
@@ -239,6 +258,11 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: "center",
         justifyContent: "center",
+    },
+    backButton: {
+        position: 'absolute',
+        top: 75,
+        left: 25
     },
     titleText: {
         fontFamily: "Dongle-Regular",
@@ -278,6 +302,13 @@ const styles = StyleSheet.create({
         marginLeft: screenHeight * 0.05,
         marginBottom: screenHeight * 0.05
     },
+    lowerContainer: {
+        width: screenWidth * 0.3,
+        height: screenHeight * 0.05,
+        alignItems: "center",
+        justifyContent: "center",
+        marginTop: screenHeight * 0.025
+    },
     button: {
         width: screenWidth * 0.3,
         height: screenHeight * 0.05,
@@ -285,7 +316,6 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         alignItems: "center",
         justifyContent: "center",
-        marginTop: screenHeight * 0.025
     },
     buttonText: {
         color: "#FFFFFF",

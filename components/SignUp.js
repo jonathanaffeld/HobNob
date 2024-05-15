@@ -109,13 +109,15 @@ const SignUp = ({ navigation }) => {
                     autoCorrect={false}
                     secureTextEntry={true}
                 />
-                {
-                    loading ? 
-                    <ActivityIndicator style={styles.loading} /> :
-                    <Pressable style={styles.continueButton} onPress={handleContinue}>
-                        <Text style={styles.continue}>Continue</Text>
-                    </Pressable>
-                }
+                <View style={styles.lowerContainer}>
+                    {
+                        loading ? 
+                        <ActivityIndicator style={styles.loading} /> :
+                        <Pressable style={styles.continueButton} onPress={handleContinue}>
+                            <Text style={styles.continue}>Continue</Text>
+                        </Pressable>
+                    }
+                </View>
                 <View style={styles.loginContainer}>
                     <Text style={styles.loginText}>Already have an account?</Text>
                     <Pressable onPress={handleLogin}>
@@ -171,6 +173,13 @@ const styles = StyleSheet.create({
         fontSize: screenHeight * 0.05,
         resizeMode: "contain",
     },
+    lowerContainer: {
+        width: screenWidth * 0.3,
+        height: screenHeight * 0.05,
+        alignItems: "center",
+        justifyContent: "center",
+        marginTop: screenHeight * 0.025
+    },
     continueButton: {
         width: screenWidth * 0.3,
         height: screenHeight * 0.05,
@@ -178,7 +187,6 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         alignItems: "center",
         justifyContent: "center",
-        marginTop: screenHeight * 0.025
     },
     continue: {
         color: "#FFFFFF",
@@ -186,7 +194,7 @@ const styles = StyleSheet.create({
         fontSize: screenHeight * 0.04
     },
     loginContainer: {
-        marginTop: screenHeight * 0.05,
+        marginTop: screenHeight * 0.025,
         flexDirection: "row"
     },
     loginText: {

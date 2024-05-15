@@ -98,13 +98,15 @@ const Login = ({ navigation }) => {
                     autoCorrect={false}
                     secureTextEntry={true}
                 />
-                {
-                    loading ? 
-                    <ActivityIndicator /> :
-                    <Pressable style={styles.loginButton} onPress={handleSubmit}>
-                        <Text style={styles.submit}>Submit</Text>
-                    </Pressable>
-                }
+                <View style={styles.lowerContainer}>
+                    {
+                        loading ? 
+                        <ActivityIndicator /> :
+                        <Pressable style={styles.loginButton} onPress={handleSubmit}>
+                            <Text style={styles.submit}>Submit</Text>
+                        </Pressable>
+                    }
+                </View>
                 <View style={styles.signupContainer}>
                     <Text style={styles.signupText}>New? Create your HobNob account </Text>
                     <Pressable onPress={handleSignup}>
@@ -160,6 +162,13 @@ const styles = StyleSheet.create({
         fontSize: screenHeight * 0.05,
         resizeMode: "contain",
     },
+    lowerContainer: {
+        width: screenWidth * 0.3,
+        height: screenHeight * 0.05,
+        alignItems: "center",
+        justifyContent: "center",
+        marginTop: screenHeight * 0.025
+    },
     loginButton: {
         width: screenWidth * 0.3,
         height: screenHeight * 0.05,
@@ -167,7 +176,6 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         alignItems: "center",
         justifyContent: "center",
-        marginTop: screenHeight * 0.025
     },
     submit: {
         color: "#FFFFFF",
@@ -175,7 +183,7 @@ const styles = StyleSheet.create({
         fontSize: screenHeight * 0.04
     },
     signupContainer: {
-        marginTop: screenHeight * 0.05,
+        marginTop: screenHeight * 0.025,
         flexDirection: "row"
     },
     signupText: {
