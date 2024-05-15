@@ -10,9 +10,9 @@ import {
 import { React, useState, useEffect } from "react"; // Correct import for useState and useEffect
 import { LinearGradient } from "expo-linear-gradient";
 import Icon from "react-native-vector-icons/EvilIcons"; // Import EvilIcons
-import upcomingEvents from "/Users/leonmacalister/HobNob-1/assets/images/Group 3.png";
-import barpic from "/Users/leonmacalister/HobNob-1/assets/images/Bar.png";
-import BottomBar from "/Users/leonmacalister/HobNob-1/components/BottomBar.js"; // Import the BottomBar component
+import upcomingEvents from "../assets/images/Group 3.png";
+import barpic from "../assets/images/Bar.png";
+import BottomBar from "./BottomBar.js"; // Import the BottomBar component
 import { useNavigation } from "@react-navigation/native";
 import { supabase } from "../supabase";
 

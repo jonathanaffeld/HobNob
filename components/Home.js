@@ -11,10 +11,10 @@ import { React, useState, useEffect } from "react"; // Correct import for useSta
 
 import { LinearGradient } from "expo-linear-gradient";
 import Icon from "react-native-vector-icons/EvilIcons"; // Import EvilIcons
-import neelroy from "/Users/leonmacalister/HobNob-1/assets/images/NeelRoy.jpeg";
-import upcomingEvents from "/Users/leonmacalister/HobNob-1/assets/images/Group 3.png";
-import barpic from "/Users/leonmacalister/HobNob-1/assets/images/Bar.png";
-import BottomBar from "/Users/leonmacalister/HobNob-1/components/BottomBar.js"; // Import the BottomBar component
+import neelroy from "../assets/images/NeelRoy.jpeg";
+import upcomingEvents from "../assets/images/Group 3.png";
+import barpic from "../assets/images/Bar.png";
+import BottomBar from "./BottomBar"; // Import the BottomBar component
 
 const screenWidth = Dimensions.get("window").width;
 const screenHeight = Dimensions.get("window").height;
