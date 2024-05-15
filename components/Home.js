@@ -10,9 +10,9 @@ import {
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import Icon from "react-native-vector-icons/EvilIcons"; // Import EvilIcons
-import neelroy from "/Users/leonmacalister/HobNob-1/assets/images/NeelRoy.jpeg";
-import upcomingEvents from "/Users/leonmacalister/HobNob-1/assets/images/Group 3.png";
-import barpic from "/Users/leonmacalister/HobNob-1/assets/images/Bar.png";
+import neelroy from "../assets/images/NeelRoy.jpeg";
+import upcomingEvents from "../assets/images/Group 3.png";
+import barpic from "../assets/images/Bar.png";
 import { useNavigation } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
