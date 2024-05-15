@@ -77,7 +77,7 @@ const Name = ({ route, navigation }) => {
             navigation.navigate("Account", { user_id: user_id });
         }
         else {
-            navigation.navigate("Photo", { user_id: user_id })
+            navigation.navigate("UserPhoto", { user_id: user_id })
         }
     }
 
@@ -145,8 +145,8 @@ const styles = StyleSheet.create({
     },
     backButton: {
         position: 'absolute',
-        top: 75,
-        left: 25
+        top: screenHeight * 0.01,
+        left: screenWidth * 0.05
     },
     titleText: {
         fontFamily: "Dongle-Regular",
@@ -156,7 +156,7 @@ const styles = StyleSheet.create({
         width: screenWidth * 0.75,
         height: screenHeight * 0.06,
         backgroundColor: "#FFFFFF",
-        opacity: 0.75,
+        opacity: 0.8,
         margin: screenWidth * 0.025,
         paddingLeft: screenWidth * 0.05,
         borderRadius: 20,
