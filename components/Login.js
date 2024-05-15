@@ -25,23 +25,34 @@ const Login = ({ navigation }) => {
         }
 
         setLoading(true);
-        const { data, error } = await supabase.auth.signInWithPassword({
+        supabase.auth.signInWithPassword({
             email: email,
             password: password,
-        })
-        setLoading(false);
-        
-        if (error) {
-            Alert.alert("Uhoh", error.message);
-            return;
-        }
-
-        if (data.user.user_metadata.finishedSignUp) {
-            navigation.navigate("Home");
-        }
-        else {
-            navigation.navigate("Name");
-        }
+        }).then((auth_response) => {
+            if (auth_response.error) throw auth_response.error;
+            const user_id = auth_response.data.user.id;
+            supabase
+            .from('users')
+            .select('finished_sign_up')
+            .eq('user_id', user_id)
+            .then((response) => {
+                if (response.error) throw response.error;
+                const finished_sign_up = response.data[0].finished_sign_up;
+                setLoading(false);
+                if (finished_sign_up) {
+                    navigation.navigate("Home", { user_id: user_id });
+                }
+                else {
+                    navigation.navigate("Name", { user_id: user_id });
+                }
+            }).catch((error) => {
+                setLoading(false);
+                Alert.alert("Uhoh", error.message)
+            });
+        }).catch((auth_error) => {
+            setLoading(false);
+            Alert.alert("Uhoh", auth_error.message)
+        });
     }
 
     const handleSignup = () => {
@@ -87,12 +98,15 @@ const Login = ({ navigation }) => {
                     autoCorrect={false}
                     secureTextEntry={true}
                 />
-                {loading ? 
-                <ActivityIndicator /> :
-                <Pressable style={styles.loginButton} onPress={handleSubmit}>
-                    <Text style={styles.submit}>Submit</Text>
-                </Pressable>
-                }
+                <View style={styles.lowerContainer}>
+                    {
+                        loading ? 
+                        <ActivityIndicator /> :
+                        <Pressable style={styles.loginButton} onPress={handleSubmit}>
+                            <Text style={styles.submit}>Submit</Text>
+                        </Pressable>
+                    }
+                </View>
                 <View style={styles.signupContainer}>
                     <Text style={styles.signupText}>New? Create your HobNob account </Text>
                     <Pressable onPress={handleSignup}>
@@ -109,7 +123,6 @@ const styles = StyleSheet.create({
     loginContainer: {
         flex: 3,
         alignItems: "center",
-        backgroundColor: "#A8D0F5"
     },
     logoContainer: {
         flex: 1,
@@ -149,6 +162,13 @@ const styles = StyleSheet.create({
         fontSize: screenHeight * 0.05,
         resizeMode: "contain",
     },
+    lowerContainer: {
+        width: screenWidth * 0.3,
+        height: screenHeight * 0.05,
+        alignItems: "center",
+        justifyContent: "center",
+        marginTop: screenHeight * 0.025
+    },
     loginButton: {
         width: screenWidth * 0.3,
         height: screenHeight * 0.05,
@@ -156,7 +176,6 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         alignItems: "center",
         justifyContent: "center",
-        marginTop: screenHeight * 0.025
     },
     submit: {
         color: "#FFFFFF",
@@ -164,7 +183,7 @@ const styles = StyleSheet.create({
         fontSize: screenHeight * 0.04
     },
     signupContainer: {
-        marginTop: screenHeight * 0.05,
+        marginTop: screenHeight * 0.025,
         flexDirection: "row"
     },
     signupText: {
