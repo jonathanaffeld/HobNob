@@ -34,23 +34,27 @@ const SignUp = ({ navigation }) => {
         }
 
         setLoading(true);
-        const { data, error } = await supabase.auth.signUp({
+        supabase.auth.signUp({
             email: email,
-            password: password,
-            options: {
-                data: {
-                    finishedSignUp: false
-                }
-            }
+            password: password
+        }).then((auth_response) => {
+            if (auth_response.error) throw auth_response.error;
+            const user_id = auth_response.data.user.id;
+            supabase
+            .from('users')
+            .insert({ user_id: user_id })
+            .then((response) => {
+                if (response.error) throw response.error;
+                setLoading(false);
+                navigation.navigate("Name", { user_id: user_id });
+            }).catch((error) => {
+                setLoading(false);
+                Alert.alert("Uhoh", error.message);
+            });
+        }).catch((auth_error) => {
+            setLoading(false);
+            Alert.alert("Uhoh", auth_error.message);
         });
-        setLoading(false);
-
-        if (error) {
-            Alert.alert("Uhoh", error.message);
-            return;
-        }
-
-        navigation.navigate("Name")
     }
 
     const handleLogin = () => {
@@ -105,11 +109,12 @@ const SignUp = ({ navigation }) => {
                     autoCorrect={false}
                     secureTextEntry={true}
                 />
-                {loading ? 
-                <ActivityIndicator style={styles.loading} /> :
-                <Pressable style={styles.continueButton} onPress={handleContinue}>
-                    <Text style={styles.continue}>Continue</Text>
-                </Pressable>
+                {
+                    loading ? 
+                    <ActivityIndicator style={styles.loading} /> :
+                    <Pressable style={styles.continueButton} onPress={handleContinue}>
+                        <Text style={styles.continue}>Continue</Text>
+                    </Pressable>
                 }
                 <View style={styles.loginContainer}>
                     <Text style={styles.loginText}>Already have an account?</Text>
@@ -127,7 +132,6 @@ const styles = StyleSheet.create({
     signUpContainer: {
         flex: 3,
         alignItems: "center",
-        backgroundColor: "#A8D0F5"
     },
     logoContainer: {
         flex: 1,

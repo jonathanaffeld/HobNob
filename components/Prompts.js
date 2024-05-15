@@ -4,7 +4,7 @@ import { StyleSheet, Text, View } from "react-native";
 const Prompts = () => {
     return(
         <View style={styles.container}>
-            <Text>Home</Text>
+            <Text>Prompts</Text>
         </View>
     );
 }
