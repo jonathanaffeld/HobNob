@@ -41,7 +41,50 @@ const Discover = () => {
 
     fetchProfileData();
   }, []);
+  const items = [
+    {
+      prompt: "What do you like to do in your free time?",
+      answer: "Collecting invisible stamps.",
+    },
+    {
+      prompt: "What's your favorite hobby?",
+      answer: "Training my pet rock to do tricks.",
+    },
+    {
+      prompt: "What is your dream job?",
+      answer: "Professional sleeper.",
+    },
+    {
+      prompt: "What do you usually have for breakfast?",
+      answer: "Unicorn pancakes with a side of dragon fruit.",
+    },
+    {
+      prompt: "What's your hidden talent?",
+      answer: "Communicating with garden gnomes.",
+    },
+    {
+      prompt: "What's your favorite book?",
+      answer: "The Invisible Book of Transparent Stories.",
+    },
+    {
+      prompt: "What's your favorite movie?",
+      answer: "The Adventures of the Couch Potato and the Lost Remote.",
+    },
+    {
+      prompt: "If you could have any superpower, what would it be?",
+      answer: "The ability to speak fluent dolphin.",
+    },
+    {
+      prompt: "What's your go-to karaoke song?",
+      answer: "The Sound of Silence, but only the silent parts.",
+    },
+    {
+      prompt: "What’s the weirdest food you’ve ever eaten?",
+      answer: "Spaghetti made from moon dust.",
+    },
 
+    // Add more items as needed
+  ];
   const navigation = useNavigation();
   const handleProfile = () => {
     navigation.navigate("Profile");
@@ -85,7 +128,7 @@ const Discover = () => {
         </View>
       </View>
       <LinearGradient
-        colors={["#ffffff", "#ffa500"]} // white to orange gradient
+        colors={["rgba(255, 255, 255, 0.7)", "rgba(255, 255, 255, 0.4)"]} // white to orange gradient
         style={styles.card}
       >
         <View style={styles.profileSection}>
@@ -94,12 +137,24 @@ const Discover = () => {
             style={styles.profilePic}
           />
           <View style={styles.info}>
-            <Text style={styles.text}>Age: 29</Text>
-            <Text style={styles.text}>Location: New York</Text>
-            <Text style={styles.text}>Occupation: Developer</Text>
+            <Text style={styles.infotext1}>Neel Roy</Text>
+            <Text style={styles.infotext}>Age: 29</Text>
+            <Text style={styles.infotext}>Location: New York</Text>
+            <Text style={styles.infotext}>Occupation: Developer</Text>
           </View>
         </View>
         {/* Additional content can go here */}
+        <ScrollView
+          contentContainerStyle={styles.scrollView}
+          showsVerticalScrollIndicator={false}
+        >
+          {items.map((item, index) => (
+            <View key={index} style={styles.card1}>
+              <Text style={styles.prompt}>{item.prompt}</Text>
+              <Text style={styles.answer}>{item.answer}</Text>
+            </View>
+          ))}
+        </ScrollView>
       </LinearGradient>
 
       <BottomBar
@@ -116,6 +171,32 @@ const styles = StyleSheet.create({
   profileSection: {
     flexDirection: "row", // Horizontal layout
     alignItems: "center", // Center items vertically in the row
+    marginBottom: "2%",
+  },
+  scrollView: {
+    alignItems: "center",
+  },
+
+  card1: {
+    width: "98%",
+    padding: 20,
+    marginVertical: 10,
+    borderRadius: 15,
+    backgroundColor: "rgba(255, 255, 255, 0.8)",
+    elevation: 3, // For Android shadow
+    shadowColor: "#000", // For iOS shadow
+    shadowOffset: { width: 0, height: 2 }, // For iOS shadow
+    shadowOpacity: 0.3, // For iOS shadow
+    shadowRadius: 3, // For iOS shadow
+  },
+  prompt: {
+    fontWeight: "bold",
+    fontSize: 18,
+    marginBottom: 5,
+  },
+  answer: {
+    fontSize: 14,
+    color: "#555",
   },
   topContainer: {
     width: "90%",
@@ -132,6 +213,7 @@ const styles = StyleSheet.create({
     padding: 20,
     alignItems: "flex-start", // Align children to the start of the flex-direction
     justifyContent: "flex-start",
+    flexDirection: "column",
   },
   loginContainer: {
     flex: 3,
@@ -156,6 +238,11 @@ const styles = StyleSheet.create({
   infotext: {
     fontSize: 16,
     font: "Dongle",
+    color: "#333",
+  },
+  infotext1: {
+    fontSize: 18,
+    fontWeight: "bold",
     color: "#333",
   },
 

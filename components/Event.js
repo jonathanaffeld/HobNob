@@ -6,41 +6,68 @@ import {
   Image,
   Pressable,
   ScrollView,
+  ActivityIndicator,
 } from "react-native";
 import { React, useState, useEffect } from "react"; // Correct import for useState and useEffect
 import { LinearGradient } from "expo-linear-gradient";
 import Icon from "react-native-vector-icons/EvilIcons"; // Import EvilIcons
 import upcomingEvents from "/Users/leonmacalister/HobNob-1/assets/images/Group 3.png";
-import barpic from "/Users/leonmacalister/HobNob-1/assets/images/Bar.png";
+import barpic from "../assets/images/Bar.png";
 import BottomBar from "/Users/leonmacalister/HobNob-1/components/BottomBar.js"; // Import the BottomBar component
 import { useNavigation } from "@react-navigation/native";
 import { supabase } from "../supabase";
 
 const screenWidth = Dimensions.get("window").width;
 const screenHeight = Dimensions.get("window").height;
-const Event = () => {
+const Event = (route) => {
   const [eventData, setEventData] = useState(null);
+  const [loadingProfile, setLoadingProfile] = useState(true);
+  const [loadingEvent, setLoadingEvent] = useState(true);
 
   useEffect(() => {
     const fetchEventData = async () => {
       try {
-        let { data, error } = await supabase
+        let event_id = null;
+        if (route.params?.user_id) {
+          // Fetch event IDs associated with the user_id
+          const { data: userData, error: userError } = await supabase
+            .from("users")
+            .select("event_id")
+            .eq("user_id", route.params.user_id);
+
+          if (userError) {
+            console.error("Error fetching user data:", userError.message);
+          } else if (userData?.length) {
+            // Use the first event ID in the list
+            event_id = userData[0].event_id;
+          }
+        }
+
+        if (!event_id) {
+          // Use default event ID if no event ID is found
+          event_id = "9fbcc4b9-dc0d-45bc-a0f4-8fd44c2a8583";
+        }
+
+        const { data, error } = await supabase
           .from("events")
           .select("*")
-          .eq("id", 1) // You should replace '1' with the event ID you want to query
-          .single();
+          .eq("event_id", event_id);
+
+        console.log("Fetched data:", data);
 
         if (error) {
           throw error;
         }
-        setEventData(data);
+
+        setEventData(data[0]);
       } catch (error) {
         console.error("Error fetching event data:", error.message);
+      } finally {
+        setLoadingEvent(false);
       }
     };
-
     fetchEventData();
-  }, []);
+  }, [route.params?.user_id]);
   const initials = [
     "AB",
     "CD",
@@ -73,6 +100,7 @@ const Event = () => {
   const handleHome = () => {
     navigation.navigate("Home");
   };
+
   return (
     <LinearGradient
       colors={["#A8D0F5", "#D0B4F4"]}
@@ -103,68 +131,98 @@ const Event = () => {
 
       <View style={styles.eventContainer}>
         <LinearGradient colors={["#FFFFFF", "#A9DFBF"]} style={styles.event}>
-          <View style={styles.parentContainer}>
-            <Text style={styles.fontBold}>HAPPY HOUR AND POOL</Text>
-            {/* {eventData.title}*/}
-            <View style={styles.info}>
-              <View style={styles.eventTopLeft}>
-                <Image source={barpic} style={styles.barpic}></Image>
-                {/* {eventData.image}*/}
-              </View>
-              <View style={styles.eventTopRight}>
-                <View style={styles.nestedChild}>
-                  <Text style={styles.fontNormal}>
-                    <Icon name="location" size={15} color="black" fill="true" />
-                    St. Stephen's Green, Mt. View, California
-                  </Text>
-                  {/* {eventData.location}*/}
+          <ScrollView
+            horizontal={false}
+            pagingEnabled={true}
+            showsHorizontalScrollIndicator={true}
+            style={{ height: "100%" }}
+          >
+            <View style={styles.parentContainer}>
+              <Text style={styles.fontBold}>
+                {eventData ? (
+                  <Text style={styles.text}>{eventData.title}</Text>
+                ) : (
+                  <Text style={styles.text}>Loading...</Text>
+                )}
+              </Text>
+              <View style={styles.info}>
+                <View style={styles.eventTopLeft}>
+                  {eventData?.image_url && (
+                    <Image
+                      source={{ uri: eventData.image_url }}
+                      style={{ width: 120, height: 120 }}
+                    />
+                  )}
                 </View>
-                <View style={styles.nestedChild1}>
-                  <Text style={styles.fontSmall}>May 18th, 8:30-10:30 pm</Text>
-                </View>
-              </View>
-            </View>
-            <View style={styles.going}>
-              <Text style={styles.label}>Attendees:</Text>
-            </View>
-
-            <View style={styles.parentContainer2}>
-              <View style={styles.circleContainer}>
-                {initials.map((initial, index) => (
-                  <View key={index} style={styles.circle}>
-                    <Text style={styles.initials}>{initial}</Text>
+                <View style={styles.eventTopRight}>
+                  <View style={styles.nestedChild}>
+                    <Text style={styles.fontNormal}>
+                      <Icon
+                        name="location"
+                        size={15}
+                        color="black"
+                        fill="true"
+                      />
+                      {eventData ? (
+                        <Text style={styles.text}>{eventData.location}</Text>
+                      ) : (
+                        <Text style={styles.text}>Loading...</Text>
+                      )}
+                    </Text>
                   </View>
-                ))}
-                {/* {eventData && eventData.attendeesInitials && 
+                  <View style={styles.nestedChild1}>
+                    <Text style={styles.fontSmall}>
+                      {eventData ? (
+                        <Text style={styles.text}>{eventData.start_time}</Text>
+                      ) : (
+                        <Text style={styles.text}>Loading...</Text>
+                      )}
+                    </Text>
+                  </View>
+                </View>
+              </View>
+              <View style={styles.going}>
+                <Text style={styles.label}>Attendees:</Text>
+              </View>
+
+              <View style={styles.parentContainer2}>
+                <View style={styles.circleContainer}>
+                  {initials.map((initial, index) => (
+                    <View key={index} style={styles.circle}>
+                      <Text style={styles.initials}>{initial}</Text>
+                    </View>
+                  ))}
+                  {/* {eventData && eventData.attendeesInitials && 
       eventData.attendeesInitials.slice(0, 13).map((initial, index) => (
         <View key={index} style={styles.circle}>
           <Text style={styles.initials}>{initial}</Text>
         </View>
       ))
     }*/}
+                </View>
               </View>
             </View>
-          </View>
 
-          <View style={styles.parentContainer3}>
-            <Text style={styles.fontNormal1}>
-              Discounted drinks and free pool, all are very welcome to partake
-              and mingle! Discounted drinks include Guinness, VB and Great
-              Northerns. This event was created by the owner who will be
-              fascillitating the event.
-            </Text>
-            {/* {eventData.description}*/}
-          </View>
-          <View style={styles.parentContainer4}>
-            <Icon name="exclamation" size={45} color="brown" fill="true" />
+            <View style={styles.parentContainer3}>
+              <Text style={styles.fontNormal1}>
+                {eventData ? (
+                  <Text style={styles.text}>{eventData.description}</Text>
+                ) : (
+                  <Text style={styles.text}>Loading...</Text>
+                )}
+              </Text>
+              {/* {eventData.description}*/}
+            </View>
+            <View style={styles.parentContainer4}>
+              <Icon name="exclamation" size={45} color="brown" fill="true" />
 
-            <Text style={styles.fontAlert}>
-              4 other attendees are also from Boise!
-            </Text>
-          </View>
+              <Text style={styles.fontAlert}>
+                4 other attendees are also from Boise!
+              </Text>
+            </View>
+          </ScrollView>
         </LinearGradient>
       </View>
-
       <BottomBar
         handleEventEdit={handleEventEdit}
         handlePrompts={handlePrompts}
@@ -201,7 +259,7 @@ const styles = StyleSheet.create({
   info: {
     width: "100%",
     height: "50%",
-
+    marginVertical: "5%",
     flexDirection: "row",
   },
   event: {
@@ -222,6 +280,7 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     width: "100%", // Align children horizontally
     height: "60%",
+    marginTop: "5%",
     justifyContent: "center",
     alignItems: "flex-start", // Centers children vertically in the container
   },
@@ -230,6 +289,7 @@ const styles = StyleSheet.create({
     width: "100%", // Align children horizontally
     height: "30%",
     padding: "0%",
+    marginVertical: "1%",
     // justifyContent: "space-between",
     alignItems: "flex-s", // Centers children vertically in the container
   },
@@ -274,12 +334,12 @@ const styles = StyleSheet.create({
     justifyContent: "flex-start",
     alignItems: "flex-start",
     padding: "2%",
-    marginBottom: "1%",
+    marginVertical: "4%",
   },
   parentContainer4: {
     flexDirection: "row",
     padding: "2%",
-    width: "100%",
+    width: "99%",
     height: "15%",
     backgroundColor: "#F4F1DE", // A soft beige color that stands out but complements clover green
     borderRadius: "30%", // Rounded edges
@@ -288,8 +348,8 @@ const styles = StyleSheet.create({
     borderColor: "#B22222",
     borderWidth: 0.5,
     shadowColor: "#000", // Shadow color
-    shadowOffset: { width: 2, height: 2 }, // Shadow offset
-    shadowOpacity: 0.25, // Shadow opacity
+    shadowOffset: { width: 1, height: 1 }, // Shadow offset
+    shadowOpacity: 0.1, // Shadow opacity
     shadowRadius: 3.84, // Shadow blur radius
   },
   eventTopLeft: {

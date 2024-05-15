@@ -6,52 +6,33 @@ import {
   Image,
   Pressable,
   ScrollView,
+  ActivityIndicator,
 } from "react-native";
 import { React, useState, useEffect } from "react"; // Correct import for useState and useEffect
-
 import { LinearGradient } from "expo-linear-gradient";
 import Icon from "react-native-vector-icons/EvilIcons"; // Import EvilIcons
-import neelroy from "/Users/leonmacalister/HobNob-1/assets/images/NeelRoy.jpeg";
-import upcomingEvents from "/Users/leonmacalister/HobNob-1/assets/images/Group 3.png";
-import barpic from "/Users/leonmacalister/HobNob-1/assets/images/Bar.png";
-import BottomBar from "/Users/leonmacalister/HobNob-1/components/BottomBar.js"; // Import the BottomBar component
-
-const screenWidth = Dimensions.get("window").width;
+import upcomingEvents from "../assets/images/Group 3.png";
+import barpic from "../assets/images/Bar.png";
+import BottomBar from "../components/BottomBar.js"; // Import the BottomBar component
+import { supabase } from "../supabase.js";
 const screenHeight = Dimensions.get("window").height;
+const initials = ["AB", "CD", "EF", "LM", "+34"];
 
-const Home = ({ navigation }) => {
-  const initials = ["AB", "CD", "EF", "LM", "+34"];
+const Home = ({ route, navigation }) => {
   const [eventData, setEventData] = useState(null);
-
-  useEffect(() => {
-    const fetchEventData = async () => {
-      try {
-        let { data, error } = await supabase
-          .from("events")
-          .select("*")
-          .eq("id", 1) // You should replace '1' with the event ID you want to query
-          .single();
-
-        if (error) {
-          throw error;
-        }
-        setEventData(data);
-      } catch (error) {
-        console.error("Error fetching event data:", error.message);
-      }
-    };
-
-    fetchEventData();
-  }, []);
+  const [loadingProfile, setLoadingProfile] = useState(true);
+  const [loadingEvent, setLoadingEvent] = useState(true);
   const [profileData, setProfileData] = useState(null);
 
   useEffect(() => {
     const fetchProfileData = async () => {
+      const profile_id =
+        route.params?.user_id || "50664c52-d080-45e2-aefd-3f74af4cf6de";
       try {
-        let { data, error } = await supabase
-          .from("profiles") // Assuming your table name is 'profiles'
-          .select("username, name, profile_picture, location") // Selecting specific fields
-          .eq("id", 1) // Replace '1' with the profile ID you want to query
+        const { data, error } = await supabase
+          .from("users")
+          .select("*")
+          .eq("user_id", profile_id) // Ensure that 'user_id' is the correct column name for user ID
           .single();
 
         if (error) {
@@ -60,11 +41,60 @@ const Home = ({ navigation }) => {
         setProfileData(data);
       } catch (error) {
         console.error("Error fetching profile data:", error.message);
+      } finally {
+        setLoadingProfile(false);
       }
     };
 
     fetchProfileData();
   }, []);
+
+  useEffect(() => {
+    const fetchEventData = async () => {
+      try {
+        let event_id = null;
+        if (route.params?.user_id) {
+          // Fetch event IDs associated with the user_id
+          const { data: userData, error: userError } = await supabase
+            .from("users")
+            .select("event_id")
+            .eq("user_id", route.params.user_id);
+
+          if (userError) {
+            console.error("Error fetching user data:", userError.message);
+          } else if (userData?.length) {
+            // Use the first event ID in the list
+            event_id = userData[0].event_id;
+          }
+        }
+
+        if (!event_id) {
+          // Use default event ID if no event ID is found
+          event_id = "9fbcc4b9-dc0d-45bc-a0f4-8fd44c2a8583";
+        }
+
+        const { data, error } = await supabase
+          .from("events")
+          .select("*")
+          .eq("event_id", event_id)
+          .single();
+
+        console.log("Fetched data:", data);
+
+        if (error) {
+          throw error;
+        }
+
+        setEventData(data);
+      } catch (error) {
+        console.error("Error fetching event data:", error.message);
+      } finally {
+        setLoadingEvent(false);
+      }
+    };
+
+    fetchEventData();
+  }, [route.params?.user_id]);
 
   const handleEventPreview = () => {
     navigation.navigate("Event");
@@ -81,7 +111,6 @@ const Home = ({ navigation }) => {
   const handlePrompts = () => {
     navigation.navigate("Prompts");
   };
-
   const handleEventEdit = () => {
     navigation.navigate("EventEdit");
   };
@@ -118,21 +147,33 @@ const Home = ({ navigation }) => {
       </View>
       <View style={styles.profileContainer}>
         <Pressable onPress={handleProfile} style={styles.profilebutton}>
-          <Image source={neelroy} style={styles.profilePic}></Image>
-          {/* {profileData.profile_picture}*/}
-
-          <Text style={styles.usernameFont}>@neelroy</Text>
-          {/* {profileData.username}*/}
+          {loadingProfile ? (
+            <ActivityIndicator size="large" color="#0000ff" />
+          ) : (
+            <Image
+              source={{ uri: profileData?.image_url }}
+              style={styles.profilePic}
+            />
+          )}
+          <Text style={styles.usernameFont}>
+            {profileData ? (
+              <Text style={styles.text}>
+                {profileData.first_name} {profileData.last_name}
+              </Text>
+            ) : (
+              <Text style={styles.text}>Loading...</Text>
+            )}
+          </Text>
         </Pressable>
       </View>
       <View style={styles.upcomingEventsContainer}>
-        <Image source={upcomingEvents} style={styles.upcomingEvents}></Image>
+        <Image source={upcomingEvents}></Image>
       </View>
       <View style={styles.eventContainer}>
         <ScrollView
           horizontal={true}
           pagingEnabled={true}
-          showsHorizontalScrollIndicator={true}
+          showsHorizontalScrollIndicator={false}
           style={{ height: "100%" }}
         >
           <Pressable onPress={handleEventPreview}>
@@ -142,13 +183,24 @@ const Home = ({ navigation }) => {
             >
               <View style={styles.parentContainer}>
                 <View style={styles.eventTopLeft}>
-                  <Image source={barpic} style={styles.barpic}></Image>
+                  <View style={styles.eventTopLeft}>
+                    {eventData?.image_url && (
+                      <Image
+                        source={{ uri: eventData.image_url }}
+                        style={{ width: 85, height: 100 }}
+                      />
+                    )}
+                  </View>
                 </View>
                 <View style={styles.eventTopRight}>
                   <View style={styles.nestedChild}>
-                    <Text style={styles.fontBold}>HAPPY HOUR AND POOL</Text>
-                    {/* {eventData.title}*/}
-
+                    <Text style={styles.fontBold}>
+                      {eventData ? (
+                        <Text style={styles.text}>{eventData.title}</Text>
+                      ) : (
+                        <Text style={styles.text}>Loading...</Text>
+                      )}
+                    </Text>
                     <Text style={styles.fontNormal}>
                       <Icon
                         name="location"
@@ -156,15 +208,21 @@ const Home = ({ navigation }) => {
                         color="black"
                         fill="true"
                       />
-                      St. Stephen's Green, Mt. View
+                      {eventData ? (
+                        <Text style={styles.text}>{eventData.location}</Text>
+                      ) : (
+                        <Text style={styles.text}>Loading...</Text>
+                      )}
                     </Text>
-                    {/* {eventData.location}*/}
                   </View>
                   <View style={styles.nestedChild1}>
                     <Text style={styles.fontSmall}>
-                      May 18th, 8:30-10:30 pm
+                      {eventData ? (
+                        <Text style={styles.text}>{eventData.start_time}</Text>
+                      ) : (
+                        <Text style={styles.text}>Loading...</Text>
+                      )}
                     </Text>
-                    {/* {eventData.time}*/}
                   </View>
                 </View>
               </View>
@@ -187,10 +245,12 @@ const Home = ({ navigation }) => {
               </View>
               <View style={styles.parentContainer3}>
                 <Text style={styles.fontNormal}>
-                  Discounted drinks and free pool, all are very welcome to
-                  partake and mingle!
+                  {eventData ? (
+                    <Text style={styles.text}>{eventData.description}</Text>
+                  ) : (
+                    <Text style={styles.text}>Loading...</Text>
+                  )}
                 </Text>
-                {/* {eventData.description}*/}
               </View>
             </LinearGradient>
           </Pressable>
@@ -245,14 +305,14 @@ const styles = StyleSheet.create({
   upcomingEventsContainer: {
     alignItems: "center", // Centers the image horizontally
     justifyContent: "flex-end", // Centers the image vertically
-    width: "90%",
-    height: "6%",
+    width: "80%",
+    height: "6.5%",
     marginBottom: "2%",
   },
   eventContainer: {
     alignItems: "center", // Centers the image horizontally
     justifyContent: "center", // Centers the image vertically
-    width: "80%",
+    width: "100%",
     height: "35%",
     marginBottom: "1%",
   },
@@ -321,6 +381,7 @@ const styles = StyleSheet.create({
     justifyContent: "center", // Center content vertically
     alignItems: "center", // Center content horizontally
     marginRight: 20, // Adds space between the left and right child
+    marginLeft: 5,
   },
   barpic: {
     resizeMode: "contain",
@@ -353,8 +414,9 @@ const styles = StyleSheet.create({
   },
   upcomingEvents: {
     width: "70%", // Specify the width
-    height: "70%", // Specify the height
+    height: "100%", // Specify the height
     resizeMode: "contain",
+    borderWidth: 1,
   },
   topContainer: {
     width: "90%",

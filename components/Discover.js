@@ -41,7 +41,58 @@ const Discover = () => {
 
     fetchEventsData();
   }, []);
-
+  const events = [
+    {
+      colors: ["#F0F0F0", "#D9EAD3"], // Very unsaturated and aesthetic white to light green gradient
+      title: "HAPPY HOUR AND POOL",
+      location: "St. Stephen's Green, Mt. View, California",
+      date: "May 18th, 8:30-10:30 pm",
+      description:
+        "Discounted drinks and free pool, all are very welcome to partake and mingle! Discounted drinks include Guinness, VB and Great Northerns. This event was created by the owner who will be facilitating the event.",
+      alert: "4 other attendees are also from Boise!",
+      image: barpic,
+    },
+    {
+      colors: ["#FFFACD", "#FFDAB9"], // Very unsaturated and aesthetic light yellow to light peach gradient
+      title: "SUNSET BEACH PARTY",
+      location: "Santa Monica Beach, California",
+      date: "June 5th, 5:00-9:00 pm",
+      description:
+        "Join us for a beach party with live music, bonfire, and volleyball. Refreshments provided. Bring your friends and enjoy the sunset!",
+      alert: "Don't forget to bring your sunscreen!",
+      image: upcomingEvents,
+    },
+    {
+      colors: ["#FDEEF4", "#FADADD"], // Very unsaturated and aesthetic light pink to light rose gradient
+      title: "GARDEN PICNIC",
+      location: "Central Park, New York",
+      date: "June 12th, 1:00-4:00 pm",
+      description:
+        "A lovely afternoon picnic in the park. We'll have sandwiches, lemonade, and plenty of games. All ages welcome!",
+      alert: "Please bring your own blanket.",
+      image: barpic,
+    },
+    {
+      colors: ["#E0F7FA", "#B2EBF2"], // Very unsaturated and aesthetic light cyan to light blue gradient
+      title: "MOVIE NIGHT UNDER THE STARS",
+      location: "Griffith Park, Los Angeles",
+      date: "June 20th, 8:00-11:00 pm",
+      description:
+        "Watch a classic movie under the stars with your friends and family. Popcorn and drinks will be available.",
+      alert: "Bring a jacket, it might get chilly!",
+      image: upcomingEvents,
+    },
+    {
+      colors: ["#E6E6FA", "#D8BFD8"], // Very unsaturated and aesthetic light lavender to light thistle gradient
+      title: "BOOK CLUB MEETING",
+      location: "Downtown Library, Boston",
+      date: "June 25th, 6:00-8:00 pm",
+      description:
+        "Join us for a discussion of our latest book. Snacks and refreshments will be provided. All book lovers are welcome!",
+      alert: "Next month's book: 'The Great Gatsby'.",
+      image: barpic,
+    },
+  ];
   const initials = [
     "AB",
     "CD",
@@ -112,38 +163,68 @@ const Discover = () => {
         style={styles.scrollView}
         contentContainerStyle={styles.scrollViewContentStyle}
       >
-        {eventsData.map((event, index) => (
-          <LinearGradient
-            key={index}
-            colors={["blue", "red"]}
-            style={styles.event}
-          >
-            <View style={styles.parentContainer}>
-              <Text style={styles.fontBold}>
-                {/*{event.title || "Default Event Title"}*/}
-              </Text>
-              <View style={styles.info}>
-                <View style={styles.eventTopLeft}>
-                  {/*<Image
-                    source={event.image ? { uri: event.image } : barpic}
-                    style={styles.barpic}
-                  />*/}
+        {events.map((item, index) => (
+          <View key={index} style={styles.eventContainer}>
+            <LinearGradient colors={item.colors} style={styles.event}>
+              <View style={styles.parentContainer}>
+                <Text style={styles.fontBold}>{item.title}</Text>
+                {/* {eventData.title}*/}
+                <View style={styles.info}>
+                  <View style={styles.eventTopLeft}>
+                    <Image source={barpic} style={styles.barpic}></Image>
+                    {/* {eventData.image}*/}
+                  </View>
+                  <View style={styles.eventTopRight}>
+                    <View style={styles.nestedChild}>
+                      <Text style={styles.fontNormal}>
+                        <Icon
+                          name="location"
+                          size={15}
+                          color="black"
+                          fill="true"
+                        />
+                        {item.location}
+                      </Text>
+                      {/* {eventData.location}*/}
+                    </View>
+                    <View style={styles.nestedChild1}>
+                      <Text style={styles.fontSmall}>{item.date}</Text>
+                    </View>
+                  </View>
                 </View>
-                <View style={styles.eventTopRight}>
-                  <Text style={styles.fontNormal}>
-                    {/*<Icon name="location" size={15} color="black" />
-                    {event.location || "Default Location"}*/}
-                  </Text>
-                  <Text style={styles.fontSmall}>
-                    {/*{event.date || "Default Date"}*/}
-                  </Text>
+                <View style={styles.going}>
+                  <Text style={styles.label}>Attendees:</Text>
+                </View>
+
+                <View style={styles.parentContainer2}>
+                  <View style={styles.circleContainer}>
+                    {initials.map((initial, index) => (
+                      <View key={index} style={styles.circle}>
+                        <Text style={styles.initials}>{initial}</Text>
+                      </View>
+                    ))}
+                    {/* {eventData && eventData.attendeesInitials && 
+         eventData.attendeesInitials.slice(0, 13).map((initial, index) => (
+           <View key={index} style={styles.circle}>
+             <Text style={styles.initials}>{initial}</Text>
+           </View>
+         ))
+       }*/}
+                  </View>
                 </View>
               </View>
-              <Text style={styles.fontNormal1}>
-                {/*{event.description || "Default Description"}*/}
-              </Text>
-            </View>
-          </LinearGradient>
+
+              <View style={styles.parentContainer3}>
+                <Text style={styles.fontNormal1}>{item.description}</Text>
+                {/* {eventData.description}*/}
+              </View>
+              <View style={styles.parentContainer4}>
+                <Icon name="exclamation" size={45} color="brown" fill="true" />
+
+                <Text style={styles.fontAlert}>{item.alert}</Text>
+              </View>
+            </LinearGradient>
+          </View>
         ))}
       </ScrollView>
       <BottomBar
@@ -271,16 +352,17 @@ const styles = StyleSheet.create({
     marginBottom: "1%",
   },
   scrollView: {
-    flex: 1, // Take up all available space
-    width: "80%",
+    flex: 1,
+    width: "90%",
   },
   scrollViewContentStyle: {
-    alignItems: "center", // Center children horizontally
-    justifyContent: "flex-start", // Align items from the start vertically
-    padding: 0, // Optional padding for better spacing
-    height: "60%",
-    borderWidth: 1,
+    alignItems: "center",
+    justifyContent: "flex-start",
+    padding: 0,
+    height: "78%",
+    width: "100%",
   },
+
   parentContainer4: {
     flexDirection: "row",
     padding: "2%",

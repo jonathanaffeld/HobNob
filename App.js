@@ -16,8 +16,11 @@ import Event from "./components/Event";
 import EventCreate from "./components/EventCreate";
 import EventEdit from "./components/EventEdit";
 import Profile from "./components/Profile";
+import { LogBox } from "react-native";
 
 const Stack = createNativeStackNavigator();
+LogBox.ignoreLogs(["Warning: ..."]); // Ignore log notification by message
+LogBox.ignoreAllLogs();
 
 const App = () => (
   <NavigationContainer>
