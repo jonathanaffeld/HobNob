@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 
 const Prompts = () => {
@@ -10,11 +10,11 @@ const Prompts = () => {
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        alignItems: "center",
-        justifyContent: "center",
-    }
+  container: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
 });
 
 export default Prompts;
