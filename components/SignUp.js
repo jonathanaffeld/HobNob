@@ -124,6 +124,7 @@ const SignUp = ({ navigation }) => {
 }
 
 const styles = StyleSheet.create({
+    
     signUpContainer: {
         flex: 3,
         alignItems: "center",
