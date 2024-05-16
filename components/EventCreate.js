@@ -170,7 +170,8 @@ const EventCreate = ({navigation}) => {
                     autoCapitalize='none'
                     placeholderTextColor="gray"
                 />
-                
+                <View style={{ flexDirection: 'row' }}>
+                <Text style={styles.dateTitle}>Start Date:</Text>
                 <DateTimePicker
                     value={dateStart}
                     mode="date"
@@ -183,7 +184,9 @@ const EventCreate = ({navigation}) => {
                     display="default"
                     onChange={onChangeStartTime}
                 />
-                
+                </View>
+                <View style={{ flexDirection: 'row' }}>
+                <Text style={styles.dateTitle}>End Date:</Text>
                 <DateTimePicker
                     value={dateEnd}
                     mode="date"
@@ -192,11 +195,12 @@ const EventCreate = ({navigation}) => {
                     minimumDate={dateStart}
                 />
                 <DateTimePicker
-  value={timeEnd}
-  mode="time"
-  display="default"
-  onChange={onChangeEndTime}
-/>
+                    value={timeEnd}
+                    mode="time"
+                    display="default"
+                    onChange={onChangeEndTime}
+                />
+                </View>
                 {loading ? 
                 <ActivityIndicator /> :
                 <Pressable style={styles.loginButton} onPress={handleSubmit}>
@@ -228,6 +232,11 @@ const EventCreate = ({navigation}) => {
 }
 
 const styles = StyleSheet.create({
+    dateTitle: {
+        marginRight: 10,
+        fontSize: screenHeight * 0.04,
+        fontFamily: "Dongle-Bold",
+    },
     imageContainer: {
         width: screenWidth * 0.75,
         margin: screenWidth * 0.05,
@@ -471,7 +480,7 @@ const styles = StyleSheet.create({
       },
       titleText: {
         fontFamily: "Dongle-Bold",
-        fontSize: screenHeight * 0.03,
+        fontSize: screenHeight * 0.06,
         fontWeight: "bold",
       },
       fontBold: {
@@ -512,7 +521,7 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-around",
         alignItems: "center",
-        height: "20%",
+        height: screenHeight * 0.1,
         backgroundColor: "#fff",
         borderTopWidth: 1,
         borderTopColor: "black",
