@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Dimensions, StyleSheet, Text, TextInput, Pressable, Alert, ActivityIndicator, View } from "react-native";
 import { LinearGradient } from 'expo-linear-gradient';
 import { useFonts } from "expo-font";
-import Ionicons from 'react-native-vector-icons/Ionicons';
 import { supabase } from '../supabase'
 
 const screenWidth = Dimensions.get('window').width;
@@ -47,9 +46,7 @@ const Name = ({ route, navigation }) => {
     }, [user_id]);
 
     const handleBack = async () => {
-        if (finished_sign_up) {
-            navigation.navigate("Account", { user_id: user_id });
-        }
+        navigation.navigate("Account", { user_id: user_id });
     }
 
     const handleClick = async () => {
@@ -97,22 +94,13 @@ const Name = ({ route, navigation }) => {
 
     return (
         <LinearGradient colors={['#A8D0F5', '#D0B4F4']} style={styles.namesContainer}>
-            {
-                finished_sign_up &&
-                <Pressable style={styles.backButton} onPress={handleBack}>
-                    <Ionicons 
-                        name='caret-back-circle' 
-                        size={screenWidth * 0.1}
-                        color='#77678C'
-                    />
-                </Pressable>
-            }
             <Text style={styles.titleText}>What's your name?</Text>
             <TextInput 
                 style={styles.input} 
                 onChangeText={setFirstName} 
                 value={first_name} 
                 placeholder='First Name (Required)'
+                placeholderTextColor={'#888888'}
                 autoCapitalize='words'
                 autoCorrect={false}
             />
@@ -121,6 +109,7 @@ const Name = ({ route, navigation }) => {
                 onChangeText={setLastName} 
                 value={last_name} 
                 placeholder='Last Name'
+                placeholderTextColor={'#888888'}
                 autoCapitalize='words'
                 autoCorrect={false}
             />
@@ -128,9 +117,17 @@ const Name = ({ route, navigation }) => {
                 {
                     loading ? 
                     <ActivityIndicator style={styles.loading} /> :
-                    <Pressable style={styles.button} onPress={handleClick}>
-                        <Text style={styles.buttonText}>{finished_sign_up ? "Save" : "Continue"}</Text>
-                    </Pressable>
+                    <View style={styles.buttonContainer}>
+                        {
+                            finished_sign_up &&
+                            <Pressable style={styles.backButton} onPress={handleBack}>
+                                <Text style={styles.buttonText}>Back</Text>
+                            </Pressable>
+                        }
+                        <Pressable style={styles.button} onPress={handleClick}>
+                            <Text style={styles.buttonText}>{finished_sign_up ? "Save" : "Continue"}</Text>
+                        </Pressable>
+                    </View>
                 }
             </View>
         </LinearGradient>
@@ -142,11 +139,6 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: "center",
         justifyContent: "center",
-    },
-    backButton: {
-        position: 'absolute',
-        top: screenHeight * 0.01,
-        left: screenWidth * 0.05
     },
     titleText: {
         fontFamily: "Dongle-Regular",
@@ -165,15 +157,27 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.5,
         shadowRadius: 5,
         fontFamily: "Dongle-Regular",
-        fontSize: screenHeight * 0.05,
-        resizeMode: "contain",
+        fontSize: screenHeight * 0.03,
     },
     lowerContainer: {
-        width: screenWidth * 0.3,
         height: screenHeight * 0.05,
         alignItems: "center",
         justifyContent: "center",
         marginTop: screenHeight * 0.025
+    },
+    buttonContainer: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "center",
+    },
+    backButton: {
+        width: screenWidth * 0.3,
+        height: screenHeight * 0.05,
+        backgroundColor: "#77678C",
+        borderRadius: 20,
+        alignItems: "center",
+        justifyContent: "center",
+        marginRight: screenWidth * 0.025
     },
     button: {
         width: screenWidth * 0.3,
@@ -182,6 +186,7 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         alignItems: "center",
         justifyContent: "center",
+        marginLeft: screenWidth * 0.025
     },
     buttonText: {
         color: "#FFFFFF",
