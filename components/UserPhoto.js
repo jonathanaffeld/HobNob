@@ -4,7 +4,6 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useFonts } from "expo-font";
 import * as ImagePicker from 'expo-image-picker';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import Ionicons from 'react-native-vector-icons/Ionicons';
 import { decode } from 'base64-arraybuffer';
 import { supabase } from '../supabase'
 
@@ -188,13 +187,6 @@ const Photo = ({ route, navigation }) => {
 
     return (
         <LinearGradient colors={['#A8D0F5', '#D0B4F4']} style={styles.namesContainer}>
-            <Pressable style={styles.backButton} onPress={handleBack}>
-                <Ionicons 
-                    name='caret-back-circle' 
-                    size={screenWidth * 0.1}
-                    color='#77678C'
-                />
-            </Pressable>
             <Text style={styles.titleText}>Select a Profile Photo!</Text>
             <View style={styles.imageContainer}>
                 {
@@ -203,21 +195,21 @@ const Photo = ({ route, navigation }) => {
                     <View style={styles.image} />
                 }
                 <View style={styles.iconContainer}>
-                    <Pressable onPress={pickImage}>
+                    <Pressable onPress={pickImage} style={styles.icon1}>
                         <FontAwesome 
                             name='image' 
                             size={screenWidth * 0.1} 
                             color='#000000'
-                            style={styles.icon1}
                         />
+                        <Text style={styles.iconText}>Upload Photo</Text>
                     </Pressable>
-                    <Pressable onPress={takeImage}>
+                    <Pressable onPress={takeImage} style={styles.icon2} >
                         <FontAwesome 
                             name='camera' 
                             size={screenWidth * 0.1}
                             color='#000000'
-                            style={styles.icon2} 
                         />
+                        <Text style={styles.iconText}>Take Photo</Text>
                     </Pressable>
                 </View>
             </View>
@@ -225,9 +217,14 @@ const Photo = ({ route, navigation }) => {
                 {
                     loading ? 
                     <ActivityIndicator style={styles.loading} /> :
-                    <Pressable style={styles.button} onPress={handleClick}>
-                        <Text style={styles.buttonText}>{finished_sign_up ? "Save" : "Continue"}</Text>
-                    </Pressable>
+                    <View style={styles.buttonContainer}>
+                        <Pressable style={styles.backButton} onPress={handleBack}>
+                            <Text style={styles.buttonText}>Back</Text>
+                        </Pressable>
+                        <Pressable style={styles.button} onPress={handleClick}>
+                            <Text style={styles.buttonText}>{finished_sign_up ? "Save" : "Continue"}</Text>
+                        </Pressable>
+                    </View>
                 }
             </View>
         </LinearGradient>
@@ -240,11 +237,6 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "center",
     },
-    backButton: {
-        position: 'absolute',
-        top: screenHeight * 0.1,
-        left: screenWidth * 0.05
-    },
     titleText: {
         fontFamily: "Dongle-Regular",
         fontSize: screenHeight * 0.06
@@ -253,7 +245,7 @@ const styles = StyleSheet.create({
         width: screenWidth * 0.75,
         margin: screenWidth * 0.05,
         backgroundColor: "#FFFFFF",
-        opacity: 0.75,
+        opacity: 0.8,
         borderRadius: 20,
         shadowColor: '#000000',
         shadowOffset: { width: 0, height: 1 },
@@ -261,7 +253,6 @@ const styles = StyleSheet.create({
         shadowRadius: 5,
         justifyContent: "center",
         alignItems: "center",
-        zIndexL: "-1000"
     },
     image: {
         width: screenWidth * 0.5,
@@ -277,18 +268,41 @@ const styles = StyleSheet.create({
     },
     icon1: {
         marginRight: screenHeight * 0.05,
-        marginBottom: screenHeight * 0.05
+        marginBottom: screenHeight * 0.05,
+        justifyContent: "center",
+        alignItems: "center"
     },
     icon2: {
         marginLeft: screenHeight * 0.05,
-        marginBottom: screenHeight * 0.05
+        marginBottom: screenHeight * 0.05,
+        justifyContent: "center",
+        alignItems: "center"
+    },
+    iconText: {
+        size: screenWidth * 0.1,
+        resizeMode: "contain",
+        color: '#000000',
+        fontFamily: "Dongle-Regular"
     },
     lowerContainer: {
-        width: screenWidth * 0.3,
         height: screenHeight * 0.05,
         alignItems: "center",
         justifyContent: "center",
         marginTop: screenHeight * 0.025
+    },
+    buttonContainer: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "center",
+    },
+    backButton: {
+        width: screenWidth * 0.3,
+        height: screenHeight * 0.05,
+        backgroundColor: "#77678C",
+        borderRadius: 20,
+        alignItems: "center",
+        justifyContent: "center",
+        marginRight: screenWidth * 0.025
     },
     button: {
         width: screenWidth * 0.3,
@@ -297,6 +311,7 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         alignItems: "center",
         justifyContent: "center",
+        marginLeft: screenWidth * 0.025
     },
     buttonText: {
         color: "#FFFFFF",

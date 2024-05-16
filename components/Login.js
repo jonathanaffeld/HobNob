@@ -86,6 +86,7 @@ const Login = ({ navigation }) => {
                     onChangeText={setEmail} 
                     value={email} 
                     placeholder='Email'
+                    placeholderTextColor={'#888888'}
                     autoCapitalize='none'
                     autoCorrect={false}
                 />
@@ -94,6 +95,7 @@ const Login = ({ navigation }) => {
                     onChangeText={setPassword} 
                     value={password} 
                     placeholder='Password' 
+                    placeholderTextColor={'#888888'}
                     autoCapitalize='none'
                     autoCorrect={false}
                     secureTextEntry={true}
@@ -159,11 +161,9 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.5,
         shadowRadius: 5,
         fontFamily: "Dongle-Regular",
-        fontSize: screenHeight * 0.05,
-        resizeMode: "contain",
+        fontSize: screenHeight * 0.03,
     },
     lowerContainer: {
-        width: screenWidth * 0.3,
         height: screenHeight * 0.05,
         alignItems: "center",
         justifyContent: "center",

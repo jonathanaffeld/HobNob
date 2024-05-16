@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Dimensions, StyleSheet, Text, TextInput, Pressable, Alert, ActivityIndicator, View } from "react-native";
 import { LinearGradient } from 'expo-linear-gradient';
-import DropDownPicker from 'react-native-dropdown-picker';
 import { useFonts } from "expo-font";
-import Ionicons from 'react-native-vector-icons/Ionicons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { supabase } from '../supabase'
 
@@ -21,7 +19,7 @@ const Prompts = ({ route, navigation }) => {
     const [loading, setLoading] = useState(false);
     const prompts = [
         "My go-to song for a road trip is...",
-        "A thing I cannot live without is...",
+        "One thing I cannot live without is...",
         "The last hobby I picked up was...",
         "One place I want to explore is...",
         "A moment in history I wish I could have witnessed is...",
@@ -41,8 +39,6 @@ const Prompts = ({ route, navigation }) => {
         "A life-changing event I experienced was...",
         "The weirdest food combination I enjoy is..."
     ];
-    
-    
 
     useEffect(() => {
         async function fetchData() {
@@ -107,21 +103,13 @@ const Prompts = ({ route, navigation }) => {
         setPrompt2(prompt);
     }
 
-    const handleResponse1Change = async (inputText) => {
-        setResponse1(inputText.substring(0, 250)); 
-    }
-
-    const handleResponse2Change = async () => {
-        setResponse2(inputText.substring(0, 250)); 
-    }
-
     const handleClick = async () => {
         if (!prompt1 || !prompt2) {
             Alert.alert("Uhoh", "Please select two prompts!");
             return;
         }
         if (!response1 || !response2) {
-            Alert.alert("Uhoh", "Please write two responses!");
+            Alert.alert("Uhoh", "Please write your responses!");
             return;
         }
 
@@ -164,41 +152,41 @@ const Prompts = ({ route, navigation }) => {
 
     return (
         <LinearGradient colors={['#A8D0F5', '#D0B4F4']} style={styles.namesContainer}>
-            <Pressable style={styles.backButton} onPress={handleBack}>
-                <Ionicons 
-                    name='caret-back-circle' 
-                    size={screenWidth * 0.1}
-                    color='#77678C'
-                />
-            </Pressable>
             <Text style={styles.titleText}>Tell us about yourself!</Text>
             <View style={styles.promptContainer}>
-                <Text style={styles.promptText}>{prompt1 ? prompt1: "Prompt #1"}</Text>
-                <Pressable onPress={handlePrompt1Refresh}>
+                <Text style={styles.promptText} multiline={true}>{prompt1 ? prompt1: "Prompt #1"}</Text>
+                <Pressable onPress={handlePrompt1Refresh} style={styles.refresh}>
                     <FontAwesome
                         name='refresh'
                         size={screenWidth*0.1}
                         color='#77678C'
-                        style={styles.refresh}
                     />
+                    <Text style={styles.refreshText}>New Prompt</Text>
                 </Pressable>
             </View>
-            <TextInput
-                style={styles.input}
-                onChangeText={setResponse1}
-                value={response1}
-                placeholder="Response #1"
-                maxLength={250}
-            />
+            <View style={styles.inputContainer}>
+                <TextInput
+                    style={styles.input}
+                    onChangeText={setResponse1}
+                    value={response1}
+                    placeholder="Response #1"
+                    placeholderTextColor={'#888888'}
+                    maxLength={250}
+                    multiline={true}
+                />
+                <View style={styles.charactersLeftContainer}>
+                    <Text style={[styles.charactersLeft, 250 - response1.length < 50 && {color: '#e74c3c'}]}>Characters left: {250 - response1.length}</Text>
+                </View>
+            </View>
             <View style={styles.promptContainer}>
                 <Text style={styles.promptText}>{prompt2 ? prompt2: "Prompt #2"}</Text>
-                <Pressable onPress={handlePrompt2Refresh}>
+                <Pressable onPress={handlePrompt2Refresh} style={styles.refresh}>
                     <FontAwesome
                         name='refresh'
                         size={screenWidth*0.1}
                         color='#77678C'
-                        style={styles.refresh}
                     />
+                    <Text style={styles.refreshText}>New Prompt</Text>
                 </Pressable>
             </View>
             <View style={styles.inputContainer}>
@@ -206,18 +194,27 @@ const Prompts = ({ route, navigation }) => {
                     style={styles.input}
                     onChangeText={setResponse2}
                     value={response2}
-                    placeholder="Response #1"
+                    placeholder="Response #2"
+                    placeholderTextColor={'#888888'}
                     maxLength={250}
+                    multiline={true}
                 />
-                <Text style={styles.charCount}>Characters left: {250 - response2.length}</Text>
+                <View style={styles.charactersLeftContainer}>
+                    <Text style={[styles.charactersLeft, 250 - response2.length < 50 && {color: '#e74c3c'}]}>Characters left: {250 - response2.length}</Text>
+                </View>
             </View>
             <View style={styles.lowerContainer}>
                 {
                     loading ? 
                     <ActivityIndicator style={styles.loading} /> :
-                    <Pressable style={styles.button} onPress={handleClick}>
-                        <Text style={styles.buttonText}>{finished_sign_up ? "Save" : "Continue"}</Text>
-                    </Pressable>
+                    <View style={styles.buttonContainer}>
+                        <Pressable style={styles.backButton} onPress={handleBack}>
+                            <Text style={styles.buttonText}>Back</Text>
+                        </Pressable>
+                        <Pressable style={styles.button} onPress={handleClick}>
+                            <Text style={styles.buttonText}>{finished_sign_up ? "Save" : "Continue"}</Text>
+                        </Pressable>
+                    </View>
                 }
             </View>
         </LinearGradient>
@@ -230,20 +227,15 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "center",
     },
-    backButton: {
-        position: 'absolute',
-        top: screenHeight * 0.05,
-        left: screenWidth * 0.05
-    },
     titleText: {
         fontFamily: "Dongle-Regular",
         fontSize: screenHeight * 0.06
     },
     promptContainer: {
-        width: screenWidth * 0.8,
+        width: screenWidth * 0.75,
         height: screenHeight * 0.1,
         backgroundColor: "#FFFFFF",
-        opacity: 0.75,
+        opacity: 0.8,
         margin: screenWidth * 0.025,
         borderRadius: 20,
         shadowColor: '#000000',
@@ -251,48 +243,75 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.5,
         shadowRadius: 5,
         flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "center"
+        justifyContent: "center",
+        alignItems: "center"
     },
     promptText: {
         fontFamily: "Dongle-Regular",
         fontSize: screenHeight * 0.03,
         flex: 1,
         paddingLeft: screenWidth * 0.05,
-        lineHeight: screenHeight * 0.04,
     },
     refresh: {
-        marginRight: screenWidth * 0.05,
-        marginLeft: screenWidth * 0.05
+        marginRight: screenWidth * 0.025,
+        marginLeft: screenWidth * 0.025,
+        justifyContent: "center",
+        alignItems: "center"
     },
-    container: {
-        flex: 1,
+    refreshText: {
+        size: screenWidth * 0.1,
+        resizeMode: "contain",
+        color: '#77678C',
+        fontFamily: "Dongle-Regular"
     },
-    input: {
-        width: screenWidth * 0.8,
-        height: screenHeight * 0.18,
+    inputContainer: {
+        width: screenWidth * 0.75,
+        height: screenHeight * 0.2,
         backgroundColor: "#FFFFFF",
-        opacity: 0.75,
+        opacity: 0.8,
         margin: screenWidth * 0.025,
-        padding: screenWidth * 0.05,
         borderRadius: 20,
         shadowColor: '#000000',
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.5,
         shadowRadius: 5,
+        flexDirection: "column"
+    },
+    input: {   
         fontFamily: "Dongle-Light",
         fontSize: screenHeight * 0.03,
-        lineHeight: screenHeight * 0.04,
+        lineHeight: screenHeight * 0.03,
+        flex: 1,
+        padding: screenWidth * 0.05,
     },
-    charCount: {
-        color: '#888',
+    charactersLeftContainer: {
+        flexDirection: "row-reverse"
+    },
+    charactersLeft: {
+        fontFamily: "Dongle-Light",
+        fontSize: screenHeight * 0.02,
+        color: '#888888',
+        paddingRight: screenWidth * 0.025
     },
     lowerContainer: {
-        width: screenWidth * 0.3,
         height: screenHeight * 0.05,
         alignItems: "center",
         justifyContent: "center",
         marginTop: screenHeight * 0.025
+    },
+    buttonContainer: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "center",
+    },
+    backButton: {
+        width: screenWidth * 0.3,
+        height: screenHeight * 0.05,
+        backgroundColor: "#77678C",
+        borderRadius: 20,
+        alignItems: "center",
+        justifyContent: "center",
+        marginRight: screenWidth * 0.025
     },
     button: {
         width: screenWidth * 0.3,
@@ -301,6 +320,7 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         alignItems: "center",
         justifyContent: "center",
+        marginLeft: screenWidth * 0.025
     },
     buttonText: {
         color: "#FFFFFF",
