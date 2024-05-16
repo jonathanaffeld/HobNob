@@ -9,12 +9,11 @@ import UserName from "./components/UserName";
 import UserPhoto from "./components/UserPhoto";
 import UserPrompts from "./components/UserPrompts";
 import Home from "./components/Home";
-import Account from "./components/Account";
-import AccountEdit from "./components/AccountEdit";
 import Discover from "./components/Discover";
-import Event from "./components/Event";
 import EventCreate from "./components/EventCreate";
-import EventEdit from "./components/EventEdit";
+import Events from './components/Events'
+import Account from "./components/Account";
+import Event from "./components/Event";
 
 const Stack = createNativeStackNavigator();
 
@@ -24,62 +23,90 @@ const App = () => (
             <Stack.Screen
                 name="Login"
                 component={Login}
-                options={{ headerShown: false }}
+                options={{ 
+                    headerShown: false,
+                    presentation: "modal"
+                }}
             />
             <Stack.Screen
                 name="SignUp"
                 component={SignUp}
-                options={{ headerShown: false }}
+                options={{ 
+                    headerShown: false,
+                    presentation: "modal"
+                }}
             />
             <Stack.Screen
                 name="UserName"
                 component={UserName}
-                options={{ headerShown: false }}
+                options={{ 
+                    headerShown: false,
+                    animationEnabled: false
+                }}
             />
             <Stack.Screen
                 name="UserPhoto"
                 component={UserPhoto}
-                options={{ headerShown: false }}
+                options={{ 
+                    headerShown: false,
+                    animationEnabled: false
+                }}
             />
             <Stack.Screen
                 name="UserPrompts"
                 component={UserPrompts}
-                options={{ headerShown: false }}
+                options={{ 
+                    headerShown: false,
+                    animationEnabled: false
+                }}
             />
             <Stack.Screen
                 name="Home"
                 component={Home}
-                options={{ headerShown: false }}
-            />
-            <Stack.Screen
-                name="Account"
-                component={Account}
-                options={{ headerShown: false }}
-            />
-            <Stack.Screen
-                name="AccountEdit"
-                component={AccountEdit}
-                options={{ headerShown: false }}
+                options={{ 
+                    headerShown: false,
+                    animationEnabled: false
+                }}
             />
             <Stack.Screen
                 name="Discover"
                 component={Discover}
-                options={{ headerShown: false }}
-            />
-            <Stack.Screen
-                name="Event"
-                component={Event}
-                options={{ headerShown: false }}
+                options={{ 
+                    headerShown: false,
+                    animationEnabled: false
+                }}
             />
             <Stack.Screen
                 name="EventCreate"
                 component={EventCreate}
-                options={{ headerShown: false }}
+                options={{ 
+                    headerShown: false,
+                    animationEnabled: false
+                }}
             />
             <Stack.Screen
-                name="EventEdit"
-                component={EventEdit}
-                options={{ headerShown: false }}
+                name="Events"
+                component={Events}
+                options={{ 
+                    headerShown: false,
+                    animationEnabled: false
+                }}
+            />
+            <Stack.Screen
+                name="Account"
+                component={Account}
+                options={{ 
+                    headerShown: false,
+                    animationEnabled: false
+                }}
+            />
+            <Stack.Screen
+                name="Event"
+                component={Event}
+                options={{ 
+                    headerShown: false,
+                    animationEnabled: false
+                }}
             />
         </Stack.Navigator>
   </NavigationContainer>

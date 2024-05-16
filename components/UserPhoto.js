@@ -267,7 +267,7 @@ const styles = StyleSheet.create({
         width: screenWidth * 0.5,
         height: screenWidth * 0.5,
         borderRadius: 100,
-        borderWidth: "#000000",
+        borderColor: "#000000",
         borderWidth: 2,
         margin: screenHeight * 0.05,
         opacity: 1

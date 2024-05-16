@@ -1,20 +1,54 @@
-import React from 'react';
-import { StyleSheet, Text, View } from "react-native";
+import React, { useState } from 'react';
+import { 
+  ActivityIndicator,
+  Alert,
+  Dimensions,
+  Image,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View
+} from "react-native";
+import { useFonts } from "expo-font";
+import { LinearGradient } from 'expo-linear-gradient';
+import BottomBar from './BottomBar';
+import { supabase } from '../supabase';
 
-const Account = () => {
-    console.log("Account");
+const screenWidth = Dimensions.get('window').width;
+const screenHeight = Dimensions.get('window').height;
+
+const Account = ({ route, navigation }) => {
+    const user_id = route.params.user_id;
+
+    const [fontsLoaded] = useFonts({
+        "Dongle-Bold": require("../assets/fonts/Dongle-Bold.ttf"),
+        "Dongle-Regular": require("../assets/fonts/Dongle-Regular.ttf"),
+        "Dongle-Light": require("../assets/fonts/Dongle-Light.ttf"),
+    });
+
+    if (!fontsLoaded) {
+        return (
+            <LinearGradient colors={['#A8D0F5', '#D0B4F4']} style={styles.accountContainer}>
+                <ActivityIndicator size="large" />
+            </LinearGradient>
+        );
+    }
+    
     return(
-        <View style={styles.container}>
+        <LinearGradient colors={['#A8D0F5', '#D0B4F4']} style={styles.accountContainer}>
             <Text>Account</Text>
-        </View>
+            <BottomBar user_id={user_id} navigation={navigation} />
+        </LinearGradient>
     );
 }
 
 const styles = StyleSheet.create({
-    container: {
+    accountContainer: {
         flex: 1,
         alignItems: "center",
         justifyContent: "center",
+        paddingBottom: screenHeight * 0.1,
     }
 });
 

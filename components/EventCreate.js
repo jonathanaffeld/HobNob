@@ -26,7 +26,8 @@ const screenHeight = Dimensions.get("window").height;
 // store later: eventid, attendees, owner
 
 
-const EventCreate = ({navigation}) => {
+const EventCreate = ({ route, navigation }) => {
+    const user_id = route.params.user_id;
 
     const [loading, setLoading] = useState(false);
     const [description, setDescription] = useState('');
@@ -227,6 +228,7 @@ const EventCreate = ({navigation}) => {
           </Pressable>
         </View>
       </View>
+
         </LinearGradient>
     );
 }
