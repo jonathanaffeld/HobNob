@@ -53,6 +53,12 @@ const EventCreate = ({navigation}) => {
             return;
         }
 
+        const { data: { user } } = await supabase.auth.getUser()
+        if (!user) {
+            Alert.alert("Uhoh", "You need to be signed in to create an event!");
+            return;
+        }
+
 
         const startDateTime = new Date(dateStart.getFullYear(), dateStart.getMonth(), 
         dateStart.getDate(), timeStart.getHours(), timeStart.getMinutes());
@@ -68,13 +74,13 @@ const EventCreate = ({navigation}) => {
         const endDateTimeTz = endDateTime.toISOString();
 
         setLoading(true);
-        //owner: supabase.auth.user().id
+       
 
         const { data, error } = await supabase
         .from('events')
         .insert([
             { start_time: startDateTimeTz, end_time: endDateTimeTz, title: title, 
-                description: description, location:loc , image_url: null, participants: [], owner: null},
+                description: description, location:loc , image_url: null, participants: [], owner: user.id},
         ]);
         setLoading(false);
         
@@ -129,7 +135,7 @@ const EventCreate = ({navigation}) => {
         <View style={styles.topContainer}>
         <View style={styles.leftGroup}>
           <View style={styles.logoTextContainer}>
-            <Text style={styles.logoLetter}>Hobnob.</Text>
+            <Text style={styles.logoLetter}>HobNob.</Text>
           </View>
         </View>
         <View style={styles.spacer}></View>
