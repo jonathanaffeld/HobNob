@@ -1,58 +1,70 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 import { StyleSheet, View, Dimensions, useColorScheme, Pressable, ActivityIndicator, Image } from "react-native";
 import { useRoute } from '@react-navigation/native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Feather from 'react-native-vector-icons/Feather';
-import Entypo from 'react-native-vector-icons/Entypo';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { supabase } from '../supabase';
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
 
-const BottomBar = ({ user_id, navigation }) => {
+const BottomBar = ({ navigation }) => {
     const colorScheme = useColorScheme();
     const route = useRoute();
+    const [user_id, setUserID] = useState("");
     const [image, setImage] = useState(null);
     const [mounting, setMounting] = useState(false);
 
-    useEffect(() => {
-        async function fetchData() {
-            setMounting(true);
-            const { data, error } = await supabase
-            .from('users')
-            .select('image_url')
-            .eq('user_id', user_id);
-            
-            if (error) {
-                console.log(error);
-                return;
-            }
+    useFocusEffect(
+        useCallback(() => {
+            async function fetchData() {
+                setMounting(true);
 
-            const result = data[0];
-            const img = result.image_url;
-            
-            if (img) {
-                setImage(img);
+                supabase.auth.getUser()
+                .then((auth_response) => {
+                    if (auth_response.error) throw auth_response.error;
+
+                    const id = auth_response.data.user.id;
+                    setUserID(id);
+
+                    supabase
+                    .from('users')
+                    .select('image_url')
+                    .eq('user_id', id)
+                    .then((response) => {
+                        if (response.error) throw response.error;
+                        
+                        const img = response.data[0].image_url;
+                        
+                        setImage(img);
+                        setMounting(false);
+                    }).catch((error) => {
+                        console.log(error);
+                    });
+                }).catch((auth_error) => {
+                    console.log(auth_error);
+                })
             }
-            setMounting(false);
-        }
-        fetchData();
-    }, [user_id]);
+            fetchData();
+        }, [])
+    );
 
     const goHome = () => {
-        navigation.navigate("Home", { user_id: user_id });
+        navigation.navigate("Home");
     }
 
     const goDiscover = () => {
-        navigation.navigate("Discover", { user_id: user_id });
+        navigation.navigate("Discover");
     }
 
     const goEventCreate = () => {
-        navigation.navigate("EventCreate", { user_id: user_id });
+        navigation.navigate("EventCreate");
     }
 
     const goEvents = () => {
-        navigation.navigate("Events", { user_id: user_id });
+        navigation.navigate("Events");
     }
 
     const goAccount = () => {
@@ -109,8 +121,8 @@ const BottomBar = ({ user_id, navigation }) => {
                 }
             </Pressable>
             <Pressable style={styles.icon} onPress={goEvents}>
-                <Entypo
-                    name='ticket'
+                <MaterialIcons
+                    name='event'
                     size={screenWidth*0.1}
                     color={iconColor("Events")}
                 />
@@ -120,7 +132,7 @@ const BottomBar = ({ user_id, navigation }) => {
                 }
             </Pressable>
             <Pressable style={styles.icon} onPress={goAccount}>
-                <Image source={{ uri: image }} style={[styles.image, {borderColor: iconColor("Account")}]} />
+                <Image source={{ uri: image }} style={[styles.image, {borderColor: iconColor("Account")}, {borderWidth: route.name === "Account" ? screenWidth * 0.0075 : screenWidth * 0.005}]} />
                 {
                     route.name === "Account" &&
                     <View style={styles.highlight}/>
@@ -152,12 +164,11 @@ const styles = StyleSheet.create({
         width: screenWidth * 0.1,
         height: screenWidth * 0.1,
         borderRadius: 100,
-        borderWidth: 2,
     },
     highlight: {
         backgroundColor: '#77678C',
         position: "absolute",
-        bottom: screenHeight * -0.02,
+        bottom: screenHeight * -0.015,
         width: screenHeight * 0.01,
         height: screenHeight * 0.01,
         borderRadius: 100,

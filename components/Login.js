@@ -50,10 +50,10 @@ const Login = ({ navigation }) => {
                 const finished_sign_up = response.data[0].finished_sign_up;
                 setLoading(false);
                 if (finished_sign_up) {
-                    navigation.navigate("Home", { user_id: user_id });
+                    navigation.navigate("Home");
                 }
                 else {
-                    navigation.navigate("UserName", { user_id: user_id });
+                    navigation.navigate("UserName");
                 }
             }).catch((error) => {
                 setLoading(false);

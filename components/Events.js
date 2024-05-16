@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { 
   ActivityIndicator,
   Alert,
@@ -10,6 +10,7 @@ import {
   TextInput,
   View
 } from "react-native";
+import { useFocusEffect } from '@react-navigation/native';
 import { useFonts } from "expo-font";
 import { LinearGradient } from 'expo-linear-gradient';
 import BottomBar from './BottomBar';
@@ -18,8 +19,29 @@ import { supabase } from '../supabase';
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
 
-const Events = ({ route, navigation }) => {
-    const user_id = route.params.user_id;
+const Events = ({ navigation }) => {
+    const [user_id, setUserID]= useState("");
+    const [mounting, setMounting] = useState(false);
+
+    useFocusEffect(
+        useCallback(() => {
+            async function fetchData() {
+                setMounting(true);
+
+                supabase.auth.getUser()
+                .then((auth_response) => {
+                    if (auth_response.error) throw auth_response.error;
+
+                    const id = auth_response.data.user.id;
+                    setUserID(id);
+                    setMounting(false);
+                }).catch((auth_error) => {
+                    console.log(auth_error);
+                })
+            }
+            fetchData();
+        }, [])
+    );
 
     const [fontsLoaded] = useFonts({
         "Dongle-Bold": require("../assets/fonts/Dongle-Bold.ttf"),
@@ -38,7 +60,7 @@ const Events = ({ route, navigation }) => {
     return(
         <LinearGradient colors={['#A8D0F5', '#D0B4F4']} style={styles.eventsContainer}>
             <Text>Events</Text>
-            <BottomBar user_id={user_id} navigation={navigation} />
+            <BottomBar navigation={navigation} />
         </LinearGradient>
     );
 }

@@ -1,5 +1,4 @@
 import React from "react";
-import { StyleSheet, View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
@@ -7,7 +6,8 @@ import Login from "./components/Login";
 import SignUp from "./components/SignUp";
 import UserName from "./components/UserName";
 import UserPhoto from "./components/UserPhoto";
-import UserPrompts from "./components/UserPrompts";
+import UserPrompt1 from "./components/UserPrompt1";
+import UserPrompt2 from "./components/UserPrompt2";
 import Home from "./components/Home";
 import Discover from "./components/Discover";
 import EventCreate from "./components/EventCreate";
@@ -19,13 +19,12 @@ const Stack = createNativeStackNavigator();
 
 const App = () => (
   <NavigationContainer>
-        <Stack.Navigator>
+        <Stack.Navigator screenOptions={{ animationEnabled: false }}>
             <Stack.Screen
                 name="Login"
                 component={Login}
                 options={{ 
                     headerShown: false,
-                    presentation: "modal"
                 }}
             />
             <Stack.Screen
@@ -33,7 +32,6 @@ const App = () => (
                 component={SignUp}
                 options={{ 
                     headerShown: false,
-                    presentation: "modal"
                 }}
             />
             <Stack.Screen
@@ -41,7 +39,6 @@ const App = () => (
                 component={UserName}
                 options={{ 
                     headerShown: false,
-                    animationEnabled: false
                 }}
             />
             <Stack.Screen
@@ -49,15 +46,20 @@ const App = () => (
                 component={UserPhoto}
                 options={{ 
                     headerShown: false,
-                    animationEnabled: false
                 }}
             />
             <Stack.Screen
-                name="UserPrompts"
-                component={UserPrompts}
+                name="UserPrompt1"
+                component={UserPrompt1}
                 options={{ 
                     headerShown: false,
-                    animationEnabled: false
+                }}
+            />
+            <Stack.Screen
+                name="UserPrompt2"
+                component={UserPrompt2}
+                options={{ 
+                    headerShown: false,
                 }}
             />
             <Stack.Screen
@@ -65,7 +67,6 @@ const App = () => (
                 component={Home}
                 options={{ 
                     headerShown: false,
-                    animationEnabled: false
                 }}
             />
             <Stack.Screen
@@ -73,7 +74,6 @@ const App = () => (
                 component={Discover}
                 options={{ 
                     headerShown: false,
-                    animationEnabled: false
                 }}
             />
             <Stack.Screen
@@ -81,7 +81,6 @@ const App = () => (
                 component={EventCreate}
                 options={{ 
                     headerShown: false,
-                    animationEnabled: false
                 }}
             />
             <Stack.Screen
@@ -89,7 +88,6 @@ const App = () => (
                 component={Events}
                 options={{ 
                     headerShown: false,
-                    animationEnabled: false
                 }}
             />
             <Stack.Screen
@@ -97,7 +95,6 @@ const App = () => (
                 component={Account}
                 options={{ 
                     headerShown: false,
-                    animationEnabled: false
                 }}
             />
             <Stack.Screen
@@ -105,7 +102,6 @@ const App = () => (
                 component={Event}
                 options={{ 
                     headerShown: false,
-                    animationEnabled: false
                 }}
             />
         </Stack.Navigator>

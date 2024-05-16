@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { 
   ActivityIndicator,
   Alert,
@@ -9,6 +9,7 @@ import {
   Text,
   View
 } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { useFonts } from 'expo-font';
 import * as ImagePicker from 'expo-image-picker';
@@ -19,45 +20,58 @@ import { supabase } from '../supabase';
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
 
-const Photo = ({ route, navigation }) => {
-    const user_id = route.params.user_id;
+const UserPhoto = ({ navigation }) => {
+    const [user_id, setUserID]= useState("");
     const [image, setImage] = useState(null);
     const [finished_sign_up, setFinishedSignUp] = useState(false);
     const [mounting, setMounting] = useState(false);
     const [loading, setLoading] = useState(false);
 
-    useEffect(() => {
-        async function fetchData() {
-            setMounting(true);
-            const { data, error } = await supabase
-            .from('users')
-            .select('image_url, finished_sign_up')
-            .eq('user_id', user_id);
-            
-            if (error) {
-                console.log(error);
-                return;
-            }
+    useFocusEffect(
+        useCallback(() => {
+            async function fetchData() {
+                setMounting(true);
 
-            const result = data[0];
-            const img = result.image_url;
-            const fsu = result.finished_sign_up;
-            
-            if (img) {
-                setImage(img);
+                supabase.auth.getUser()
+                .then((auth_response) => {
+                    if (auth_response.error) throw auth_response.error;
+
+                    const id = auth_response.data.user.id;
+                    setUserID(id);
+
+                    supabase
+                    .from('users')
+                    .select('image_url, finished_sign_up')
+                    .eq('user_id', id)
+                    .then((response) => {
+                        if (response.error) throw response.error;
+                        
+                        const result = response.data[0];
+                        const img = result.image_url;
+                        const fsu = result.finished_sign_up;
+                        
+                        if (img) {
+                            setImage(img);
+                        }
+                        setFinishedSignUp(fsu);
+                        setMounting(false);
+                    }).catch((error) => {
+                        console.log(error);
+                    });
+                }).catch((auth_error) => {
+                    console.log(auth_error);
+                })
             }
-            setFinishedSignUp(fsu);
-            setMounting(false);
-        }
-        fetchData();
-    }, [user_id]);
+            fetchData();
+        }, [])
+    );
 
     const handleBack = async () => {
         if (finished_sign_up) {
             navigation.navigate("Account", { user_id: user_id });
         }
         else {
-            navigation.navigate("UserName", { user_id: user_id })
+            navigation.navigate("UserName")
         }
     }
 
@@ -163,7 +177,7 @@ const Photo = ({ route, navigation }) => {
                             Alert.alert("Updated Successfully");
                             navigation.navigate("Account", { user_id: user_id });
                         } else {
-                            navigation.navigate("UserPrompts", { user_id: user_id })
+                            navigation.navigate("UserPrompt1")
                         }
                     }).catch((error) => {
                         setLoading(false);
@@ -334,4 +348,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default Photo;
+export default UserPhoto;

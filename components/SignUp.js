@@ -56,7 +56,7 @@ const SignUp = ({ navigation }) => {
             .then((response) => {
                 if (response.error) throw response.error;
                 setLoading(false);
-                navigation.navigate("UserName", { user_id: user_id });
+                navigation.navigate("UserName");
             }).catch((error) => {
                 setLoading(false);
                 Alert.alert("Uhoh", error.message);

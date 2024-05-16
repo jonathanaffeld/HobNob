@@ -18,6 +18,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 
 import { useNavigation } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import BottomBar from "./BottomBar";
 
 const screenWidth = Dimensions.get("window").width;
 const screenHeight = Dimensions.get("window").height;
@@ -26,8 +27,8 @@ const screenHeight = Dimensions.get("window").height;
 // store later: eventid, attendees, owner
 
 
-const EventCreate = ({ route, navigation }) => {
-    const user_id = route.params.user_id;
+const EventCreate = ({ navigation }) => {
+    const [user_id, setUserID] = useState('');
 
     const [loading, setLoading] = useState(false);
     const [description, setDescription] = useState('');
@@ -59,6 +60,8 @@ const EventCreate = ({ route, navigation }) => {
             Alert.alert("Uhoh", "You need to be signed in to create an event!");
             return;
         }
+
+        setUserID(user.id);
 
 
         const startDateTime = new Date(dateStart.getFullYear(), dateStart.getMonth(), 
@@ -95,18 +98,6 @@ const EventCreate = ({ route, navigation }) => {
 
     }
 
-    const handleProfile = () => {
-        navigation.navigate("Profile");
-      };
-    const handleDiscover = () => {
-        navigation.navigate("Discover");
-    };
-    const handlePrompts = () => {
-        navigation.navigate("Prompts");
-    };
-    const handleEventEdit = () => {
-        navigation.navigate("EventEdit");
-    };
     const onChangeStart = (event, selectedDate) => {
         const currentDate = selectedDate || dateStart;
         setDateStart(currentDate);
@@ -124,9 +115,6 @@ const EventCreate = ({ route, navigation }) => {
         const currentTime = selectedTime || timeEnd;
         setTimeEnd(currentTime);
       };
-
-
-
 
     return(
         <LinearGradient
@@ -212,22 +200,7 @@ const EventCreate = ({ route, navigation }) => {
       
       
         
-        <View style={styles.bottomBar}>
-        <View style={styles.bar}>
-          <Pressable onPress={handleEventEdit}>
-            <Icon name="sc-telegram" size={40} color="#000" />
-          </Pressable>
-          <Pressable onPress={handlePrompts}>
-            <Icon name="bell" size={40} color="#000" />
-          </Pressable>
-          <Pressable onPress={handleDiscover}>
-            <Icon name="location" size={40} color="#000" />
-          </Pressable>
-          <Pressable onPress={handleProfile}>
-            <Icon name="user" size={40} color="#000" />
-          </Pressable>
-        </View>
-      </View>
+        <BottomBar navigation={navigation}/>
 
         </LinearGradient>
     );
