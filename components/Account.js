@@ -180,7 +180,7 @@ const Account = ({ route, navigation }) => {
                         {
                             loading ? 
                             <ActivityIndicator style={styles.loading} /> :
-                            <View>
+                            <View style={styles.buttonContainer}>
                                 <Pressable style={styles.logout} onPress={handleLogout}>
                                     <Text style={styles.logoutText}>Logout</Text>
                                 </Pressable>
@@ -314,6 +314,10 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
         marginTop: screenHeight * 0.0125,
+    },
+    buttonContainer: {
+        justifyContent: "center",
+        alignItems: "center",
     },
     removeSpace: {
         marginBottom: screenHeight * -0.075
