@@ -1,10 +1,20 @@
 import React, { useState } from 'react';
-import { Dimensions, StyleSheet, Text, TextInput, View, Image, Pressable, Alert, ActivityIndicator } from "react-native";
-import { LinearGradient } from 'expo-linear-gradient';
+import { 
+  ActivityIndicator,
+  Alert,
+  Dimensions,
+  Image,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View
+} from "react-native";
 import { useFonts } from "expo-font";
-import {supabase} from '../supabase';
-import HobNobLogo from "../assets/images/HobNobLogo.png"
-import LoginText from "../assets/images/LoginText.png"
+import { LinearGradient } from 'expo-linear-gradient';
+import HobNobLogo from "../assets/images/HobNobLogo.png";
+import LoginText from "../assets/images/LoginText.png";
+import { supabase } from '../supabase';
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
