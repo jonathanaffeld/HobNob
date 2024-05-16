@@ -1,8 +1,17 @@
-import React, { useState, useEffect } from 'react';
-import { Dimensions, StyleSheet, Text, TextInput, Pressable, Alert, ActivityIndicator, View } from "react-native";
+import React, { useEffect, useState } from 'react';
+import { 
+  ActivityIndicator,
+  Alert,
+  Dimensions,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View
+} from 'react-native';
+import { useFonts } from 'expo-font';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useFonts } from "expo-font";
-import { supabase } from '../supabase'
+import { supabase } from '../supabase';
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;

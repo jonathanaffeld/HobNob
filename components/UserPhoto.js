@@ -1,11 +1,20 @@
-import React, { useState, useEffect } from 'react';
-import { Dimensions, StyleSheet, Text, View, Image, Pressable, Alert, ActivityIndicator } from "react-native";
-import { LinearGradient } from 'expo-linear-gradient';
-import { useFonts } from "expo-font";
-import * as ImagePicker from 'expo-image-picker';
+import React, { useEffect, useState } from 'react';
+import { 
+  ActivityIndicator,
+  Alert,
+  Dimensions,
+  Image,
+  Pressable,
+  StyleSheet,
+  Text,
+  View
+} from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import { useFonts } from 'expo-font';
+import * as ImagePicker from 'expo-image-picker';
+import { LinearGradient } from 'expo-linear-gradient';
 import { decode } from 'base64-arraybuffer';
-import { supabase } from '../supabase'
+import { supabase } from '../supabase';
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
