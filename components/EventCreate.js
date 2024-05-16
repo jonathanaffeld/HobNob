@@ -80,7 +80,7 @@ const EventCreate = ({navigation}) => {
         .from('events')
         .insert([
             { start_time: startDateTimeTz, end_time: endDateTimeTz, title: title, 
-                description: description, location:loc , image_url: null, participants: [], owner: user.id},
+                description: description, location:loc , image_url: null, participants: [user.id], owner: user.id},
         ]);
         setLoading(false);
         
