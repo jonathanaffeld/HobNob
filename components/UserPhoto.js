@@ -49,7 +49,7 @@ const Photo = ({ route, navigation }) => {
             navigation.navigate("Account", { user_id: user_id });
         }
         else {
-            navigation.navigate("Name", { user_id: user_id })
+            navigation.navigate("UserName", { user_id: user_id })
         }
     }
 
@@ -119,26 +119,6 @@ const Photo = ({ route, navigation }) => {
             };
         });
     }
-    
-
-    async function convertImageToBuffer(blob) {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.readAsDataURL(blob);
-            reader.onloadend = () => {
-                try {
-                    const base64data = reader.result.split(',')[1];
-                    const arrayBuffer = decode(base64data);
-                    resolve(arrayBuffer);
-                } catch (error) {
-                    reject(error);
-                }
-            };
-            reader.onerror = () => {
-                reject(new Error('Error reading blob.'));
-            };
-        });
-    }
 
     const handleClick = async () => {
         if (!image) {
@@ -170,11 +150,12 @@ const Photo = ({ route, navigation }) => {
                     .eq('user_id', user_id)
                     .then((response) => {
                         if (response.error) throw response.error;
+                        setLoading(false);
                         if (finished_sign_up) {
                             Alert.alert("Updated Successfully");
                             navigation.navigate("Account", { user_id: user_id });
                         } else {
-                            navigation.navigate("Prompts", { user_id: user_id })
+                            navigation.navigate("UserPrompts", { user_id: user_id })
                         }
                     }).catch((error) => {
                         setLoading(false);
@@ -261,8 +242,8 @@ const styles = StyleSheet.create({
     },
     backButton: {
         position: 'absolute',
-        top: 75,
-        left: 25
+        top: screenHeight * 0.1,
+        left: screenWidth * 0.05
     },
     titleText: {
         fontFamily: "Dongle-Regular",

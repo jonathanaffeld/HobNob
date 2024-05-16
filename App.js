@@ -5,9 +5,9 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 import Login from "./components/Login";
 import SignUp from "./components/SignUp";
-import Name from "./components/Name";
-import Photo from "./components/Photo";
-import Prompts from "./components/Prompts";
+import UserName from "./components/UserName";
+import UserPhoto from "./components/UserPhoto";
+import UserPrompts from "./components/UserPrompts";
 import Home from "./components/Home";
 import Account from "./components/Account";
 import AccountEdit from "./components/AccountEdit";
@@ -32,18 +32,18 @@ const App = () => (
                 options={{ headerShown: false }}
             />
             <Stack.Screen
-                name="Name"
-                component={Name}
+                name="UserName"
+                component={UserName}
                 options={{ headerShown: false }}
             />
             <Stack.Screen
-                name="Photo"
-                component={Photo}
+                name="UserPhoto"
+                component={UserPhoto}
                 options={{ headerShown: false }}
             />
             <Stack.Screen
-                name="Prompts"
-                component={Prompts}
+                name="UserPrompts"
+                component={UserPrompts}
                 options={{ headerShown: false }}
             />
             <Stack.Screen

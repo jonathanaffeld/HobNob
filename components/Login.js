@@ -43,7 +43,7 @@ const Login = ({ navigation }) => {
                     navigation.navigate("Home", { user_id: user_id });
                 }
                 else {
-                    navigation.navigate("Name", { user_id: user_id });
+                    navigation.navigate("UserName", { user_id: user_id });
                 }
             }).catch((error) => {
                 setLoading(false);
@@ -150,7 +150,7 @@ const styles = StyleSheet.create({
         width: screenWidth * 0.75,
         height: screenHeight * 0.06,
         backgroundColor: "#FFFFFF",
-        opacity: 0.75,
+        opacity: 0.8,
         margin: screenWidth * 0.025,
         paddingLeft: screenWidth * 0.05,
         borderRadius: 20,
