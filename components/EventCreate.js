@@ -194,38 +194,9 @@ const EventCreate = ({ navigation }) => {
                     .eq('event_id', event_id)
                     .then((response) => {
                         if (response.error) throw response.error;
-
-                        supabase
-                        .from('users')
-                        .select('events')
-                        .eq('user_id', user_id)
-                        .then((get_events_response) => {
-                            if (get_events_response.error) throw get_events_response.error;
-
-                            let events = get_events_response.data[0].events;
-
-                            if (!events) {
-                                events = [];
-                            }
-                            events.push(event_id);
-                            supabase
-                            .from('users')
-                            .update({ events: events })
-                            .eq('user_id', user_id)
-                            .then((update_events_response) => {
-                                if (update_events_response.error) throw update_events_response.error;
-                                setLoading(false);
-                                Alert.alert("Event Created Successfully");
-                                navigation.navigate("Home");
-                            }).catch((update_events_error) => {
-                                setLoading(false);
-                                console.log(update_events_error.message);
-                                Alert.alert("Uhoh", update_events_error.message);
-                            })
-                        }).catch((get_events_error) => {
-                            setLoading(false);
-                            Alert.alert("Uhoh", get_events_error.message);
-                        });
+                        setLoading(false);
+                        Alert.alert("Event Created Successfully");
+                        navigation.navigate("Home");
                     }).catch((error) => {
                         setLoading(false);
                         Alert.alert("Uhoh", error.message);
