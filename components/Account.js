@@ -203,6 +203,8 @@ const styles = StyleSheet.create({
         flexDirection: "column",
         alignItems: "center",
         paddingBottom: screenHeight * 0.1,
+        width: screenWidth,
+        height: screenHeight
     },
     scrollContent: {
         alignItems: "center",
