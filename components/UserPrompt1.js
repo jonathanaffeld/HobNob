@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { 
   ActivityIndicator,
   Alert,
+  BackHandler,
   Dimensions,
   Pressable,
   StyleSheet,
@@ -9,116 +10,96 @@ import {
   TextInput,
   View
 } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { useFonts } from 'expo-font';
 import { LinearGradient } from 'expo-linear-gradient';
 import { supabase } from '../supabase';
+import Prompts from './Prompts.js';
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
 
-const Prompts = ({ route, navigation }) => {
-    const user_id = route.params.user_id;
+const UserPrompt1 = ({ navigation }) => {
+    const [user_id, setUserID]= useState("");
     const [prompt1, setPrompt1] = useState(null);
     const [prompt2, setPrompt2] = useState(null);
     const [response1, setResponse1] = useState("");
-    const [response2, setResponse2] = useState("");
     const [finished_sign_up, setFinishedSignUp] = useState(false);
     const [mounting, setMounting] = useState(false);
     const [loading, setLoading] = useState(false);
-    const prompts = [
-        "My go-to song for a road trip is...",
-        "One thing I cannot live without is...",
-        "The last hobby I picked up was...",
-        "One place I want to explore is...",
-        "A moment in history I wish I could have witnessed is...",
-        "A local spot I love visiting is...",
-        "An unusual skill I possess is...",
-        "An unusual fear I have is...",
-        "The best live performance I have ever seen was...",
-        "A new skill I want to learn is...",
-        "A subject I could talk about for hours is...",
-        "A movie/show I can watch over and over is...",
-        "An invention that I think is underrated is...",
-        "The strangest job I ever had was...",
-        "My favorite annual event/holiday is...",
-        "A guilty pleasure of mine is...",
-        "The most spontaneous thing I have ever done is...",
-        "My favorite childhood memory is...",
-        "A life-changing event I experienced was...",
-        "The weirdest food combination I enjoy is..."
-    ];
 
-    useEffect(() => {
-        async function fetchData() {
-            setMounting(true);
-            const { data, error } = await supabase
-            .from('users')
-            .select('prompt1, response1, prompt2, response2, finished_sign_up')
-            .eq('user_id', user_id);
-            
-            if (error) {
-                console.log(error);
-                return;
-            }
+    useFocusEffect(
+        useCallback(() => {
+            async function fetchData() {
+                setMounting(true);
 
-            const result = data[0];
-            const p1 = result.prompt1;
-            const r1 = result.response1;
-            const p2 = result.prompt2;
-            const r2 = result.response2;
-            const fsu = result.finished_sign_up;
-            
-            if (p1) {
-                setPrompt1(p1);
+                supabase.auth.getUser()
+                .then((auth_response) => {
+                    if (auth_response.error) throw auth_response.error;
+
+                    const id = auth_response.data.user.id;
+                    setUserID(id);
+
+                    supabase
+                    .from('users')
+                    .select('prompt1, prompt2, response1, finished_sign_up')
+                    .eq('user_id', id)
+                    .then((response) => {
+                        if (response.error) throw response.error;
+                        
+                        const result = response.data[0];
+                        const p1 = result.prompt1;
+                        const p2 = result.prompt2;
+                        const r1 = result.response1;
+                        const fsu = result.finished_sign_up;
+                        
+                        if (p1) {
+                            setPrompt1(p1);
+                        }
+                        if (p2) {
+                            setPrompt2(p2);
+                        }
+                        if (r1) {
+                            setResponse1(r1);
+                        }
+                        setFinishedSignUp(fsu);
+                        setMounting(false);
+                    }).catch((error) => {
+                        console.log(error);
+                    });
+                }).catch((auth_error) => {
+                    console.log(auth_error);
+                })
             }
-            if (r1) {
-                setResponse1(r1);
-            }
-            if (p2) {
-                setPrompt2(p2);
-            }
-            if (r2) {
-                setResponse2(r2);
-            }
-            setFinishedSignUp(fsu);
-            setMounting(false);
-        }
-        fetchData();
-    }, [user_id]);
+            fetchData();
+        }, [])
+    );
 
     const handleBack = async () => {
         if (finished_sign_up) {
             navigation.navigate("Account", { user_id: user_id });
         }
         else {
-            navigation.navigate("UserPhoto", { user_id: user_id })
+            navigation.navigate("UserPhoto")
         }
     }
 
-    const handlePrompt1Refresh = async () => {
-        let prompt = prompts[Math.floor(Math.random() * prompts.length)];
-        while (prompt === prompt2 || prompt === prompt1) {
-            prompt = prompts[Math.floor(Math.random() * prompts.length)];
+    const handlePromptRefresh = async () => {
+        let prompt = Prompts[Math.floor(Math.random() * Prompts.length)];
+        while (prompt === prompt1 || prompt === prompt2) {
+            prompt = Prompts[Math.floor(Math.random() * Prompts.length)];
         }
         setPrompt1(prompt);
     }
 
-    const handlePrompt2Refresh = async () => {
-        let prompt = prompts[Math.floor(Math.random() * prompts.length)];
-        while (prompt === prompt2 || prompt === prompt1) {
-            prompt = prompts[Math.floor(Math.random() * prompts.length)];
-        }
-        setPrompt2(prompt);
-    }
-
     const handleClick = async () => {
-        if (!prompt1 || !prompt2) {
-            Alert.alert("Uhoh", "Please select two prompts!");
+        if (!prompt1) {
+            Alert.alert("Uhoh", "Please select a prompt!");
             return;
         }
-        if (!response1 || !response2) {
-            Alert.alert("Uhoh", "Please write your responses!");
+        if (!response1) {
+            Alert.alert("Uhoh", "Please write a response!");
             return;
         }
 
@@ -126,7 +107,7 @@ const Prompts = ({ route, navigation }) => {
         
         const { error } = await supabase
         .from('users')
-        .update({ prompt1: prompt1, response1: response1, prompt2: prompt2, response2: response2, finished_sign_up: true })
+        .update({ prompt1: prompt1, response1: response1 })
         .eq('user_id', user_id);
         
         setLoading(false);
@@ -141,7 +122,7 @@ const Prompts = ({ route, navigation }) => {
             navigation.navigate("Account", { user_id: user_id });
         }
         else {
-            navigation.navigate("Home", { user_id: user_id })
+            navigation.navigate("UserPrompt2")
         }
     }
 
@@ -161,10 +142,10 @@ const Prompts = ({ route, navigation }) => {
 
     return (
         <LinearGradient colors={['#A8D0F5', '#D0B4F4']} style={styles.namesContainer}>
-            <Text style={styles.titleText}>Tell us about yourself!</Text>
+            <Text style={styles.titleText}>Select your first prompt!</Text>
             <View style={styles.promptContainer}>
                 <Text style={styles.promptText} multiline={true}>{prompt1 ? prompt1: "Prompt #1"}</Text>
-                <Pressable onPress={handlePrompt1Refresh} style={styles.refresh}>
+                <Pressable onPress={handlePromptRefresh} style={styles.refresh}>
                     <FontAwesome
                         name='refresh'
                         size={screenWidth*0.1}
@@ -178,38 +159,13 @@ const Prompts = ({ route, navigation }) => {
                     style={styles.input}
                     onChangeText={setResponse1}
                     value={response1}
-                    placeholder="Response #1"
+                    placeholder="Type your response here..."
                     placeholderTextColor={'#888888'}
-                    maxLength={250}
+                    maxLength={100}
                     multiline={true}
                 />
                 <View style={styles.charactersLeftContainer}>
-                    <Text style={[styles.charactersLeft, 250 - response1.length < 50 && {color: '#e74c3c'}]}>Characters left: {250 - response1.length}</Text>
-                </View>
-            </View>
-            <View style={styles.promptContainer}>
-                <Text style={styles.promptText}>{prompt2 ? prompt2: "Prompt #2"}</Text>
-                <Pressable onPress={handlePrompt2Refresh} style={styles.refresh}>
-                    <FontAwesome
-                        name='refresh'
-                        size={screenWidth*0.1}
-                        color='#77678C'
-                    />
-                    <Text style={styles.refreshText}>New Prompt</Text>
-                </Pressable>
-            </View>
-            <View style={styles.inputContainer}>
-                <TextInput
-                    style={styles.input}
-                    onChangeText={setResponse2}
-                    value={response2}
-                    placeholder="Response #2"
-                    placeholderTextColor={'#888888'}
-                    maxLength={250}
-                    multiline={true}
-                />
-                <View style={styles.charactersLeftContainer}>
-                    <Text style={[styles.charactersLeft, 250 - response2.length < 50 && {color: '#e74c3c'}]}>Characters left: {250 - response2.length}</Text>
+                    <Text style={[styles.charactersLeft, 100 - response1.length < 20 && {color: '#e74c3c'}]}>Characters left: {100 - response1.length}</Text>
                 </View>
             </View>
             <View style={styles.lowerContainer}>
@@ -238,7 +194,7 @@ const styles = StyleSheet.create({
     },
     titleText: {
         fontFamily: "Dongle-Regular",
-        fontSize: screenHeight * 0.06
+        fontSize: screenHeight * 0.05
     },
     promptContainer: {
         width: screenWidth * 0.75,
@@ -275,7 +231,7 @@ const styles = StyleSheet.create({
     },
     inputContainer: {
         width: screenWidth * 0.75,
-        height: screenHeight * 0.2,
+        height: screenHeight * 0.15,
         backgroundColor: "#FFFFFF",
         opacity: 0.8,
         margin: screenWidth * 0.025,
@@ -343,4 +299,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default Prompts;
+export default UserPrompt1;

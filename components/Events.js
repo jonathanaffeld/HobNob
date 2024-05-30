@@ -19,7 +19,7 @@ import { supabase } from '../supabase';
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
 
-const Discover = ({ navigation }) => {
+const Events = ({ navigation }) => {
     const [user_id, setUserID]= useState("");
     const [mounting, setMounting] = useState(false);
 
@@ -51,22 +51,22 @@ const Discover = ({ navigation }) => {
 
     if (!fontsLoaded) {
         return (
-            <LinearGradient colors={['#A8D0F5', '#D0B4F4']} style={styles.discoverContainer}>
+            <LinearGradient colors={['#A8D0F5', '#D0B4F4']} style={styles.eventsContainer}>
                 <ActivityIndicator size="large" />
             </LinearGradient>
         );
     }
     
     return(
-        <LinearGradient colors={['#A8D0F5', '#D0B4F4']} style={styles.discoverContainer}>
-            <Text>Discover</Text>
+        <LinearGradient colors={['#A8D0F5', '#D0B4F4']} style={styles.eventsContainer}>
+            <Text>Events</Text>
             <BottomBar navigation={navigation} />
         </LinearGradient>
     );
 }
 
 const styles = StyleSheet.create({
-    discoverContainer: {
+    eventsContainer: {
         flex: 1,
         alignItems: "center",
         justifyContent: "center",
@@ -74,4 +74,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default Discover;
+export default Events;
