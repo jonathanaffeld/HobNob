@@ -78,7 +78,7 @@ const UserPrompt2 = ({ navigation }) => {
 
     const handleBack = async () => {
         if (finished_sign_up) {
-            navigation.navigate("Account");
+            navigation.navigate("Account", { user_id: user_id });
         }
         else {
             navigation.navigate("UserPrompt1")
@@ -119,7 +119,7 @@ const UserPrompt2 = ({ navigation }) => {
 
         if (finished_sign_up) {
             Alert.alert("Updated Successfully");
-            navigation.navigate("Account");
+            navigation.navigate("Account", { user_id: user_id });
         }
         else {
             navigation.navigate("Home")
