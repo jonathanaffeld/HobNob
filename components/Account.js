@@ -76,7 +76,7 @@ const Account = ({ route, navigation }) => {
     }
 
     const editPrompt2 = () => {
-        navigation.navigate("UserName");
+        navigation.navigate("UserPrompt2");
     }
 
     const handleLogout = async () => {
