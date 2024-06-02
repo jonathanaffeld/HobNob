@@ -5,6 +5,7 @@ import { useRoute } from '@react-navigation/native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Feather from 'react-native-vector-icons/Feather';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { supabase } from '../supabase';
 
 const screenWidth = Dimensions.get('window').width;
@@ -14,7 +15,7 @@ const BottomBar = ({ navigation }) => {
     const colorScheme = useColorScheme();
     const route = useRoute();
     const [user_id, setUserID] = useState("");
-    const [image, setImage] = useState(null);
+    const [image, setImage] = useState("");
     const [mounting, setMounting] = useState(false);
 
     useFocusEffect(
@@ -39,7 +40,6 @@ const BottomBar = ({ navigation }) => {
                         const img = response.data[0].image_url;
                         
                         setImage(img);
-                        setMounting(false);
                     }).catch((error) => {
                         console.log(error);
                     });
@@ -48,6 +48,7 @@ const BottomBar = ({ navigation }) => {
                 })
             }
             fetchData();
+            setMounting(false);
         }, [])
     );
 
@@ -132,7 +133,11 @@ const BottomBar = ({ navigation }) => {
                 }
             </Pressable>
             <Pressable style={styles.icon} onPress={goAccount}>
-                <Image source={{ uri: image }} style={[styles.image, {borderColor: iconColor("Account")}, {borderWidth: route.name === "Account" ? screenWidth * 0.0075 : screenWidth * 0.005}]} />
+                {
+                    image ? 
+                    <Image source={{ uri: image }} style={[styles.image, {borderColor: iconColor("Account")}, {borderWidth: route.name === "Account" ? screenWidth * 0.0075 : screenWidth * 0.005}]} /> :
+                    <ActivityIndicator style={[styles.image, {borderColor: iconColor("Account")}, {borderWidth: route.name === "Account" ? screenWidth * 0.0075 : screenWidth * 0.005}]} />
+                }
                 {
                     route.name === "Account" &&
                     <View style={styles.highlight}/>
@@ -163,7 +168,7 @@ const styles = StyleSheet.create({
     image: {
         width: screenWidth * 0.1,
         height: screenWidth * 0.1,
-        borderRadius: 100,
+        borderRadius: screenWidth * 0.25,
     },
     highlight: {
         backgroundColor: '#77678C',
@@ -171,7 +176,7 @@ const styles = StyleSheet.create({
         bottom: screenHeight * -0.015,
         width: screenHeight * 0.01,
         height: screenHeight * 0.01,
-        borderRadius: 100,
+        borderRadius: screenWidth * 0.25,
     }
 });
 

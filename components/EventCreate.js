@@ -168,7 +168,7 @@ const EventCreate = ({ navigation }) => {
                     title: title,
                     description: description,
                     location: loc,
-                    participants: [user_id],
+                    participants: [user_id], // Remove later once we add joining capability, should be NULL or []
                     owner: user_id,
                 },
             ).select('event_id')
@@ -195,7 +195,7 @@ const EventCreate = ({ navigation }) => {
                     .then((response) => {
                         if (response.error) throw response.error;
                         setLoading(false);
-                        Alert.alert("Event Created Successfully");
+                        Alert.alert("Event Created!");
                         navigation.navigate("Home");
                     }).catch((error) => {
                         setLoading(false);
@@ -406,7 +406,7 @@ const styles = StyleSheet.create({
         opacity: 0.75,
         margin: screenWidth * 0.025,
         paddingLeft: screenWidth * 0.05,
-        borderRadius: 20,
+        borderRadius: screenWidth * 0.05,
         shadowColor: '#000000',
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.5,
@@ -422,7 +422,7 @@ const styles = StyleSheet.create({
         opacity: 0.75,
         margin: screenWidth * 0.025,
         paddingLeft: screenWidth * 0.05,
-        borderRadius: 20,
+        borderRadius: screenWidth * 0.05,
         shadowColor: '#000000',
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.5,
@@ -437,7 +437,7 @@ const styles = StyleSheet.create({
         width: screenWidth * 0.3,
         height: screenHeight * 0.05,
         backgroundColor: "#77678C",
-        borderRadius: 20,
+        borderRadius: screenWidth * 0.05,
         alignItems: "center",
         justifyContent: "center",
         marginTop: screenHeight * 0.025

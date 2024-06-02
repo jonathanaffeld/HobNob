@@ -269,7 +269,7 @@ const styles = StyleSheet.create({
         margin: screenWidth * 0.05,
         backgroundColor: "#FFFFFF",
         opacity: 0.8,
-        borderRadius: 20,
+        borderRadius: screenWidth * 0.05,
         shadowColor: '#000000',
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.5,
@@ -280,7 +280,7 @@ const styles = StyleSheet.create({
     image: {
         width: screenWidth * 0.5,
         height: screenWidth * 0.5,
-        borderRadius: 100,
+        borderRadius: screenWidth * 0.25,
         borderColor: "#000000",
         borderWidth: 2,
         margin: screenHeight * 0.05,
@@ -322,7 +322,7 @@ const styles = StyleSheet.create({
         width: screenWidth * 0.3,
         height: screenHeight * 0.05,
         backgroundColor: "#77678C",
-        borderRadius: 20,
+        borderRadius: screenWidth * 0.05,
         alignItems: "center",
         justifyContent: "center",
         marginRight: screenWidth * 0.025
@@ -331,7 +331,7 @@ const styles = StyleSheet.create({
         width: screenWidth * 0.3,
         height: screenHeight * 0.05,
         backgroundColor: "#77678C",
-        borderRadius: 20,
+        borderRadius: screenWidth * 0.05,
         alignItems: "center",
         justifyContent: "center",
         marginLeft: screenWidth * 0.025
