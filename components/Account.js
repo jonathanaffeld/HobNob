@@ -220,7 +220,7 @@ const styles = StyleSheet.create({
         position: 'relative',
         width: screenWidth * 0.5,
         height: screenWidth * 0.5,
-        borderRadius: 100,
+        borderRadius: screenWidth * 0.25,
         borderColor: "#000000",
         borderWidth: 2,
         overflow: "hidden",
@@ -229,7 +229,7 @@ const styles = StyleSheet.create({
     image: {
         width: "100%",
         height: "100%",
-        borderRadius: 100
+        borderRadius: screenWidth * 0.25
     },
     imagePressable: {
         position: 'absolute',
@@ -280,7 +280,7 @@ const styles = StyleSheet.create({
         width: screenWidth * 0.75,
         backgroundColor: "#FFFFFF",
         opacity: 0.75,
-        borderRadius: 20,
+        borderRadius: screenWidth * 0.05,
         shadowColor: '#000000',
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.5,
@@ -328,7 +328,7 @@ const styles = StyleSheet.create({
         width: screenWidth * 0.3,
         height: screenHeight * 0.05,
         backgroundColor: "#77678C",
-        borderRadius: 20,
+        borderRadius: screenWidth * 0.05,
         alignItems: "center",
         justifyContent: "center",
         marginBottom: screenHeight * 0.0125

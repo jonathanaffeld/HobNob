@@ -22,8 +22,8 @@ const screenHeight = Dimensions.get('window').height;
 
 const UserPrompt2 = ({ navigation }) => {
     const [user_id, setUserID]= useState("");
-    const [prompt1, setPrompt1] = useState(null);
-    const [prompt2, setPrompt2] = useState(null);
+    const [prompt1, setPrompt1] = useState("");
+    const [prompt2, setPrompt2] = useState("");
     const [response2, setResponse2] = useState("");
     const [finished_sign_up, setFinishedSignUp] = useState(false);
     const [mounting, setMounting] = useState(false);
@@ -202,7 +202,7 @@ const styles = StyleSheet.create({
         backgroundColor: "#FFFFFF",
         opacity: 0.8,
         margin: screenWidth * 0.025,
-        borderRadius: 20,
+        borderRadius: screenWidth * 0.05,
         shadowColor: '#000000',
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.5,
@@ -235,7 +235,7 @@ const styles = StyleSheet.create({
         backgroundColor: "#FFFFFF",
         opacity: 0.8,
         margin: screenWidth * 0.025,
-        borderRadius: 20,
+        borderRadius: screenWidth * 0.05,
         shadowColor: '#000000',
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.5,
@@ -273,7 +273,7 @@ const styles = StyleSheet.create({
         width: screenWidth * 0.3,
         height: screenHeight * 0.05,
         backgroundColor: "#77678C",
-        borderRadius: 20,
+        borderRadius: screenWidth * 0.05,
         alignItems: "center",
         justifyContent: "center",
         marginRight: screenWidth * 0.025
@@ -282,7 +282,7 @@ const styles = StyleSheet.create({
         width: screenWidth * 0.3,
         height: screenHeight * 0.05,
         backgroundColor: "#77678C",
-        borderRadius: 20,
+        borderRadius: screenWidth * 0.05,
         alignItems: "center",
         justifyContent: "center",
         marginLeft: screenWidth * 0.025
