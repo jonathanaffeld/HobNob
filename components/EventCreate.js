@@ -73,8 +73,6 @@ const EventCreate = ({ navigation }) => {
                         const result = response.data[0];
                         const p1 = result.prompt1;
                         const p2 = result.prompt2;
-                        const r2 = result.response2;
-                        const fsu = result.finished_sign_up;
                         
                         if (p1) {
                             setPrompt1(p1);
@@ -212,6 +210,7 @@ const EventCreate = ({ navigation }) => {
                             latitude: region.latitude,
                             longitude: region.longitude
                         },
+                        question: eventPrompt,
                         participants: [user_id], // Remove later once we add joining capability, should be NULL or []
                         owner: user_id,
                     },
@@ -317,8 +316,11 @@ const EventCreate = ({ navigation }) => {
             <View style={styles.upcomingEventsContainer}>
                 <Text style={styles.titleText}>Create Event</Text>
             </View>
-            <ScrollView keyboardShouldPersistTaps='handled' contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-
+            
+            
+                    
+            <ScrollView keyboardShouldPersistTaps='handled' style={{marginTop:50}} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+            
 
                 <View style={styles.uploadImage}>
                     {
@@ -377,7 +379,7 @@ const EventCreate = ({ navigation }) => {
                             });
                         }}
                         query={{
-                            key: 'YOUR_API_KEY',
+                            key: 'AIzaSyDmiWoUYh-B1NadZ9rO2JFyL98qZg0cI28',
                             language: 'en',
                         }}
                         styles={{
@@ -405,6 +407,7 @@ const EventCreate = ({ navigation }) => {
                             title="Event Location"
                         />
                     </MapView>
+                    
                     <View style={{ flexDirection: 'row' }}>
                         <Text style={styles.dateTitle}>Start Date:</Text>
                         <DateTimePicker
@@ -447,6 +450,7 @@ const EventCreate = ({ navigation }) => {
                     <Text style={styles.refreshText}>New Prompt</Text>
                 </Pressable>
             </View>
+                    
                     {loading ?
                         <ActivityIndicator /> :
                         <Pressable style={styles.loginButton} onPress={handleSubmit}>
@@ -454,7 +458,7 @@ const EventCreate = ({ navigation }) => {
                         </Pressable>
                     }
                 </View>
-
+                
             </ScrollView>
             <BottomBar navigation={navigation} />
         </LinearGradient>
@@ -635,8 +639,9 @@ const styles = StyleSheet.create({
         marginRight: screenWidth * 0.025
     },
     map: {
-        width: screenWidth*.8,
-    height: screenHeight * .3,  // Adjust as needed
+        width: screenWidth*.6,
+    height: screenHeight * .2,
+    marginTop: screenHeight * .05,
     },
     loginText: {
         height: screenHeight * 0.125,
