@@ -9,6 +9,7 @@ import {
     Pressable,
     Alert,
     ActivityIndicator,
+    ScrollView
 } from "react-native";
 import { useFocusEffect } from '@react-navigation/native';
 import { useFonts } from "expo-font";
@@ -265,6 +266,9 @@ const EventCreate = ({ navigation }) => {
             <View style={styles.upcomingEventsContainer}>
                 <Text style={styles.titleText}>Create Event</Text>
             </View>
+            <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+            
+            
             <View style={styles.uploadImage}>
                 {
                     image ?
@@ -355,12 +359,19 @@ const EventCreate = ({ navigation }) => {
                     </Pressable>
                 }
             </View>
+            
+            </ScrollView>
             <BottomBar navigation={navigation} />
         </LinearGradient>
     );
 }
 
 const styles = StyleSheet.create({
+    scrollContent: {
+        alignItems: "center",
+        paddingBottom: screenHeight * 0.1,
+        width: screenWidth
+    },
     uploadImage: {
         flexDirection: "row",
         justifyContent: "center",

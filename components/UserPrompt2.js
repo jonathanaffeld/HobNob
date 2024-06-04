@@ -10,7 +10,7 @@ import {
   TextInput,
   View,
   TouchableWithoutFeedback, 
-  Keyboard
+  Keyboard,
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
