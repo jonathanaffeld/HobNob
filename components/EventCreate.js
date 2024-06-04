@@ -11,6 +11,8 @@ import {
     ActivityIndicator,
     ScrollView
 } from "react-native";
+import MapView, { Marker } from 'react-native-maps';
+import Constants from 'expo-constants';
 import { useFocusEffect } from '@react-navigation/native';
 import { useFonts } from "expo-font";
 import * as ImagePicker from 'expo-image-picker';
@@ -20,6 +22,8 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { supabase } from "../supabase";
 import DateTimePicker from '@react-native-community/datetimepicker';
 import BottomBar from "./BottomBar";
+import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
+
 
 const screenWidth = Dimensions.get("window").width;
 const screenHeight = Dimensions.get("window").height;
@@ -36,6 +40,12 @@ const EventCreate = ({ navigation }) => {
     const [timeEnd, setTimeEnd] = useState(new Date());
     const [mounting, setMounting] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [region, setRegion] = useState({
+        latitude: 37.78825,
+        longitude: -122.4324,
+        latitudeDelta: 0.0922,
+        longitudeDelta: 0.0421,
+    });
 
     useFocusEffect(
         useCallback(() => {
@@ -266,7 +276,7 @@ const EventCreate = ({ navigation }) => {
             <View style={styles.upcomingEventsContainer}>
                 <Text style={styles.titleText}>Create Event</Text>
             </View>
-            <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+            <ScrollView keyboardShouldPersistTaps='handled' contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
             
             
             <View style={styles.uploadImage}>
@@ -296,7 +306,7 @@ const EventCreate = ({ navigation }) => {
             </View>
             <View style={styles.textContainer}>
                 <TextInput
-                    style={styles.input}
+                    style={styles.inputTitle}
                     onChangeText={setTitle}
                     value={title}
                     placeholder='Give your event a title!'
@@ -313,8 +323,48 @@ const EventCreate = ({ navigation }) => {
                     placeholder="Type your description here..."
                     placeholderTextColor="gray"
                 />
+                <GooglePlacesAutocomplete
+                placeholder='Search'
+                fetchDetails={true}
+                onPress={(data, details = null) => {
+                    setRegion({
+                        latitude: details.geometry.location.lat,
+                        longitude: details.geometry.location.lng,
+                        latitudeDelta: 0.0922,
+                        longitudeDelta: 0.0421,
+                    });
+                }}
+                query={{
+                    key: 'AIzaSyDmiWoUYh-B1NadZ9rO2JFyL98qZg0cI28',
+                    language: 'en',
+                }}
+                styles={{
+                    textInputContainer: {
+                        backgroundColor: 'transparent',
+                        width: screenWidth * 0.95,
+                        alignSelf: 'center',
+                    },
+                    textInput: {
+                        height: 38,
+                        color: '#5d5d5d',
+                        fontSize: 16,
+                        placeholderTextColor: '#5d5d5d',
+                    },
+                }}
+                
+            />
+                 <MapView
+                style={styles.map}
+                region={region}
+                onRegionChangeComplete={region => setRegion(region)}
+                >
+                <Marker
+                    coordinate={{ latitude: region.latitude, longitude: region.longitude }}
+                    title="Event Location"
+                />
+            </MapView>
                 <TextInput
-                    style={styles.input}
+                    style={styles.inputTitle}
                     onChangeText={setLoc}
                     value={loc}
                     placeholder='Where is your event?'
@@ -410,7 +460,7 @@ const styles = StyleSheet.create({
         fontSize: screenHeight * 0.04,
         fontFamily: "Dongle-Bold",
     },
-    input: {
+    inputTitle: {
         width: screenWidth * 0.90,
         height: screenHeight * 0.035,
         backgroundColor: "#FFFFFF",
@@ -456,6 +506,92 @@ const styles = StyleSheet.create({
     textContainer: {
         flex: 2,
         alignItems: "center",
+    },
+    promptContainer: {
+        width: screenWidth * 0.75,
+        height: screenHeight * 0.1,
+        backgroundColor: "#FFFFFF",
+        opacity: 0.8,
+        margin: screenWidth * 0.025,
+        borderRadius: screenWidth * 0.05,
+        shadowColor: '#000000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.5,
+        shadowRadius: 5,
+        flexDirection: "row",
+        justifyContent: "center",
+        alignItems: "center"
+    },
+    promptText: {
+        fontFamily: "Dongle-Regular",
+        fontSize: screenHeight * 0.03,
+        flex: 1,
+        paddingLeft: screenWidth * 0.05,
+    },
+    refresh: {
+        marginRight: screenWidth * 0.025,
+        marginLeft: screenWidth * 0.025,
+        justifyContent: "center",
+        alignItems: "center"
+    },
+    refreshText: {
+        size: screenWidth * 0.1,
+        resizeMode: "contain",
+        color: '#77678C',
+        fontFamily: "Dongle-Regular"
+    },
+    inputContainer: {
+        width: screenWidth * 0.75,
+        height: screenHeight * 0.15,
+        backgroundColor: "#FFFFFF",
+        opacity: 0.8,
+        margin: screenWidth * 0.025,
+        borderRadius: screenWidth * 0.05,
+        shadowColor: '#000000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.5,
+        shadowRadius: 5,
+        flexDirection: "column"
+    },
+    input: {   
+        fontFamily: "Dongle-Light",
+        fontSize: screenHeight * 0.03,
+        lineHeight: screenHeight * 0.03,
+        flex: 1,
+        padding: screenWidth * 0.05,
+    },
+    charactersLeftContainer: {
+        flexDirection: "row-reverse"
+    },
+    charactersLeft: {
+        fontFamily: "Dongle-Light",
+        fontSize: screenHeight * 0.02,
+        color: '#888888',
+        paddingRight: screenWidth * 0.025
+    },
+    lowerContainer: {
+        height: screenHeight * 0.05,
+        alignItems: "center",
+        justifyContent: "center",
+        marginTop: screenHeight * 0.025
+    },
+    buttonContainer: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "center",
+    },
+    backButton: {
+        width: screenWidth * 0.3,
+        height: screenHeight * 0.05,
+        backgroundColor: "#77678C",
+        borderRadius: screenWidth * 0.05,
+        alignItems: "center",
+        justifyContent: "center",
+        marginRight: screenWidth * 0.025
+    },
+    map: {
+        width: screenWidth*.8,
+    height: screenHeight * .3,  // Adjust as needed
     },
     loginText: {
         height: screenHeight * 0.125,
