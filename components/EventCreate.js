@@ -23,6 +23,7 @@ import { supabase } from "../supabase";
 import DateTimePicker from '@react-native-community/datetimepicker';
 import BottomBar from "./BottomBar";
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
+import Prompts from './Prompts';
 
 
 const screenWidth = Dimensions.get("window").width;
@@ -30,6 +31,9 @@ const screenHeight = Dimensions.get("window").height;
 
 const EventCreate = ({ navigation }) => {
     const [user_id, setUserID] = useState('');
+    const [prompt1, setPrompt1] = useState("");
+    const [prompt2, setPrompt2] = useState("");
+    const [eventPrompt, setEventPrompt] = useState("");
     const [locationName, setLocationName] = useState("");
     const [image, setImage] = useState(null);
     const [description, setDescription] = useState('');
@@ -58,6 +62,31 @@ const EventCreate = ({ navigation }) => {
 
                         const id = auth_response.data.user.id;
                         setUserID(id);
+                        
+                        supabase
+                        .from('users')
+                        .select('prompt1, prompt2, response2, finished_sign_up')
+                        .eq('user_id', id)
+                        .then((response) => {
+                            if (response.error) throw response.error;
+                        
+                        const result = response.data[0];
+                        const p1 = result.prompt1;
+                        const p2 = result.prompt2;
+                        const r2 = result.response2;
+                        const fsu = result.finished_sign_up;
+                        
+                        if (p1) {
+                            setPrompt1(p1);
+                        }
+                        if (p2) {
+                            setPrompt2(p2);
+                        }
+                        setMounting(false);
+                        }).catch((error) => {
+                            console.log(error);
+                        });
+
                         setMounting(false);
                     }).catch((auth_error) => {
                         console.log(auth_error);
@@ -230,6 +259,14 @@ const EventCreate = ({ navigation }) => {
         }
     };
 
+    const handlePromptRefresh = async () => {
+        let prompt = Prompts[Math.floor(Math.random() * Prompts.length)];
+        while (prompt === prompt1 || prompt === prompt2) {
+            prompt = Prompts[Math.floor(Math.random() * Prompts.length)];
+        }
+        setEventPrompt(prompt);
+    }
+
     const onChangeStart = (event, selectedDate) => {
         const currentDate = selectedDate || dateStart;
         setDateStart(currentDate);
@@ -399,6 +436,17 @@ const EventCreate = ({ navigation }) => {
                             onChange={onChangeEndTime}
                         />
                     </View>
+                    <View style={styles.promptContainer}>
+                <Text style={styles.promptText} multiline={true}>{eventPrompt ? eventPrompt: "Set Event Prompt"}</Text>
+                <Pressable onPress={handlePromptRefresh} style={styles.refresh}>
+                    <FontAwesome
+                        name='refresh'
+                        size={screenWidth*0.1}
+                        color='#77678C'
+                    />
+                    <Text style={styles.refreshText}>New Prompt</Text>
+                </Pressable>
+            </View>
                     {loading ?
                         <ActivityIndicator /> :
                         <Pressable style={styles.loginButton} onPress={handleSubmit}>
