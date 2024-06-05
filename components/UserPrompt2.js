@@ -8,7 +8,9 @@ import {
   StyleSheet,
   Text,
   TextInput,
-  View
+  View,
+  TouchableWithoutFeedback, 
+  Keyboard,
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
@@ -141,6 +143,7 @@ const UserPrompt2 = ({ navigation }) => {
     }
 
     return (
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
         <LinearGradient colors={['#A8D0F5', '#D0B4F4']} style={styles.namesContainer}>
             <Text style={styles.titleText}>Select your second prompt!</Text>
             <View style={styles.promptContainer}>
@@ -183,6 +186,7 @@ const UserPrompt2 = ({ navigation }) => {
                 }
             </View>
         </LinearGradient>
+        </TouchableWithoutFeedback>
       )
 }
 

@@ -57,7 +57,7 @@ const EventPreview = ({ event, navigation }) => {
                             color={"#000000"}
                             style={styles.locationIcon}
                         />
-                        <Text style={styles.otherText}>{`${event.location}`}</Text>
+                        <Text style={styles.otherText}>{`${event.location.name}`}</Text>
                     </View>
                     <Text style={styles.otherText}>{`People Going: ${event.participants.length}`}</Text>
                     <Text style={styles.otherText}>{`${formatDate(event.start_time)} to ${formatDate(event.end_time)}`}</Text>

@@ -9,7 +9,10 @@ import {
     Pressable,
     Alert,
     ActivityIndicator,
+    ScrollView
 } from "react-native";
+import MapView, { Marker } from 'react-native-maps';
+import Constants from 'expo-constants';
 import { useFocusEffect } from '@react-navigation/native';
 import { useFonts } from "expo-font";
 import * as ImagePicker from 'expo-image-picker';
@@ -19,22 +22,34 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { supabase } from "../supabase";
 import DateTimePicker from '@react-native-community/datetimepicker';
 import BottomBar from "./BottomBar";
+import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
+import Prompts from './Prompts';
+
 
 const screenWidth = Dimensions.get("window").width;
 const screenHeight = Dimensions.get("window").height;
 
 const EventCreate = ({ navigation }) => {
     const [user_id, setUserID] = useState('');
+    const [prompt1, setPrompt1] = useState("");
+    const [prompt2, setPrompt2] = useState("");
+    const [eventPrompt, setEventPrompt] = useState("");
+    const [locationName, setLocationName] = useState("");
     const [image, setImage] = useState(null);
     const [description, setDescription] = useState('');
     const [title, setTitle] = useState('');
-    const [loc, setLoc] = useState('');
     const [dateStart, setDateStart] = useState(new Date());
     const [dateEnd, setDateEnd] = useState(new Date());
     const [timeStart, setTimeStart] = useState(new Date());
     const [timeEnd, setTimeEnd] = useState(new Date());
     const [mounting, setMounting] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [region, setRegion] = useState({
+        latitude: 37.78825,
+        longitude: -122.4324,
+        latitudeDelta: 0.0922,
+        longitudeDelta: 0.0421,
+    });
 
     useFocusEffect(
         useCallback(() => {
@@ -42,15 +57,38 @@ const EventCreate = ({ navigation }) => {
                 setMounting(true);
 
                 supabase.auth.getUser()
-                .then((auth_response) => {
-                    if (auth_response.error) throw auth_response.error;
+                    .then((auth_response) => {
+                        if (auth_response.error) throw auth_response.error;
 
-                    const id = auth_response.data.user.id;
-                    setUserID(id);
-                    setMounting(false);
-                }).catch((auth_error) => {
-                    console.log(auth_error);
-                })
+                        const id = auth_response.data.user.id;
+                        setUserID(id);
+                        
+                        supabase
+                        .from('users')
+                        .select('prompt1, prompt2, response2, finished_sign_up')
+                        .eq('user_id', id)
+                        .then((response) => {
+                            if (response.error) throw response.error;
+                        
+                        const result = response.data[0];
+                        const p1 = result.prompt1;
+                        const p2 = result.prompt2;
+                        
+                        if (p1) {
+                            setPrompt1(p1);
+                        }
+                        if (p2) {
+                            setPrompt2(p2);
+                        }
+                        setMounting(false);
+                        }).catch((error) => {
+                            console.log(error);
+                        });
+
+                        setMounting(false);
+                    }).catch((auth_error) => {
+                        console.log(auth_error);
+                    })
             }
             fetchData();
         }, [])
@@ -69,9 +107,9 @@ const EventCreate = ({ navigation }) => {
                 aspect: [4, 3],
                 quality: 1,
             });
-    
+
             console.log(result);
-    
+
             if (!result.canceled) {
                 setImage(result.assets[0].uri);
             }
@@ -79,7 +117,7 @@ const EventCreate = ({ navigation }) => {
             console.error("ImagePicker Error", error.message);
         }
     };
-    
+
     const takeImage = async () => {
         const cameraPermission = await ImagePicker.requestCameraPermissionsAsync();
         if (cameraPermission.status !== 'granted') {
@@ -93,9 +131,9 @@ const EventCreate = ({ navigation }) => {
                 aspect: [4, 3],
                 quality: 1,
             });
-    
+
             console.log(result);
-    
+
             if (!result.canceled) {
                 setImage(result.assets[0].uri);
             }
@@ -132,7 +170,7 @@ const EventCreate = ({ navigation }) => {
             Alert.alert("Uh-oh", "Title cannot be empty!");
             return;
         }
-        if (!loc) {
+        if (!region) {
             Alert.alert("Uh-oh", "Location cannot be empty!");
             return;
         }
@@ -160,60 +198,73 @@ const EventCreate = ({ navigation }) => {
             const arrayBuffer = await convertImageToBuffer(blob);
 
             supabase
-            .from('events')
-            .insert(
-                {
-                    start_time: startDateTimeTz,
-                    end_time: endDateTimeTz,
-                    title: title,
-                    description: description,
-                    location: loc,
-                    participants: [user_id], // Remove later once we add joining capability, should be NULL or []
-                    owner: user_id,
-                },
-            ).select('event_id')
-            .then((event_response) => {
-                if (event_response.error) throw event_response.error;
+                .from('events')
+                .insert(
+                    {
+                        start_time: startDateTimeTz,
+                        end_time: endDateTimeTz,
+                        title: title,
+                        description: description,
+                        location: {
+                            name: locationName,
+                            latitude: region.latitude,
+                            longitude: region.longitude
+                        },
+                        question: eventPrompt,
+                        participants: [user_id], // Remove later once we add joining capability, should be NULL or []
+                        owner: user_id,
+                    },
+                ).select('event_id')
+                .then((event_response) => {
+                    if (event_response.error) throw event_response.error;
 
-                const event_id = event_response.data[0].event_id;
+                    const event_id = event_response.data[0].event_id;
 
-                supabase
-                .storage
-                .from('event-photos')
-                .upload(`${user_id}/events/${event_id}.png`, arrayBuffer, {
-                    contentType: 'image/png',
-                    upsert: true
-                })
-                .then((upload_response) => {
-                    if (upload_response.error) throw upload_response.error;
-                    const publicUrlResponse = supabase.storage.from('event-photos').getPublicUrl(`${user_id}/events/${event_id}.png`);
-                    const url = publicUrlResponse.data.publicUrl;
                     supabase
-                    .from('events')
-                    .update({ image_url: url })
-                    .eq('event_id', event_id)
-                    .then((response) => {
-                        if (response.error) throw response.error;
-                        setLoading(false);
-                        Alert.alert("Event Created!");
-                        navigation.navigate("Home");
-                    }).catch((error) => {
-                        setLoading(false);
-                        Alert.alert("Uhoh", error.message);
-                    });
-                }).catch((upload_error) => {
+                        .storage
+                        .from('event-photos')
+                        .upload(`${user_id}/events/${event_id}.png`, arrayBuffer, {
+                            contentType: 'image/png',
+                            upsert: true
+                        })
+                        .then((upload_response) => {
+                            if (upload_response.error) throw upload_response.error;
+                            const publicUrlResponse = supabase.storage.from('event-photos').getPublicUrl(`${user_id}/events/${event_id}.png`);
+                            const url = publicUrlResponse.data.publicUrl;
+                            supabase
+                                .from('events')
+                                .update({ image_url: url })
+                                .eq('event_id', event_id)
+                                .then((response) => {
+                                    if (response.error) throw response.error;
+                                    setLoading(false);
+                                    Alert.alert("Event Created!");
+                                    navigation.navigate("Home");
+                                }).catch((error) => {
+                                    setLoading(false);
+                                    Alert.alert("Uhoh", error.message);
+                                });
+                        }).catch((upload_error) => {
+                            setLoading(false);
+                            Alert.alert("Uhoh", upload_error.message);
+                        });
+                }).catch((event_error) => {
                     setLoading(false);
-                    Alert.alert("Uhoh", upload_error.message);
+                    Alert.alert("Uhoh", event_error.message);
                 });
-            }).catch((event_error) => {
-                setLoading(false);
-                Alert.alert("Uhoh", event_error.message);
-            });
         } catch (image_error) {
             setLoading(false);
             Alert.alert("Uhoh", image_error.message);
         }
     };
+
+    const handlePromptRefresh = async () => {
+        let prompt = Prompts[Math.floor(Math.random() * Prompts.length)];
+        while (prompt === prompt1 || prompt === prompt2) {
+            prompt = Prompts[Math.floor(Math.random() * Prompts.length)];
+        }
+        setEventPrompt(prompt);
+    }
 
     const onChangeStart = (event, selectedDate) => {
         const currentDate = selectedDate || dateStart;
@@ -265,102 +316,161 @@ const EventCreate = ({ navigation }) => {
             <View style={styles.upcomingEventsContainer}>
                 <Text style={styles.titleText}>Create Event</Text>
             </View>
-            <View style={styles.uploadImage}>
-                {
-                    image ?
-                    <Image source={{ uri: image }} style={styles.image} /> :
-                    <View style={styles.image} />
-                }
-                <View style={styles.iconContainer}>
-                    <Pressable onPress={pickImage} style={styles.icon1}>
-                        <FontAwesome 
-                            name='image' 
-                            size={screenWidth * 0.1} 
-                            color='#000000'
+            
+            
+                    
+            <ScrollView keyboardShouldPersistTaps='handled' style={{marginTop:50}} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+            
+
+                <View style={styles.uploadImage}>
+                    {
+                        image ?
+                            <Image source={{ uri: image }} style={styles.image} /> :
+                            <View style={styles.image} />
+                    }
+                    <View style={styles.iconContainer}>
+                        <Pressable onPress={pickImage} style={styles.icon1}>
+                            <FontAwesome
+                                name='image'
+                                size={screenWidth * 0.1}
+                                color='#000000'
+                            />
+                            <Text style={styles.iconText}>Upload Photo</Text>
+                        </Pressable>
+                        <Pressable onPress={takeImage} style={styles.icon2} >
+                            <FontAwesome
+                                name='camera'
+                                size={screenWidth * 0.1}
+                                color='#000000'
+                            />
+                            <Text style={styles.iconText}>Take Photo</Text>
+                        </Pressable>
+                    </View>
+                </View>
+                <View style={styles.textContainer}>
+                    <TextInput
+                        style={styles.inputTitle}
+                        onChangeText={setTitle}
+                        value={title}
+                        placeholder='Give your event a title!'
+                        autoCapitalize='none'
+                        autoCorrect={false}
+                        placeholderTextColor="gray"
+                    />
+                    <TextInput
+                        style={styles.desc}
+                        multiline={true}
+                        numberOfLines={4}
+                        onChangeText={setDescription}
+                        value={description}
+                        placeholder="Type your description here..."
+                        placeholderTextColor="gray"
+                    />
+                    <GooglePlacesAutocomplete
+                        placeholder='Search'
+                        fetchDetails={true}
+                        onPress={(data, details = null) => {
+                            setLocationName(data.description);
+                            setRegion({
+                                latitude: details.geometry.location.lat,
+                                longitude: details.geometry.location.lng,
+                                latitudeDelta: 0.0922,
+                                longitudeDelta: 0.0421,
+                            });
+                        }}
+                        query={{
+                            key: 'AIzaSyDmiWoUYh-B1NadZ9rO2JFyL98qZg0cI28',
+                            language: 'en',
+                        }}
+                        styles={{
+                            textInputContainer: {
+                                backgroundColor: 'transparent',
+                                width: screenWidth * 0.95,
+                                alignSelf: 'center',
+                            },
+                            textInput: {
+                                height: 38,
+                                color: '#5d5d5d',
+                                fontSize: 16,
+                                placeholderTextColor: '#5d5d5d',
+                            },
+                        }}
+
+                    />
+                    <MapView
+                        style={styles.map}
+                        region={region}
+                        onRegionChangeComplete={region => setRegion(region)}
+                    >
+                        <Marker
+                            coordinate={{ latitude: region.latitude, longitude: region.longitude }}
+                            title="Event Location"
                         />
-                        <Text style={styles.iconText}>Upload Photo</Text>
-                    </Pressable>
-                    <Pressable onPress={takeImage} style={styles.icon2} >
-                        <FontAwesome 
-                            name='camera' 
-                            size={screenWidth * 0.1}
-                            color='#000000'
+                    </MapView>
+                    
+                    <View style={{ flexDirection: 'row' }}>
+                        <Text style={styles.dateTitle}>Start Date:</Text>
+                        <DateTimePicker
+                            value={dateStart}
+                            mode="date"
+                            display="default"
+                            onChange={onChangeStart}
                         />
-                        <Text style={styles.iconText}>Take Photo</Text>
-                    </Pressable>
-                </View>
+                        <DateTimePicker
+                            value={timeStart}
+                            mode="time"
+                            display="default"
+                            onChange={onChangeStartTime}
+                        />
+                    </View>
+                    <View style={{ flexDirection: 'row' }}>
+                        <Text style={styles.dateTitle}>End Date:</Text>
+                        <DateTimePicker
+                            value={dateEnd}
+                            mode="date"
+                            display="default"
+                            onChange={onChangeEnd}
+                            minimumDate={dateStart}
+                        />
+                        <DateTimePicker
+                            value={timeEnd}
+                            mode="time"
+                            display="default"
+                            onChange={onChangeEndTime}
+                        />
+                    </View>
+                    <View style={styles.promptContainer}>
+                <Text style={styles.promptText} multiline={true}>{eventPrompt ? eventPrompt: "Set Event Prompt"}</Text>
+                <Pressable onPress={handlePromptRefresh} style={styles.refresh}>
+                    <FontAwesome
+                        name='refresh'
+                        size={screenWidth*0.1}
+                        color='#77678C'
+                    />
+                    <Text style={styles.refreshText}>New Prompt</Text>
+                </Pressable>
             </View>
-            <View style={styles.textContainer}>
-                <TextInput
-                    style={styles.input}
-                    onChangeText={setTitle}
-                    value={title}
-                    placeholder='Give your event a title!'
-                    autoCapitalize='none'
-                    autoCorrect={false}
-                    placeholderTextColor="gray"
-                />
-                <TextInput
-                    style={styles.desc}
-                    multiline={true}
-                    numberOfLines={4}
-                    onChangeText={setDescription}
-                    value={description}
-                    placeholder="Type your description here..."
-                    placeholderTextColor="gray"
-                />
-                <TextInput
-                    style={styles.input}
-                    onChangeText={setLoc}
-                    value={loc}
-                    placeholder='Where is your event?'
-                    autoCapitalize='none'
-                    placeholderTextColor="gray"
-                />
-                <View style={{ flexDirection: 'row' }}>
-                    <Text style={styles.dateTitle}>Start Date:</Text>
-                    <DateTimePicker
-                        value={dateStart}
-                        mode="date"
-                        display="default"
-                        onChange={onChangeStart}
-                    />
-                    <DateTimePicker
-                        value={timeStart}
-                        mode="time"
-                        display="default"
-                        onChange={onChangeStartTime}
-                    />
+                    
+                    {loading ?
+                        <ActivityIndicator /> :
+                        <Pressable style={styles.loginButton} onPress={handleSubmit}>
+                            <Text style={styles.submit}>Submit</Text>
+                        </Pressable>
+                    }
                 </View>
-                <View style={{ flexDirection: 'row' }}>
-                    <Text style={styles.dateTitle}>End Date:</Text>
-                    <DateTimePicker
-                        value={dateEnd}
-                        mode="date"
-                        display="default"
-                        onChange={onChangeEnd}
-                        minimumDate={dateStart}
-                    />
-                    <DateTimePicker
-                        value={timeEnd}
-                        mode="time"
-                        display="default"
-                        onChange={onChangeEndTime}
-                    />
-                </View>
-                {loading ?
-                    <ActivityIndicator /> :
-                    <Pressable style={styles.loginButton} onPress={handleSubmit}>
-                        <Text style={styles.submit}>Submit</Text>
-                    </Pressable>
-                }
-            </View>
+                
+            </ScrollView>
             <BottomBar navigation={navigation} />
         </LinearGradient>
     );
 }
 
 const styles = StyleSheet.create({
+    scrollContent: {
+        alignItems: "center",
+        paddingBottom: screenHeight * 0.1,
+        width: screenWidth
+    },
     uploadImage: {
         flexDirection: "row",
         justifyContent: "center",
@@ -399,7 +509,7 @@ const styles = StyleSheet.create({
         fontSize: screenHeight * 0.04,
         fontFamily: "Dongle-Bold",
     },
-    input: {
+    inputTitle: {
         width: screenWidth * 0.90,
         height: screenHeight * 0.035,
         backgroundColor: "#FFFFFF",
@@ -445,6 +555,93 @@ const styles = StyleSheet.create({
     textContainer: {
         flex: 2,
         alignItems: "center",
+    },
+    promptContainer: {
+        width: screenWidth * 0.75,
+        height: screenHeight * 0.1,
+        backgroundColor: "#FFFFFF",
+        opacity: 0.8,
+        margin: screenWidth * 0.025,
+        borderRadius: screenWidth * 0.05,
+        shadowColor: '#000000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.5,
+        shadowRadius: 5,
+        flexDirection: "row",
+        justifyContent: "center",
+        alignItems: "center"
+    },
+    promptText: {
+        fontFamily: "Dongle-Regular",
+        fontSize: screenHeight * 0.03,
+        flex: 1,
+        paddingLeft: screenWidth * 0.05,
+    },
+    refresh: {
+        marginRight: screenWidth * 0.025,
+        marginLeft: screenWidth * 0.025,
+        justifyContent: "center",
+        alignItems: "center"
+    },
+    refreshText: {
+        size: screenWidth * 0.1,
+        resizeMode: "contain",
+        color: '#77678C',
+        fontFamily: "Dongle-Regular"
+    },
+    inputContainer: {
+        width: screenWidth * 0.75,
+        height: screenHeight * 0.15,
+        backgroundColor: "#FFFFFF",
+        opacity: 0.8,
+        margin: screenWidth * 0.025,
+        borderRadius: screenWidth * 0.05,
+        shadowColor: '#000000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.5,
+        shadowRadius: 5,
+        flexDirection: "column"
+    },
+    input: {   
+        fontFamily: "Dongle-Light",
+        fontSize: screenHeight * 0.03,
+        lineHeight: screenHeight * 0.03,
+        flex: 1,
+        padding: screenWidth * 0.05,
+    },
+    charactersLeftContainer: {
+        flexDirection: "row-reverse"
+    },
+    charactersLeft: {
+        fontFamily: "Dongle-Light",
+        fontSize: screenHeight * 0.02,
+        color: '#888888',
+        paddingRight: screenWidth * 0.025
+    },
+    lowerContainer: {
+        height: screenHeight * 0.05,
+        alignItems: "center",
+        justifyContent: "center",
+        marginTop: screenHeight * 0.025
+    },
+    buttonContainer: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "center",
+    },
+    backButton: {
+        width: screenWidth * 0.3,
+        height: screenHeight * 0.05,
+        backgroundColor: "#77678C",
+        borderRadius: screenWidth * 0.05,
+        alignItems: "center",
+        justifyContent: "center",
+        marginRight: screenWidth * 0.025
+    },
+    map: {
+        width: screenWidth*.6,
+    height: screenHeight * .2,
+    marginTop: screenHeight * .05,
     },
     loginText: {
         height: screenHeight * 0.125,
