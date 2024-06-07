@@ -178,7 +178,6 @@ const styles = StyleSheet.create({
 	logoContainer: {
 		alignItems: "center",
 		justifyContent: "center",
-		marginTop: screenHeight * 0.1
 	},
 	logo: {
 		width: screenWidth * 0.5,
@@ -196,7 +195,6 @@ const styles = StyleSheet.create({
 	createAccountText: {
 		height: screenHeight * 0.125,
 		resizeMode: "contain",
-		marginBottom: screenHeight * 0.05
 	},
 	input: {
 		width: screenWidth * 0.75,
