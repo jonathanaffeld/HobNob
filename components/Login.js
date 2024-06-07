@@ -10,7 +10,9 @@ import {
 	Text,
 	TextInput,
 	TouchableWithoutFeedback,
-	View
+	View,
+	KeyboardAvoidingView,
+	Platform
 } from "react-native";
 import { useFonts } from "expo-font";
 import { LinearGradient } from "expo-linear-gradient";
@@ -93,57 +95,62 @@ const Login = ({ navigation }) => {
 				colors={["#A8D0F5", "#D0B4F4"]}
 				style={styles.loginContainer}
 			>
-				<View style={styles.logoContainer}>
-					<Image
-						style={styles.logo}
-						source={HobNobLogo}
-					/>
-					<Text style={styles.logoText}>HobNob.</Text>
-				</View>
-				<View style={styles.textContainer}>
-					<Image
-						style={styles.loginText}
-						source={LoginText}
-					/>
-					<TextInput
-						style={styles.input}
-						onChangeText={setEmail}
-						value={email}
-						placeholder="Email"
-						placeholderTextColor="#888888"
-						autoCapitalize="none"
-						autoCorrect={false}
-					/>
-					<TextInput
-						style={styles.input}
-						onChangeText={setPassword}
-						value={password}
-						placeholder="Password"
-						placeholderTextColor="#888888"
-						autoCapitalize="none"
-						autoCorrect={false}
-						secureTextEntry
-					/>
-					<View style={styles.lowerContainer}>
-						{loading ? (
-							<ActivityIndicator />
-						) : (
-							<Pressable
-								style={styles.loginButton}
-								onPress={handleSubmit}
-							>
-								<Text style={styles.submit}>Submit</Text>
+				<KeyboardAvoidingView
+					behavior={Platform.OS === "ios" ? "padding" : "height"}
+					style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+				>
+					<View style={styles.logoContainer}>
+						<Image
+							style={styles.logo}
+							source={HobNobLogo}
+						/>
+						<Text style={styles.logoText}>HobNob.</Text>
+					</View>
+					<View style={styles.textContainer}>
+						<Image
+							style={styles.loginText}
+							source={LoginText}
+						/>
+						<TextInput
+							style={styles.input}
+							onChangeText={setEmail}
+							value={email}
+							placeholder="Email"
+							placeholderTextColor="#888888"
+							autoCapitalize="none"
+							autoCorrect={false}
+						/>
+						<TextInput
+							style={styles.input}
+							onChangeText={setPassword}
+							value={password}
+							placeholder="Password"
+							placeholderTextColor="#888888"
+							autoCapitalize="none"
+							autoCorrect={false}
+							secureTextEntry
+						/>
+						<View style={styles.lowerContainer}>
+							{loading ? (
+								<ActivityIndicator />
+							) : (
+								<Pressable
+									style={styles.loginButton}
+									onPress={handleSubmit}
+								>
+									<Text style={styles.submit}>Submit</Text>
+								</Pressable>
+							)}
+						</View>
+						<View style={styles.signupContainer}>
+							<Text style={styles.signupText}>New? Create your HobNob account </Text>
+							<Pressable onPress={handleSignup}>
+								<Text style={styles.signupLink}>here</Text>
 							</Pressable>
-						)}
+							<Text style={styles.signupText}>.</Text>
+						</View>
 					</View>
-					<View style={styles.signupContainer}>
-						<Text style={styles.signupText}>New? Create your HobNob account </Text>
-						<Pressable onPress={handleSignup}>
-							<Text style={styles.signupLink}>here</Text>
-						</Pressable>
-						<Text style={styles.signupText}>.</Text>
-					</View>
-				</View>
+				</KeyboardAvoidingView>
 			</LinearGradient>
 		</TouchableWithoutFeedback>
 	);
@@ -151,37 +158,40 @@ const Login = ({ navigation }) => {
 
 const styles = StyleSheet.create({
 	loginContainer: {
-		flex: 3,
-		alignItems: "center"
-	},
-	logoContainer: {
 		flex: 1,
 		alignItems: "center",
-		justifyContent: "center"
+		width: screenWidth,
+		height: screenHeight
+	},
+	logoContainer: {
+		alignItems: "center",
+		justifyContent: "center",
+		marginTop: screenHeight * 0.1
 	},
 	logo: {
 		width: screenWidth * 0.5,
-		resizeMode: "contain",
-		marginTop: screenHeight * 0.1
+		resizeMode: "contain"
 	},
 	logoText: {
 		fontFamily: "Dongle-Bold",
 		fontSize: screenHeight * 0.05
 	},
 	textContainer: {
-		flex: 2,
-		alignItems: "center"
+		alignItems: "center",
+		width: screenWidth,
+		paddingHorizontal: screenWidth * 0.1
 	},
 	loginText: {
 		height: screenHeight * 0.125,
-		resizeMode: "contain"
+		resizeMode: "contain",
+		marginBottom: screenHeight * 0.05
 	},
 	input: {
 		width: screenWidth * 0.75,
 		height: screenHeight * 0.06,
 		backgroundColor: "#FFFFFF",
 		opacity: 0.8,
-		margin: screenWidth * 0.025,
+		marginVertical: screenWidth * 0.025,
 		paddingLeft: screenWidth * 0.05,
 		borderRadius: screenWidth * 0.05,
 		shadowColor: "#000000",

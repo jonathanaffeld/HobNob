@@ -9,7 +9,9 @@ import {
 	Text,
 	TextInput,
 	TouchableWithoutFeedback,
-	View
+	View,
+	KeyboardAvoidingView,
+	Platform
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
@@ -136,53 +138,58 @@ const UserPrompt1 = ({ navigation }) => {
 	return (
 		<TouchableWithoutFeedback onPress={Keyboard.dismiss}>
 			<LinearGradient colors={["#A8D0F5", "#D0B4F4"]} style={styles.namesContainer}>
-				<Text style={styles.titleText}>Select your first prompt!</Text>
-				<View style={styles.promptContainer}>
-					<Text style={styles.promptText} multiline={true}>{prompt1 ? prompt1 : "Prompt #1"}</Text>
-					<Pressable onPress={handlePromptRefresh} style={styles.refresh}>
-						<FontAwesome
-							name="refresh"
-							size={screenWidth * 0.1}
-							color="#77678C"
-						/>
-						<Text style={styles.refreshText}>New Prompt</Text>
-					</Pressable>
-				</View>
-				<View style={styles.inputContainer}>
-					<TextInput
-						style={styles.input}
-						onChangeText={setResponse1}
-						value={response1}
-						placeholder="Type your response here..."
-						placeholderTextColor="#888888"
-						maxLength={100}
-						multiline={true}
-					/>
-					<View style={styles.charactersLeftContainer}>
-						<Text
-							style={[
-								styles.charactersLeft,
-								100 - response1.length < 20 && { color: "#e74c3c" }
-							]}
-						>
-							Characters left: {100 - response1.length}
-						</Text>
+				<KeyboardAvoidingView
+					behavior={Platform.OS === "ios" ? "padding" : "height"}
+					style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+				>
+					<Text style={styles.titleText}>Select your first prompt!</Text>
+					<View style={styles.promptContainer}>
+						<Text style={styles.promptText} multiline={true}>{prompt1 ? prompt1 : "Prompt #1"}</Text>
+						<Pressable onPress={handlePromptRefresh} style={styles.refresh}>
+							<FontAwesome
+								name="refresh"
+								size={screenWidth * 0.1}
+								color="#77678C"
+							/>
+							<Text style={styles.refreshText}>New Prompt</Text>
+						</Pressable>
 					</View>
-				</View>
-				<View style={styles.lowerContainer}>
-					{loading ? (
-						<ActivityIndicator style={styles.loading} />
-					) : (
-						<View style={styles.buttonContainer}>
-							<Pressable style={styles.backButton} onPress={handleBack}>
-								<Text style={styles.buttonText}>Back</Text>
-							</Pressable>
-							<Pressable style={styles.button} onPress={handleClick}>
-								<Text style={styles.buttonText}>{finishedSignUp ? "Save" : "Continue"}</Text>
-							</Pressable>
+					<View style={styles.inputContainer}>
+						<TextInput
+							style={styles.input}
+							onChangeText={setResponse1}
+							value={response1}
+							placeholder="Type your response here..."
+							placeholderTextColor="#888888"
+							maxLength={100}
+							multiline={true}
+						/>
+						<View style={styles.charactersLeftContainer}>
+							<Text
+								style={[
+									styles.charactersLeft,
+									100 - response1.length < 20 && { color: "#e74c3c" }
+								]}
+							>
+								Characters left: {100 - response1.length}
+							</Text>
 						</View>
-					)}
-				</View>
+					</View>
+					<View style={styles.lowerContainer}>
+						{loading ? (
+							<ActivityIndicator style={styles.loading} />
+						) : (
+							<View style={styles.buttonContainer}>
+								<Pressable style={styles.backButton} onPress={handleBack}>
+									<Text style={styles.buttonText}>Back</Text>
+								</Pressable>
+								<Pressable style={styles.button} onPress={handleClick}>
+									<Text style={styles.buttonText}>{finishedSignUp ? "Save" : "Continue"}</Text>
+								</Pressable>
+							</View>
+						)}
+					</View>
+				</KeyboardAvoidingView>
 			</LinearGradient>
 		</TouchableWithoutFeedback>
 	);
