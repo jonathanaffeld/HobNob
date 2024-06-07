@@ -9,7 +9,9 @@ import {
   StyleSheet,
   Text,
   TextInput,
-  View
+  View,
+  TouchableWithoutFeedback,
+  Keyboard
 } from "react-native";
 import Constants from 'expo-constants';
 import { useFocusEffect } from '@react-navigation/native';
@@ -364,27 +366,29 @@ const Event = ({ route, navigation }) => {
     }
     
     return(
-        <LinearGradient colors={['#A8D0F5', '#D0B4F4']} style={styles.eventContainer}>
-            <Image
-                source={{ uri: event.image_url }}
-                style={styles.image}
-            />
-            <Text style={styles.title}>{event.title}</Text>
-            <Text style={styles.description}>{event.description}</Text>
-            <View style={styles.locationContainer}>
-                <FontAwesome6
-                    name="location-dot"
-                    size={screenHeight * 0.02}
-                    color="#000000"
-                    style={styles.locationIcon}
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+            <LinearGradient colors={['#A8D0F5', '#D0B4F4']} style={styles.eventContainer}>
+                <Image
+                    source={{ uri: event.image_url }}
+                    style={styles.image}
                 />
-                <Text style={styles.otherText}>{`${event.location}`}</Text>
-            </View>
-            <Text style={styles.otherText}>{`From ${formatDate(event.start_time)} To ${formatDate(event.end_time)}`}</Text>
-            <Text style={styles.otherText}>{`${event.participants ? event.participants.length: 0} person(s) ${currentDateTime > event.end_time ? 'went' : 'going'}`}</Text>
-            {renderBottom()}
-            <BottomBar navigation={navigation} />
-        </LinearGradient>
+                <Text style={styles.title}>{event.title}</Text>
+                <Text style={styles.description}>{event.description}</Text>
+                <View style={styles.locationContainer}>
+                    <FontAwesome6
+                        name="location-dot"
+                        size={screenHeight * 0.02}
+                        color="#000000"
+                        style={styles.locationIcon}
+                    />
+                    <Text style={styles.otherText}>{`${event.location}`}</Text>
+                </View>
+                <Text style={styles.otherText}>{`From ${formatDate(event.start_time)} To ${formatDate(event.end_time)}`}</Text>
+                <Text style={styles.otherText}>{`${event.participants ? event.participants.length: 0} person(s) ${currentDateTime > event.end_time ? 'went' : 'going'}`}</Text>
+                {renderBottom()}
+                <BottomBar navigation={navigation} />
+            </LinearGradient>
+        </TouchableWithoutFeedback>
     );
 }
 
