@@ -10,7 +10,9 @@ import {
 	Text,
 	TextInput,
 	TouchableWithoutFeedback,
-	View
+	View,
+	KeyboardAvoidingView,
+	Platform
 } from "react-native";
 import { useFonts } from "expo-font";
 import { LinearGradient } from "expo-linear-gradient";
@@ -95,67 +97,72 @@ const SignUp = ({ navigation }) => {
 				colors={["#A8D0F5", "#D0B4F4"]}
 				style={styles.signUpContainer}
 			>
-				<View style={styles.logoContainer}>
-					<Image
-						style={styles.logo}
-						source={HobNobLogo}
-					/>
-					<Text style={styles.logoText}>HobNob.</Text>
-				</View>
-				<View style={styles.textContainer}>
-					<Image
-						style={styles.createAccountText}
-						source={CreateAccountText}
-					/>
-					<TextInput
-						style={styles.input}
-						onChangeText={setEmail}
-						value={email}
-						placeholder="Email"
-						placeholderTextColor="#888888"
-						autoCapitalize="none"
-						autoCorrect={false}
-					/>
-					<TextInput
-						style={styles.input}
-						onChangeText={setPassword}
-						value={password}
-						placeholder="Password"
-						placeholderTextColor="#888888"
-						autoCapitalize="none"
-						autoCorrect={false}
-						secureTextEntry
-					/>
-					<TextInput
-						style={styles.input}
-						onChangeText={setConfirmPassword}
-						value={confirmPassword}
-						placeholder="Confirm Password"
-						placeholderTextColor="#888888"
-						autoCapitalize="none"
-						autoCorrect={false}
-						secureTextEntry
-					/>
-					<View style={styles.lowerContainer}>
-						{loading ? (
-							<ActivityIndicator style={styles.loading} />
-						) : (
-							<Pressable
-								style={styles.continueButton}
-								onPress={handleContinue}
-							>
-								<Text style={styles.continue}>Continue</Text>
+				<KeyboardAvoidingView
+					behavior={Platform.OS === "ios" ? "padding" : "height"}
+					style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+				>
+					<View style={styles.logoContainer}>
+						<Image
+							style={styles.logo}
+							source={HobNobLogo}
+						/>
+						<Text style={styles.logoText}>HobNob.</Text>
+					</View>
+					<View style={styles.textContainer}>
+						<Image
+							style={styles.createAccountText}
+							source={CreateAccountText}
+						/>
+						<TextInput
+							style={styles.input}
+							onChangeText={setEmail}
+							value={email}
+							placeholder="Email"
+							placeholderTextColor="#888888"
+							autoCapitalize="none"
+							autoCorrect={false}
+						/>
+						<TextInput
+							style={styles.input}
+							onChangeText={setPassword}
+							value={password}
+							placeholder="Password"
+							placeholderTextColor="#888888"
+							autoCapitalize="none"
+							autoCorrect={false}
+							secureTextEntry
+						/>
+						<TextInput
+							style={styles.input}
+							onChangeText={setConfirmPassword}
+							value={confirmPassword}
+							placeholder="Confirm Password"
+							placeholderTextColor="#888888"
+							autoCapitalize="none"
+							autoCorrect={false}
+							secureTextEntry
+						/>
+						<View style={styles.lowerContainer}>
+							{loading ? (
+								<ActivityIndicator style={styles.loading} />
+							) : (
+								<Pressable
+									style={styles.continueButton}
+									onPress={handleContinue}
+								>
+									<Text style={styles.continue}>Continue</Text>
+								</Pressable>
+							)}
+						</View>
+						<View style={styles.loginContainer}>
+							<Text style={styles.loginText}>Already have an account?</Text>
+							<Pressable onPress={handleLogin}>
+								<Text style={styles.loginLink}> Log In</Text>
 							</Pressable>
-						)}
+							<Text style={styles.loginText}>.</Text>
+						</View>
 					</View>
-					<View style={styles.loginContainer}>
-						<Text style={styles.loginText}>Already have an account?</Text>
-						<Pressable onPress={handleLogin}>
-							<Text style={styles.loginLink}> Log In</Text>
-						</Pressable>
-						<Text style={styles.loginText}>.</Text>
-					</View>
-				</View>
+				</KeyboardAvoidingView>
 			</LinearGradient>
 		</TouchableWithoutFeedback>
 	);
@@ -163,37 +170,40 @@ const SignUp = ({ navigation }) => {
 
 const styles = StyleSheet.create({
 	signUpContainer: {
-		flex: 3,
-		alignItems: "center"
-	},
-	logoContainer: {
 		flex: 1,
 		alignItems: "center",
-		justifyContent: "center"
+		width: screenWidth,
+		height: screenHeight
+	},
+	logoContainer: {
+		alignItems: "center",
+		justifyContent: "center",
+		marginTop: screenHeight * 0.1
 	},
 	logo: {
 		width: screenWidth * 0.5,
-		resizeMode: "contain",
-		marginTop: screenHeight * 0.1
+		resizeMode: "contain"
 	},
 	logoText: {
 		fontFamily: "Dongle-Bold",
 		fontSize: screenHeight * 0.05
 	},
 	textContainer: {
-		flex: 2,
-		alignItems: "center"
+		alignItems: "center",
+		width: screenWidth,
+		paddingHorizontal: screenWidth * 0.1
 	},
 	createAccountText: {
 		height: screenHeight * 0.125,
-		resizeMode: "contain"
+		resizeMode: "contain",
+		marginBottom: screenHeight * 0.05
 	},
 	input: {
 		width: screenWidth * 0.75,
 		height: screenHeight * 0.06,
 		backgroundColor: "#FFFFFF",
 		opacity: 0.8,
-		margin: screenWidth * 0.025,
+		marginVertical: screenWidth * 0.025,
 		paddingLeft: screenWidth * 0.05,
 		borderRadius: screenWidth * 0.05,
 		shadowColor: "#000000",
