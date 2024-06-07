@@ -1,5 +1,5 @@
-import Constants from 'expo-constants';
-import { createClient } from '@supabase/supabase-js';
+import Constants from "expo-constants";
+import { createClient } from "@supabase/supabase-js";
 
 const { supabaseUrl, supabaseKey } = Constants.expoConfig.extra;
 

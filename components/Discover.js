@@ -21,7 +21,7 @@ const screenWidth = Dimensions.get("window").width;
 const screenHeight = Dimensions.get("window").height;
 
 const Discover = ({ navigation }) => {
-	const [discoverEvents, setDiscoverEvents] = useState([]);
+  const [discoverEvents, setDiscoverEvents] = useState([]);
 	const [mounting, setMounting] = useState(false);
 
 	useFocusEffect(
