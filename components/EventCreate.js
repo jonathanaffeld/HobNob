@@ -9,9 +9,7 @@ import {
 	StyleSheet,
 	Text,
 	TextInput,
-	View,
-	KeyboardAvoidingView,
-	Platform
+	View
 } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useFocusEffect } from "@react-navigation/native";
@@ -268,124 +266,119 @@ const EventCreate = ({ navigation }) => {
 			colors={["#A8D0F5", "#D0B4F4"]}
 			style={styles.eventCreateContainer}
 		>
-			<KeyboardAvoidingView
-				behavior={Platform.OS === "ios" ? "padding" : "height"}
-				style={{ flex: 1 }}
-			>
-				<ScrollView 
-					contentContainerStyle={styles.scrollContainer} 
-					showsVerticalScrollIndicator={false}
-					keyboardShouldPersistTaps='handled'
-				>
-					<Image
-						source={CreateEventText}
-						style={styles.createEventText}
-					/>
-					<View style={styles.titleContainer}>
-						<TextInput
-							style={styles.title}
-							onChangeText={setTitle}
-							value={title}
-							placeholder="Name your Event!"
-							autoCorrect={false}
-							placeholderTextColor="#888888"
-							maxLength={30}
-						/>
-						<View style={styles.charactersLeftContainer}>
-							<Text
-								style={[
-									styles.charactersLeft,
-									30 - title.length < 10 && { color: "#e74c3c" }
-								]}
-							>
-								Characters left: {30 - title.length}
-							</Text>
-						</View>
-					</View>
-					<View style={styles.descriptionContainer}>
-						<TextInput
-							style={styles.description}
-							onChangeText={setDescription}
-							value={description}
-							placeholder="Tell us a little bit about your event!"
-							placeholderTextColor="#888888"
-							maxLength={250}
-							multiline={true}
-						/>
-						<View style={styles.charactersLeftContainer}>
-							<Text
-								style={[
-									styles.charactersLeft,
-									250 - description.length < 50 && { color: "#e74c3c" }
-								]}
-							>
-								Characters left: {250 - description.length}
-							</Text>
-						</View>
-					</View>
-					<View style={styles.imageContainer}>
-						{image ? (
-							<Image source={{ uri: image }} style={styles.image} />
-						) : (
-							<View style={styles.image}>
-								<Text style={styles.imagePlaceholder}>Select an Image!</Text>
-							</View>
-						)}
-						<View style={styles.iconContainer}>
-							<Pressable onPress={pickImage} style={styles.icon1}>
-								<FontAwesome
-									name="image"
-									size={screenWidth * 0.1}
-									color="#000000"
-								/>
-								<Text style={styles.iconText}>Upload Photo</Text>
-							</Pressable>
-							<Pressable onPress={takeImage} style={styles.icon2}>
-								<FontAwesome
-									name="camera"
-									size={screenWidth * 0.1}
-									color="#000000"
-								/>
-								<Text style={styles.iconText}>Take Photo</Text>
-							</Pressable>
-						</View>
-					</View>
+			<ScrollView 
+                contentContainerStyle={styles.scrollContainer} 
+                showsVerticalScrollIndicator={false}
+                keyboardShouldPersistTaps='handled'
+            >
+				<Image
+					source={CreateEventText}
+					style={styles.createEventText}
+				/>
+				<View style={styles.titleContainer}>
 					<TextInput
-						style={styles.location}
-						onChangeText={setLocation}
-						value={location}
-						placeholder="Where is your event?"
+						style={styles.title}
+						onChangeText={setTitle}
+						value={title}
+						placeholder="Name your Event!"
 						autoCorrect={false}
 						placeholderTextColor="#888888"
+						maxLength={30}
 					/>
-					<View style={styles.dateTimeContainer}>
-						<Text style={styles.dateTimeTitle}>Start Date:</Text>
-						<DateTimePicker style={styles.dateTimeDropdown} value={dateStart} mode="date" display="default" onChange={onChangeStartDate} />
-						<DateTimePicker style={styles.dateTimeDropdown} value={timeStart} mode="time" display="default" onChange={onChangeStartTime} />
+					<View style={styles.charactersLeftContainer}>
+						<Text
+							style={[
+								styles.charactersLeft,
+								30 - title.length < 10 && { color: "#e74c3c" }
+							]}
+						>
+							Characters left: {30 - title.length}
+						</Text>
 					</View>
-					<View style={styles.dateTimeContainer}>
-						<Text style={styles.dateTimeTitle}>End Date:</Text>
-						<DateTimePicker style={styles.dateTimeDropdown} value={dateEnd} mode="date" display="default" onChange={onChangeEndDate} minimumDate={dateStart} />
-						<DateTimePicker style={styles.dateTimeDropdown} value={timeEnd} mode="time" display="default" onChange={onChangeEndTime} />
-					</View>
+				</View>
+				<View style={styles.descriptionContainer}>
 					<TextInput
-						style={styles.prompt}
-						onChangeText={setPrompt}
-						value={prompt}
-						multiline={true}
-						placeholder="Break the Ice with a Prompt!"
+						style={styles.description}
+						onChangeText={setDescription}
+						value={description}
+						placeholder="Tell us a little bit about your event!"
 						placeholderTextColor="#888888"
+						maxLength={250}
+						multiline={true}
 					/>
-					{loading ? (
-						<ActivityIndicator />
+					<View style={styles.charactersLeftContainer}>
+						<Text
+							style={[
+								styles.charactersLeft,
+								250 - description.length < 50 && { color: "#e74c3c" }
+							]}
+						>
+							Characters left: {250 - description.length}
+						</Text>
+					</View>
+				</View>
+				<View style={styles.imageContainer}>
+					{image ? (
+						<Image source={{ uri: image }} style={styles.image} />
 					) : (
-						<Pressable style={styles.submitButton} onPress={handleSubmit}>
-							<Text style={styles.submitText}>Submit</Text>
-						</Pressable>
+						<View style={styles.image}>
+							<Text style={styles.imagePlaceholder}>Select an Image!</Text>
+						</View>
 					)}
-				</ScrollView>
-				<BottomBar navigation={navigation} />
-			</KeyboardAvoidingView>
+					<View style={styles.iconContainer}>
+						<Pressable onPress={pickImage} style={styles.icon1}>
+							<FontAwesome
+								name="image"
+								size={screenWidth * 0.1}
+								color="#000000"
+							/>
+							<Text style={styles.iconText}>Upload Photo</Text>
+						</Pressable>
+						<Pressable onPress={takeImage} style={styles.icon2}>
+							<FontAwesome
+								name="camera"
+								size={screenWidth * 0.1}
+								color="#000000"
+							/>
+							<Text style={styles.iconText}>Take Photo</Text>
+						</Pressable>
+					</View>
+				</View>
+				<TextInput
+					style={styles.location}
+					onChangeText={setLocation}
+					value={location}
+					placeholder="Where is your event?"
+					autoCorrect={false}
+					placeholderTextColor="#888888"
+				/>
+				<View style={styles.dateTimeContainer}>
+					<Text style={styles.dateTimeTitle}>Start Date:</Text>
+					<DateTimePicker style={styles.dateTimeDropdown} value={dateStart} mode="date" display="default" onChange={onChangeStartDate} />
+					<DateTimePicker style={styles.dateTimeDropdown} value={timeStart} mode="time" display="default" onChange={onChangeStartTime} />
+				</View>
+				<View style={styles.dateTimeContainer}>
+					<Text style={styles.dateTimeTitle}>End Date:</Text>
+					<DateTimePicker style={styles.dateTimeDropdown} value={dateEnd} mode="date" display="default" onChange={onChangeEndDate} minimumDate={dateStart} />
+					<DateTimePicker style={styles.dateTimeDropdown} value={timeEnd} mode="time" display="default" onChange={onChangeEndTime} />
+				</View>
+				<TextInput
+					style={styles.prompt}
+					onChangeText={setPrompt}
+					value={prompt}
+					multiline={true}
+					placeholder="Break the Ice with a Prompt!"
+					placeholderTextColor="#888888"
+				/>
+				{loading ? (
+					<ActivityIndicator />
+				) : (
+					<Pressable style={styles.submitButton} onPress={handleSubmit}>
+						<Text style={styles.submitText}>Submit</Text>
+					</Pressable>
+				)}
+			</ScrollView>
+			<BottomBar navigation={navigation} />
 		</LinearGradient>
 	);
 };
