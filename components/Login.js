@@ -158,15 +158,13 @@ const Login = ({ navigation }) => {
 
 const styles = StyleSheet.create({
 	loginContainer: {
-		flex: 1,
 		alignItems: "center",
 		width: screenWidth,
-		height: screenHeight
+		height: screenHeight,
 	},
 	logoContainer: {
 		alignItems: "center",
 		justifyContent: "center",
-		marginTop: screenHeight * 0.1
 	},
 	logo: {
 		width: screenWidth * 0.5,
@@ -184,7 +182,6 @@ const styles = StyleSheet.create({
 	loginText: {
 		height: screenHeight * 0.125,
 		resizeMode: "contain",
-		marginBottom: screenHeight * 0.05
 	},
 	input: {
 		width: screenWidth * 0.75,
