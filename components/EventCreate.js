@@ -271,17 +271,17 @@ const EventCreate = ({ navigation }) => {
 					source={CreateEventText}
 					style={styles.createEventText}
 				/>
-                <View style={styles.titleContainer}>
-                    <TextInput
-                        style={styles.title}
-                        onChangeText={setTitle}
-                        value={title}
-                        placeholder="Name your Event!"
-                        autoCorrect={false}
-                        placeholderTextColor="#888888"
-                        maxLength={30}
-                    />
-                    <View style={styles.charactersLeftContainer}>
+				<View style={styles.titleContainer}>
+					<TextInput
+						style={styles.title}
+						onChangeText={setTitle}
+						value={title}
+						placeholder="Name your Event!"
+						autoCorrect={false}
+						placeholderTextColor="#888888"
+						maxLength={30}
+					/>
+					<View style={styles.charactersLeftContainer}>
 						<Text
 							style={[
 								styles.charactersLeft,
@@ -291,7 +291,7 @@ const EventCreate = ({ navigation }) => {
 							Characters left: {30 - title.length}
 						</Text>
 					</View>
-                </View>
+				</View>
 				<View style={styles.descriptionContainer}>
 					<TextInput
 						style={styles.description}
@@ -362,8 +362,8 @@ const EventCreate = ({ navigation }) => {
 					style={styles.prompt}
 					onChangeText={setPrompt}
 					value={prompt}
-                    multiline={true}
-                    placeholder="Break the Ice with a Prompt!"
+					multiline={true}
+					placeholder="Break the Ice with a Prompt!"
 					placeholderTextColor="#888888"
 				/>
 				{loading ? (
@@ -399,7 +399,7 @@ const styles = StyleSheet.create({
 	},
 	titleContainer: {
 		width: screenWidth * 0.8,
-        height: screenHeight * 0.08,
+		height: screenHeight * 0.08,
 		backgroundColor: "#FFFFFF",
 		opacity: 0.8,
 		margin: screenWidth * 0.025,
@@ -409,12 +409,12 @@ const styles = StyleSheet.create({
 		shadowOpacity: 0.5,
 		shadowRadius: 5,
 	},
-    title: {
-        fontFamily: "Dongle-Regular",
+	title: {
+		fontFamily: "Dongle-Regular",
 		fontSize: screenHeight * 0.04,
-        padding: screenWidth * 0.05,
-        flex: 1
-    },
+		padding: screenWidth * 0.05,
+		flex: 1
+	},
 	descriptionContainer: {
 		width: screenWidth * 0.8,
 		height: screenHeight * 0.2,
@@ -522,14 +522,14 @@ const styles = StyleSheet.create({
 		fontFamily: "Dongle-Regular",
 		flex: 1,
 		textAlign: "right",
-        marginHorizontal: screenWidth * 0.0125
+		marginHorizontal: screenWidth * 0.0125
 	},
-    dateTimeDropdown: {
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        marginHorizontal: screenWidth * 0.0125,
-    },
+	dateTimeDropdown: {
+		flex: 1,
+		justifyContent: "center",
+		alignItems: "center",
+		marginHorizontal: screenWidth * 0.0125,
+	},
 	prompt: {
 		width: screenWidth * 0.8,
 		height: screenHeight * 0.1,

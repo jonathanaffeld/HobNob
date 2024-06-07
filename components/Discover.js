@@ -21,7 +21,7 @@ const screenWidth = Dimensions.get("window").width;
 const screenHeight = Dimensions.get("window").height;
 
 const Discover = ({ navigation }) => {
-  const [discoverEvents, setDiscoverEvents] = useState([]);
+	const [discoverEvents, setDiscoverEvents] = useState([]);
 	const [mounting, setMounting] = useState(false);
 
 	useFocusEffect(
@@ -39,7 +39,7 @@ const Discover = ({ navigation }) => {
 						.from("events")
 						.select("event_id, title, description, image_url")
 						.not("participants", "cs", `{${id}}`)
-                        .not("owner", "eq", id)
+						.not("owner", "eq", id)
 						.gt("end_time", currentDateTime)
 						.order("start_time", { ascending: true });
 

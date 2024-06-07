@@ -372,9 +372,7 @@ const Event = ({ route, navigation }) => {
 			</LinearGradient>
 		);
 	}
-
-    console.log(users);
-
+    
 	return (
 		<LinearGradient colors={["#A8D0F5", "#D0B4F4"]} style={styles.eventContainer}>
 			<Image source={{ uri: event.image_url }} style={styles.image} />
@@ -560,7 +558,8 @@ const styles = StyleSheet.create({
 	cluster: {
 		fontFamily: "Dongle-Regular",
 		fontSize: screenHeight * 0.03,
-		textAlign: "center"
+		textAlign: "center",
+        marginBottom: screenHeight * 0.0125
 	}
 });
 

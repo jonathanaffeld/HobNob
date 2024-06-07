@@ -37,18 +37,12 @@ const EventCard = ({ event, navigation }) => {
 	}
 
 	return (
-		<Pressable
-			style={styles.eventCardContainer}
-			onPress={handleClick}
-		>
-            <Image
-                source={{ uri: event.image_url }}
-                style={styles.image}
-            />
-            <View style={styles.textContainer}>
-                <Text style={styles.title}>{event.title}</Text>
-			    <Text style={styles.description}>{event.description}</Text>
-            </View>
+		<Pressable style={styles.eventCardContainer} onPress={handleClick}>
+			<Image source={{ uri: event.image_url }} style={styles.image} />
+			<View style={styles.textContainer}>
+				<Text style={styles.title}>{event.title}</Text>
+				<Text style={styles.description}>{event.description}</Text>
+			</View>
 		</Pressable>
 	);
 };
@@ -67,27 +61,27 @@ const styles = StyleSheet.create({
 		shadowOpacity: 0.5,
 		shadowRadius: 5,
 		marginBottom: screenHeight * 0.025,
-        flex: 2,
-        flexDirection: "row"
+		flex: 2,
+		flexDirection: "row"
 	},
 	image: {
-        flex: 1,
-        width: "100%",
-        height: "100%",
-        marginRight: screenWidth * 0.05,
-        borderColor: "#000000",
+		flex: 1,
+		width: "100%",
+		height: "100%",
+		marginRight: screenWidth * 0.05,
+		borderColor: "#000000",
 		borderWidth: 1,
 		borderRadius: screenWidth * 0.05,
 		shadowColor: "#000000",
 		shadowOffset: { width: 0, height: 1 },
 		shadowOpacity: 0.5,
-		shadowRadius: 5,
+		shadowRadius: 5
 	},
-    textContainer: {
-        flex: 1,
-        flexDirection: "column",
-        justifyContent: "center",
-    },
+	textContainer: {
+		flex: 1,
+		flexDirection: "column",
+		justifyContent: "center"
+	},
 	title: {
 		fontFamily: "Dongle-Bold",
 		fontSize: screenHeight * 0.03,
@@ -97,7 +91,7 @@ const styles = StyleSheet.create({
 	description: {
 		fontFamily: "Dongle-Light",
 		fontSize: screenHeight * 0.02,
-        lineHeight: screenHeight * 0.02,
+		lineHeight: screenHeight * 0.02,
 		textAlign: "center"
 	}
 });
