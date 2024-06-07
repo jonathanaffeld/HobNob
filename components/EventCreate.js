@@ -1,678 +1,564 @@
-import React, { useState, useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import {
-    Dimensions,
-    StyleSheet,
-    Text,
-    View,
-    Image,
-    TextInput,
-    Pressable,
-    Alert,
-    ActivityIndicator,
+	ActivityIndicator,
+	Alert,
+	Dimensions,
+	Image,
+	Pressable,
+	ScrollView,
+	StyleSheet,
+	Text,
+	TextInput,
+	View
 } from "react-native";
-import { useFocusEffect } from '@react-navigation/native';
-import { useFonts } from "expo-font";
-import * as ImagePicker from 'expo-image-picker';
-import { decode } from 'base64-arraybuffer';
+import DateTimePicker from "@react-native-community/datetimepicker";
+import { useFocusEffect } from "@react-navigation/native";
+import * as ImagePicker from "expo-image-picker";
 import { LinearGradient } from "expo-linear-gradient";
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import { supabase } from "../supabase";
-import DateTimePicker from '@react-native-community/datetimepicker';
+import { useFonts } from "expo-font";
+import FontAwesome from "react-native-vector-icons/FontAwesome";
+import { decode } from "base64-arraybuffer";
+
 import BottomBar from "./BottomBar";
+import CreateEventText from "../assets/images/CreateEventText.png";
+import { supabase } from "../supabase";
 
 const screenWidth = Dimensions.get("window").width;
 const screenHeight = Dimensions.get("window").height;
 
 const EventCreate = ({ navigation }) => {
-    const [user_id, setUserID] = useState('');
-    const [image, setImage] = useState(null);
-    const [description, setDescription] = useState('');
-    const [title, setTitle] = useState('');
-    const [loc, setLoc] = useState('');
-    const [dateStart, setDateStart] = useState(new Date());
-    const [dateEnd, setDateEnd] = useState(new Date());
-    const [timeStart, setTimeStart] = useState(new Date());
-    const [timeEnd, setTimeEnd] = useState(new Date());
-    const [mounting, setMounting] = useState(false);
-    const [loading, setLoading] = useState(false);
+	const [userId, setUserId] = useState("");
+	const [title, setTitle] = useState("");
+	const [description, setDescription] = useState("");
+	const [image, setImage] = useState(null);
+	const [location, setLocation] = useState("");
+	const [dateStart, setDateStart] = useState(new Date());
+	const [dateEnd, setDateEnd] = useState(new Date());
+	const [timeStart, setTimeStart] = useState(new Date());
+	const [timeEnd, setTimeEnd] = useState(new Date(new Date().getTime() + 60000));
+	const [prompt, setPrompt] = useState("");
+	const [mounting, setMounting] = useState(false);
+	const [loading, setLoading] = useState(false);
 
-    useFocusEffect(
-        useCallback(() => {
-            async function fetchData() {
-                setMounting(true);
+	useFocusEffect(
+		useCallback(() => {
+			async function fetchData() {
+				setMounting(true);
+				try {
+					const authResponse = await supabase.auth.getUser();
+					if (authResponse.error) throw authResponse.error;
 
-                supabase.auth.getUser()
-                .then((auth_response) => {
-                    if (auth_response.error) throw auth_response.error;
+					const id = authResponse.data.user.id;
+					setUserId(id);
+					setMounting(false);
+				} catch (error) {
+					console.log(error);
+					setMounting(false);
+				}
+			}
+			fetchData();
+		}, [])
+	);
 
-                    const id = auth_response.data.user.id;
-                    setUserID(id);
-                    setMounting(false);
-                }).catch((auth_error) => {
-                    console.log(auth_error);
-                })
-            }
-            fetchData();
-        }, [])
-    );
+	const pickImage = async () => {
+		const cameraRollPermission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+		if (cameraRollPermission.status !== "granted") {
+			alert("Permission for camera roll access needed.");
+			return;
+		}
+		try {
+			const result = await ImagePicker.launchImageLibraryAsync({
+				mediaTypes: ImagePicker.MediaTypeOptions.All,
+				allowsEditing: true,
+				aspect: [4, 3],
+				quality: 1,
+			});
 
-    const pickImage = async () => {
-        const cameraRollPermission = await ImagePicker.requestMediaLibraryPermissionsAsync();
-        if (cameraRollPermission.status !== 'granted') {
-            alert('Permission for camera roll access needed.');
-            return;
-        }
-        try {
-            const result = await ImagePicker.launchImageLibraryAsync({
-                mediaTypes: ImagePicker.MediaTypeOptions.All,
-                allowsEditing: true,
-                aspect: [4, 3],
-                quality: 1,
-            });
-    
-            console.log(result);
-    
-            if (!result.canceled) {
-                setImage(result.assets[0].uri);
-            }
-        } catch (error) {
-            console.error("ImagePicker Error", error.message);
-        }
-    };
-    
-    const takeImage = async () => {
-        const cameraPermission = await ImagePicker.requestCameraPermissionsAsync();
-        if (cameraPermission.status !== 'granted') {
-            alert('Permission for camera access needed.');
-            return;
-        }
-        try {
-            const result = await ImagePicker.launchCameraAsync({
-                mediaTypes: ImagePicker.MediaTypeOptions.All,
-                allowsEditing: true,
-                aspect: [4, 3],
-                quality: 1,
-            });
-    
-            console.log(result);
-    
-            if (!result.canceled) {
-                setImage(result.assets[0].uri);
-            }
-        } catch (error) {
-            console.error("Camera Error", error.message);
-        }
-    };
+			if (!result.canceled) {
+				setImage(result.assets[0].uri);
+			}
+		} catch (error) {
+			console.error("ImagePicker Error", error.message);
+		}
+	};
 
-    async function convertImageToBuffer(blob) {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.readAsDataURL(blob);
-            reader.onloadend = () => {
-                try {
-                    const base64data = reader.result.split(',')[1];
-                    const arrayBuffer = decode(base64data);
-                    resolve(arrayBuffer);
-                } catch (error) {
-                    reject(error);
-                }
-            };
-            reader.onerror = () => {
-                reject(new Error('Error reading blob.'));
-            };
-        });
-    }
+	const takeImage = async () => {
+		const cameraPermission = await ImagePicker.requestCameraPermissionsAsync();
+		if (cameraPermission.status !== "granted") {
+			alert("Permission for camera access needed.");
+			return;
+		}
+		try {
+			const result = await ImagePicker.launchCameraAsync({
+				mediaTypes: ImagePicker.MediaTypeOptions.All,
+				allowsEditing: true,
+				aspect: [4, 3],
+				quality: 1,
+			});
 
-    const handleSubmit = async () => {
-        if (!description) {
-            Alert.alert("Uh-oh", "Description cannot be empty!");
-            return;
-        }
-        if (!title) {
-            Alert.alert("Uh-oh", "Title cannot be empty!");
-            return;
-        }
-        if (!loc) {
-            Alert.alert("Uh-oh", "Location cannot be empty!");
-            return;
-        }
-        if (!image) {
-            Alert.alert("Uh-oh", "Please Upload an Image!");
-            return;
-        }
+			if (!result.canceled) {
+				setImage(result.assets[0].uri);
+			}
+		} catch (error) {
+			console.error("Camera Error", error.message);
+		}
+	};
 
-        const startDateTime = new Date(dateStart.getFullYear(), dateStart.getMonth(), dateStart.getDate(), timeStart.getHours(), timeStart.getMinutes());
-        const endDateTime = new Date(dateEnd.getFullYear(), dateEnd.getMonth(), dateEnd.getDate(), timeEnd.getHours(), timeEnd.getMinutes());
+	async function convertImageToBuffer(blob) {
+		return new Promise((resolve, reject) => {
+			const reader = new FileReader();
+			reader.readAsDataURL(blob);
+			reader.onloadend = () => {
+				try {
+					const base64data = reader.result.split(",")[1];
+					const arrayBuffer = decode(base64data);
+					resolve(arrayBuffer);
+				} catch (error) {
+					reject(error);
+				}
+			};
+			reader.onerror = () => {
+				reject(new Error("Error reading blob."));
+			};
+		});
+	}
 
-        if (startDateTime >= endDateTime) {
-            Alert.alert("Uh-oh", "Start date/time must be before end date/time!");
-            return;
-        }
+	const handleSubmit = async () => {
+		if (!title) {
+			Alert.alert("Uh-oh", "Title cannot be empty!");
+			return;
+		}
+		if (!description) {
+			Alert.alert("Uh-oh", "Description cannot be empty!");
+			return;
+		}
+		if (!image) {
+			Alert.alert("Uh-oh", "Please Upload an Image!");
+			return;
+		}
+		if (!location) {
+			Alert.alert("Uh-oh", "Location cannot be empty!");
+			return;
+		}
+		if (!prompt) {
+			Alert.alert("Uh-oh", "Prompt cannot be empty!");
+			return;
+		}
 
-        const startDateTimeTz = startDateTime.toISOString();
-        const endDateTimeTz = endDateTime.toISOString();
+		const startDateTime = new Date(dateStart.getFullYear(), dateStart.getMonth(), dateStart.getDate(), timeStart.getHours(), timeStart.getMinutes());
+		const endDateTime = new Date(dateEnd.getFullYear(), dateEnd.getMonth(), dateEnd.getDate(), timeEnd.getHours(), timeEnd.getMinutes());
 
-        setLoading(true);
+		if (startDateTime >= endDateTime) {
+			Alert.alert("Uh-oh", "End date/time must be after Start date/time!");
+			return;
+		}
 
-        try {
-            const base64Response = await fetch(image);
-            const blob = await base64Response.blob();
-            const arrayBuffer = await convertImageToBuffer(blob);
+		const startDateTimeTz = startDateTime.toISOString();
+		const endDateTimeTz = endDateTime.toISOString();
 
-            supabase
-            .from('events')
-            .insert(
-                {
-                    start_time: startDateTimeTz,
-                    end_time: endDateTimeTz,
-                    title: title,
-                    description: description,
-                    location: loc,
-                    participants: [user_id], // Remove later once we add joining capability, should be NULL or []
-                    owner: user_id,
-                },
-            ).select('event_id')
-            .then((event_response) => {
-                if (event_response.error) throw event_response.error;
+		setLoading(true);
 
-                const event_id = event_response.data[0].event_id;
+		try {
+			const base64Response = await fetch(image);
+			const blob = await base64Response.blob();
+			const arrayBuffer = await convertImageToBuffer(blob);
 
-                supabase
-                .storage
-                .from('event-photos')
-                .upload(`${user_id}/events/${event_id}.png`, arrayBuffer, {
-                    contentType: 'image/png',
-                    upsert: true
-                })
-                .then((upload_response) => {
-                    if (upload_response.error) throw upload_response.error;
-                    const publicUrlResponse = supabase.storage.from('event-photos').getPublicUrl(`${user_id}/events/${event_id}.png`);
-                    const url = publicUrlResponse.data.publicUrl;
-                    supabase
-                    .from('events')
-                    .update({ image_url: url })
-                    .eq('event_id', event_id)
-                    .then((response) => {
-                        if (response.error) throw response.error;
-                        setLoading(false);
-                        Alert.alert("Event Created!");
-                        navigation.navigate("Home");
-                    }).catch((error) => {
-                        setLoading(false);
-                        Alert.alert("Uhoh", error.message);
-                    });
-                }).catch((upload_error) => {
-                    setLoading(false);
-                    Alert.alert("Uhoh", upload_error.message);
-                });
-            }).catch((event_error) => {
-                setLoading(false);
-                Alert.alert("Uhoh", event_error.message);
-            });
-        } catch (image_error) {
-            setLoading(false);
-            Alert.alert("Uhoh", image_error.message);
-        }
-    };
+			const { data: eventData, error: eventError } = await supabase
+				.from("events")
+				.insert({
+					title: title,
+					description: description,
+					location: location,
+					start_time: startDateTimeTz,
+					end_time: endDateTimeTz,
+					owner: userId,
+					participants: [],
+					prompt: prompt,
+					participant_responses: {}
+				})
+				.select("event_id")
+				.single();
 
-    const onChangeStart = (event, selectedDate) => {
-        const currentDate = selectedDate || dateStart;
-        setDateStart(currentDate);
-    };
+			if (eventError) throw eventError;
 
-    const onChangeEnd = (event, selectedDate) => {
-        const currentDate = selectedDate || dateEnd;
-        setDateEnd(currentDate);
-    };
+			const event_id = eventData.event_id;
 
-    const onChangeStartTime = (event, selectedTime) => {
-        const currentTime = selectedTime || timeStart;
-        setTimeStart(currentTime);
-    };
+			const { error: uploadError } = await supabase
+				.storage
+				.from("event-photos")
+				.upload(`${userId}/events/${event_id}.png`, arrayBuffer, {
+					contentType: "image/png",
+					upsert: true
+				});
 
-    const onChangeEndTime = (event, selectedTime) => {
-        const currentTime = selectedTime || timeEnd;
-        setTimeEnd(currentTime);
-    };
+			if (uploadError) throw uploadError;
 
-    const [fontsLoaded] = useFonts({
-        "Dongle-Bold": require("../assets/fonts/Dongle-Bold.ttf"),
-        "Dongle-Regular": require("../assets/fonts/Dongle-Regular.ttf"),
-        "Dongle-Light": require("../assets/fonts/Dongle-Light.ttf"),
-    });
+			const { data: publicUrlData, error: urlError } = supabase.storage
+				.from("event-photos")
+				.getPublicUrl(`${userId}/events/${event_id}.png`);
 
-    if (!fontsLoaded || mounting) {
-        return (
-            <LinearGradient colors={['#A8D0F5', '#D0B4F4']} style={styles.createEventContainer}>
-                <ActivityIndicator size="large" />
-            </LinearGradient>
-        );
-    }
+			if (urlError) throw urlError;
 
-    return (
-        <LinearGradient
-            colors={["#A8D0F5", "#D0B4F4"]}
-            style={styles.createEventContainer}
-        >
-            <View style={styles.topContainer}>
-                <View style={styles.leftGroup}>
-                    <View style={styles.logoTextContainer}>
-                        <Text style={styles.logoLetter}>HobNob.</Text>
-                    </View>
+			const imageUrl = publicUrlData.publicUrl;
+
+			const { error: updateError } = await supabase
+				.from("events")
+				.update({ image_url: imageUrl })
+				.eq("event_id", event_id);
+
+			if (updateError) throw updateError;
+
+			setLoading(false);
+			Alert.alert("Event Created!");
+			navigation.navigate("Home");
+		} catch (error) {
+			setLoading(false);
+			Alert.alert("Uh-oh", error.message);
+		}
+	};
+
+	const onChangeStartDate = (event, selectedDate) => {
+		const currentDate = selectedDate || dateStart;
+		setDateStart(currentDate);
+	};
+
+	const onChangeEndDate = (event, selectedDate) => {
+		const currentDate = selectedDate || dateEnd;
+		setDateEnd(currentDate);
+	};
+
+	const onChangeStartTime = (event, selectedTime) => {
+		const currentTime = selectedTime || timeStart;
+		setTimeStart(currentTime);
+	};
+
+	const onChangeEndTime = (event, selectedTime) => {
+		const currentTime = selectedTime || timeEnd;
+		setTimeEnd(currentTime);
+	};
+
+	const [fontsLoaded] = useFonts({
+		"Dongle-Bold": require("../assets/fonts/Dongle-Bold.ttf"),
+		"Dongle-Regular": require("../assets/fonts/Dongle-Regular.ttf"),
+		"Dongle-Light": require("../assets/fonts/Dongle-Light.ttf"),
+	});
+
+	if (!fontsLoaded || mounting) {
+		return (
+			<LinearGradient
+				colors={["#A8D0F5", "#D0B4F4"]}
+				style={styles.discoverContainer}
+			>
+				<ActivityIndicator
+					size="large"
+					style={{
+						alignItems: "center",
+						justifyContent: "center",
+						flex: 1
+					}}
+				/>
+			</LinearGradient>
+		);
+	}
+
+	return (
+		<LinearGradient
+			colors={["#A8D0F5", "#D0B4F4"]}
+			style={styles.eventCreateContainer}
+		>
+			<ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
+				<Image
+					source={CreateEventText}
+					style={styles.createEventText}
+				/>
+                <View style={styles.titleContainer}>
+                    <TextInput
+                        style={styles.title}
+                        onChangeText={setTitle}
+                        value={title}
+                        placeholder="Name your Event!"
+                        autoCorrect={false}
+                        placeholderTextColor="#888888"
+                        maxLength={30}
+                    />
+                    <View style={styles.charactersLeftContainer}>
+						<Text
+							style={[
+								styles.charactersLeft,
+								30 - title.length < 10 && { color: "#e74c3c" }
+							]}
+						>
+							Characters left: {30 - title.length}
+						</Text>
+					</View>
                 </View>
-                <View style={styles.spacer}></View>
-            </View>
-            <View style={styles.upcomingEventsContainer}>
-                <Text style={styles.titleText}>Create Event</Text>
-            </View>
-            <View style={styles.uploadImage}>
-                {
-                    image ?
-                    <Image source={{ uri: image }} style={styles.image} /> :
-                    <View style={styles.image} />
-                }
-                <View style={styles.iconContainer}>
-                    <Pressable onPress={pickImage} style={styles.icon1}>
-                        <FontAwesome 
-                            name='image' 
-                            size={screenWidth * 0.1} 
-                            color='#000000'
-                        />
-                        <Text style={styles.iconText}>Upload Photo</Text>
-                    </Pressable>
-                    <Pressable onPress={takeImage} style={styles.icon2} >
-                        <FontAwesome 
-                            name='camera' 
-                            size={screenWidth * 0.1}
-                            color='#000000'
-                        />
-                        <Text style={styles.iconText}>Take Photo</Text>
-                    </Pressable>
-                </View>
-            </View>
-            <View style={styles.textContainer}>
-                <TextInput
-                    style={styles.input}
-                    onChangeText={setTitle}
-                    value={title}
-                    placeholder='Give your event a title!'
-                    autoCapitalize='none'
-                    autoCorrect={false}
-                    placeholderTextColor="gray"
-                />
-                <TextInput
-                    style={styles.desc}
+				<View style={styles.descriptionContainer}>
+					<TextInput
+						style={styles.description}
+						onChangeText={setDescription}
+						value={description}
+						placeholder="Tell us a little bit about your event!"
+						placeholderTextColor="#888888"
+						maxLength={250}
+						multiline={true}
+					/>
+					<View style={styles.charactersLeftContainer}>
+						<Text
+							style={[
+								styles.charactersLeft,
+								250 - description.length < 50 && { color: "#e74c3c" }
+							]}
+						>
+							Characters left: {250 - description.length}
+						</Text>
+					</View>
+				</View>
+				<View style={styles.imageContainer}>
+					{image ? (
+						<Image source={{ uri: image }} style={styles.image} />
+					) : (
+						<View style={styles.image}>
+							<Text style={styles.imagePlaceholder}>Select an Image!</Text>
+						</View>
+					)}
+					<View style={styles.iconContainer}>
+						<Pressable onPress={pickImage} style={styles.icon1}>
+							<FontAwesome
+								name="image"
+								size={screenWidth * 0.1}
+								color="#000000"
+							/>
+							<Text style={styles.iconText}>Upload Photo</Text>
+						</Pressable>
+						<Pressable onPress={takeImage} style={styles.icon2}>
+							<FontAwesome
+								name="camera"
+								size={screenWidth * 0.1}
+								color="#000000"
+							/>
+							<Text style={styles.iconText}>Take Photo</Text>
+						</Pressable>
+					</View>
+				</View>
+				<TextInput
+					style={styles.location}
+					onChangeText={setLocation}
+					value={location}
+					placeholder="Where is your event?"
+					autoCorrect={false}
+					placeholderTextColor="#888888"
+				/>
+				<View style={styles.dateTimeContainer}>
+					<Text style={styles.dateTimeTitle}>Start Date:</Text>
+					<DateTimePicker style={styles.dateTimeDropdown} value={dateStart} mode="date" display="default" onChange={onChangeStartDate} />
+					<DateTimePicker style={styles.dateTimeDropdown} value={timeStart} mode="time" display="default" onChange={onChangeStartTime} />
+				</View>
+				<View style={styles.dateTimeContainer}>
+					<Text style={styles.dateTimeTitle}>End Date:</Text>
+					<DateTimePicker style={styles.dateTimeDropdown} value={dateEnd} mode="date" display="default" onChange={onChangeEndDate} minimumDate={dateStart} />
+					<DateTimePicker style={styles.dateTimeDropdown} value={timeEnd} mode="time" display="default" onChange={onChangeEndTime} />
+				</View>
+				<TextInput
+					style={styles.prompt}
+					onChangeText={setPrompt}
+					value={prompt}
                     multiline={true}
-                    numberOfLines={4}
-                    onChangeText={setDescription}
-                    value={description}
-                    placeholder="Type your description here..."
-                    placeholderTextColor="gray"
-                />
-                <TextInput
-                    style={styles.input}
-                    onChangeText={setLoc}
-                    value={loc}
-                    placeholder='Where is your event?'
-                    autoCapitalize='none'
-                    placeholderTextColor="gray"
-                />
-                <View style={{ flexDirection: 'row' }}>
-                    <Text style={styles.dateTitle}>Start Date:</Text>
-                    <DateTimePicker
-                        value={dateStart}
-                        mode="date"
-                        display="default"
-                        onChange={onChangeStart}
-                    />
-                    <DateTimePicker
-                        value={timeStart}
-                        mode="time"
-                        display="default"
-                        onChange={onChangeStartTime}
-                    />
-                </View>
-                <View style={{ flexDirection: 'row' }}>
-                    <Text style={styles.dateTitle}>End Date:</Text>
-                    <DateTimePicker
-                        value={dateEnd}
-                        mode="date"
-                        display="default"
-                        onChange={onChangeEnd}
-                        minimumDate={dateStart}
-                    />
-                    <DateTimePicker
-                        value={timeEnd}
-                        mode="time"
-                        display="default"
-                        onChange={onChangeEndTime}
-                    />
-                </View>
-                {loading ?
-                    <ActivityIndicator /> :
-                    <Pressable style={styles.loginButton} onPress={handleSubmit}>
-                        <Text style={styles.submit}>Submit</Text>
-                    </Pressable>
-                }
-            </View>
-            <BottomBar navigation={navigation} />
-        </LinearGradient>
-    );
-}
+                    placeholder="Break the Ice with a Prompt!"
+					placeholderTextColor="#888888"
+				/>
+				{loading ? (
+					<ActivityIndicator />
+				) : (
+					<Pressable style={styles.submitButton} onPress={handleSubmit}>
+						<Text style={styles.submitText}>Submit</Text>
+					</Pressable>
+				)}
+			</ScrollView>
+			<BottomBar navigation={navigation} />
+		</LinearGradient>
+	);
+};
 
 const styles = StyleSheet.create({
-    uploadImage: {
-        flexDirection: "row",
-        justifyContent: "center",
-        alignItems: "center"
-    },
-    image: {
-        width: screenWidth * 0.4,
-        height: screenWidth * 0.4,
-        marginRight: screenWidth * 0.125,
-        borderWidth: 2,
-        borderColor: "#000000"
-    },
-    iconContainer: {
-        flexDirection: "column",
-        justifyContent: "space-center",
-        alignItems: "center",
-    },
-    icon1: {
-        justifyContent: "center",
-        alignItems: "center",
-        marginBottom: screenHeight * 0.02
-    },
-    icon2: {
-        justifyContent: "center",
-        alignItems: "center",
-        marginTop: screenHeight * 0.02
-    },
-    iconText: {
-        size: screenWidth * 0.1,
-        resizeMode: "contain",
-        color: '#000000',
-        fontFamily: "Dongle-Regular"
-    },
-    dateTitle: {
-        marginRight: 10,
-        fontSize: screenHeight * 0.04,
-        fontFamily: "Dongle-Bold",
-    },
-    input: {
-        width: screenWidth * 0.90,
-        height: screenHeight * 0.035,
-        backgroundColor: "#FFFFFF",
-        opacity: 0.75,
-        margin: screenWidth * 0.025,
-        paddingLeft: screenWidth * 0.05,
-        borderRadius: screenWidth * 0.05,
-        shadowColor: '#000000',
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.5,
-        shadowRadius: 5,
+	eventCreateContainer: {
+		flexDirection: "column",
+		alignItems: "center",
+		paddingBottom: screenHeight * 0.1,
+		width: screenWidth,
+		height: screenHeight
+	},
+	scrollContainer: {
+		alignItems: "center",
+		paddingBottom: screenHeight * 0.1,
+		width: screenWidth
+	},
+	createEventText: {
+		height: screenHeight * 0.125,
+		resizeMode: "contain",
+		marginTop: screenHeight * 0.05
+	},
+	titleContainer: {
+		width: screenWidth * 0.8,
+        height: screenHeight * 0.08,
+		backgroundColor: "#FFFFFF",
+		opacity: 0.8,
+		margin: screenWidth * 0.025,
+		borderRadius: screenWidth * 0.05,
+		shadowColor: "#000000",
+		shadowOffset: { width: 0, height: 1 },
+		shadowOpacity: 0.5,
+		shadowRadius: 5,
+	},
+    title: {
         fontFamily: "Dongle-Regular",
-        fontSize: screenHeight * 0.03,
-        resizeMode: "contain",
+		fontSize: screenHeight * 0.04,
+        padding: screenWidth * 0.05,
+        flex: 1
     },
-    desc: {
-        width: screenWidth * 0.90,
-        height: screenHeight * 0.1,
-        backgroundColor: "#FFFFFF",
-        opacity: 0.75,
-        margin: screenWidth * 0.025,
-        paddingLeft: screenWidth * 0.05,
-        borderRadius: screenWidth * 0.05,
-        shadowColor: '#000000',
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.5,
-        shadowRadius: 5,
-        fontFamily: "Dongle-Regular",
-        fontSize: screenHeight * 0.02,
-        resizeMode: "contain",
-        textAlignVertical: 'top',
-        color: 'black',
-    },
-    loginButton: {
-        width: screenWidth * 0.3,
-        height: screenHeight * 0.05,
-        backgroundColor: "#77678C",
-        borderRadius: screenWidth * 0.05,
-        alignItems: "center",
-        justifyContent: "center",
-        marginTop: screenHeight * 0.025
-    },
-    textContainer: {
-        flex: 2,
-        alignItems: "center",
-    },
-    loginText: {
-        height: screenHeight * 0.125,
-        resizeMode: "contain",
-    },
-    container: {
+	descriptionContainer: {
+		width: screenWidth * 0.8,
+		height: screenHeight * 0.2,
+		backgroundColor: "#FFFFFF",
+		opacity: 0.8,
+		margin: screenWidth * 0.025,
+		borderRadius: screenWidth * 0.05,
+		shadowColor: "#000000",
+		shadowOffset: { width: 0, height: 1 },
+		shadowOpacity: 0.5,
+		shadowRadius: 5,
+		flexDirection: "column"
+	},
+	description: {
+		fontFamily: "Dongle-Light",
+		fontSize: screenHeight * 0.03,
+		lineHeight: screenHeight * 0.03,
+		padding: screenWidth * 0.05,
+		flex: 1
+	},
+	charactersLeftContainer: {
+		flexDirection: "row-reverse"
+	},
+	charactersLeft: {
+		fontFamily: "Dongle-Light",
+		fontSize: screenHeight * 0.02,
+		color: "#888888",
+		paddingRight: screenWidth * 0.025
+	},
+	imageContainer: {
+		width: screenWidth * 0.8,
+		margin: screenWidth * 0.025,
+		backgroundColor: "#FFFFFF",
+		opacity: 0.8,
+		borderRadius: screenWidth * 0.05,
+		shadowColor: "#000000",
+		shadowOffset: { width: 0, height: 1 },
+		shadowOpacity: 0.5,
+		shadowRadius: 5,
+		justifyContent: "center",
+		alignItems: "center"
+	},
+	image: {
+		width: screenWidth * 0.5,
+		height: screenWidth * 0.5,
+		borderRadius: screenWidth * 0.05,
+		borderColor: "#000000",
+		borderWidth: 2,
+		margin: screenHeight * 0.025,
+		justifyContent: "center",
+		alignItems: "center",
+	},
+	imagePlaceholder: {
+		fontFamily: "Dongle-Light",
+		fontSize: screenHeight * 0.03,
+		color: "#888888",
+		opacity: 0.8
+	},
+	iconContainer: {
+		flexDirection: "row"
+	},
+	icon1: {
+		marginRight: screenHeight * 0.05,
+		marginBottom: screenHeight * 0.025,
+		justifyContent: "center",
+		alignItems: "center"
+	},
+	icon2: {
+		marginLeft: screenHeight * 0.05,
+		marginBottom: screenHeight * 0.025,
+		justifyContent: "center",
+		alignItems: "center"
+	},
+	iconText: {
+		size: screenWidth * 0.1,
+		resizeMode: "contain",
+		color: "#000000",
+		fontFamily: "Dongle-Regular"
+	},
+	location: {
+		width: screenWidth * 0.8,
+		height: screenHeight * 0.05,
+		backgroundColor: "#FFFFFF",
+		opacity: 0.8,
+		margin: screenWidth * 0.025,
+		paddingLeft: screenWidth * 0.05,
+		borderRadius: screenWidth * 0.05,
+		shadowColor: "#000000",
+		shadowOffset: { width: 0, height: 1 },
+		shadowOpacity: 0.5,
+		shadowRadius: 5,
+		fontFamily: "Dongle-Regular",
+		fontSize: screenHeight * 0.03
+	},
+	dateTimeContainer: {
+		flex: 3,
+		flexDirection: "row",
+		alignItems: "center",
+		justifyContent: "center",
+		width: screenWidth * 0.8,
+		marginVertical: screenHeight * 0.0125
+	},
+	dateTimeTitle: {
+		fontSize: screenHeight * 0.03,
+		fontFamily: "Dongle-Regular",
+		flex: 1,
+		textAlign: "right",
+        marginHorizontal: screenWidth * 0.0125
+	},
+    dateTimeDropdown: {
         flex: 1,
-        alignItems: "center",
-        justifyContent: "center",
-    },
-    createEventContainer: {
-        flex: 1,
-        alignItems: "center",
-    },
-    profilebutton: {
-        width: "100%",
-        height: "100%",
         justifyContent: "center",
         alignItems: "center",
+        marginHorizontal: screenWidth * 0.0125,
     },
-    profileContainer: {
-        alignItems: "center", // Centers the image horizontally
-        justifyContent: "center", // Centers the image vertically
-        width: "90%",
-        height: "25%",
-    },
-    submit: {
-        color: "#FFFFFF",
-        fontFamily: "Dongle-Light",
-        fontSize: screenHeight * 0.04
-    },
-    upcomingEventsContainer: {
-        alignItems: "center", // Centers the image horizontally
-        justifyContent: "flex-end", // Centers the image vertically
-        width: "90%",
-        height: "6%",
-        marginBottom: "2%",
-    },
-    eventContainer: {
-        alignItems: "center", // Centers the image horizontally
-        justifyContent: "center", // Centers the image vertically
-        width: "90%",
-        height: "35%",
-        marginBottom: "1%",
-    },
-    event: {
-        backgroundColor: "#fff", // White background
-        padding: "5%", // Padding around the content inside the container
-        borderRadius: "30%", // Rounded edges
-        alignItems: "center", // Aligns children to the center horizontally
-        justifyContent: "top", // Aligns children to the center vertically
-        flexDirection: "column", // Arranges children in a column
-        shadowColor: "#000", // Shadow color
-        width: "95%",
-        height: "90%",
-        shadowOffset: { width: 0, height: 2 }, // Shadow offset
-        shadowOpacity: 0.25, // Shadow opacity
-        shadowRadius: 3.84, // Shadow blur radius
-    },
-    parentContainer: {
-        flexDirection: "row",
-        width: "100%", // Align children horizontally
-        height: "55%",
-        padding: "2%",
-        justifyContent: "space-between",
-        alignItems: "center", // Centers children vertically in the container
-    },
-    parentContainer2: {
-        flexDirection: "row",
-        width: "100%", // Align children horizontally
-        height: "18%",
-        padding: "0%",
-        // justifyContent: "space-between",
-        alignItems: "center", // Centers children vertically in the container
-    },
-    circleContainer: {
-        flexDirection: "row", // Aligns circles horizontally
-        height: "100%",
-    },
-    circle: {
-        width: "15.5%", // Diameter of the circle
-        height: "97%", // Diameter of the circle
-        borderRadius: "20%", // Half of width/height to make perfect circle
-        backgroundColor: "#ADD8E6",
-        justifyContent: "center",
-        alignItems: "center",
-        marginLeft: 5, // Adds spacing between circles
-    },
-    initials: {
-        color: "#333",
-        fontSize: "8%",
-    },
-    label: {
-        fontWeight: "bold",
-        marginHorizontal: "1%", // Adds spacing between the label and the circles
-    },
-    parentContainer3: {
-        flexDirection: "row",
-        width: "100%", // Align children horizontally
-        height: "30%",
-        justifyContent: "flex-start",
-        alignItems: "center",
-        padding: "2%",
-    },
-    eventTopLeft: {
-        height: "80%",
-        width: "30%",
-        justifyContent: "center", // Center content vertically
-        alignItems: "center", // Center content horizontally
-        marginRight: 20, // Adds space between the left and right child
-    },
-    barpic: {
-        resizeMode: "contain",
-        width: "120%",
-    },
-    eventTopRight: {
-        height: "85%",
-        width: "63%",
-        padding: "1%",
-        flexDirection: "column", // Aligns its children vertically
-        justifyContent: "flex-start", // Center content vertically
-        alignItems: "flex-start",
-    },
-    nestedChild: {
-        height: "55%",
-        width: "100%",
-        justifyContent: "space-evenly", // Center content vertically
-        borderBottomColor: "black",
-        borderBottomWidth: 1,
-    },
-    nestedChild1: {
-        height: "45%",
-        width: "100%",
-        justifyContent: "space-evenly", // Center content vertically
-    },
-    profilePic: {
-        width: "40%", // Specify the width
-        height: "65%", // Specify the height
-        borderRadius: "100%", // Half the width/height to make the image circular
-        borderWidth: 1.5, // Optional, adds a border
-        borderColor: "#000", // Optional, sets the border color
-    },
-    upcomingEvents: {
-        width: "70%", // Specify the width
-        height: "70%", // Specify the height
-        resizeMode: "contain",
-    },
-    topContainer: {
-        width: "90%",
-        height: "6%",
-        marginTop: "15%",
-        alignItems: "center",
-        justifyContent: "flex-start",
-        flexDirection: "row",
-    },
-    leftGroup: {
-        flexDirection: "row", // Stack children vertically within the group
-        alignItems: "center",
-        width: "40%",
-    },
-    rightChild: {
-        flexDirection: "row", // Stack children vertically within the group
-        alignItems: "center",
-        width: "10%",
-        height: "90%",
-        margin: "0%",
-        justifyContent: "center", // Center content vertically
-        alignItems: "center", // Center content horizontally
-    },
-    spacer: {
-        flex: 1, // Takes all available space, pushing the right child to the border
-    },
-    logoTextContainer: {
-        flexDirection: "row",
-    },
-    logoLetter: {
-        fontFamily: "Dongle-Bold",
-        fontSize: screenHeight * 0.04,
-        fontWeight: "bold",
-    },
-    titleText: {
-        fontFamily: "Dongle-Bold",
-        fontSize: screenHeight * 0.06,
-        fontWeight: "bold",
-    },
-    fontBold: {
-        fontFamily: "Dongle-Bold",
-        fontSize: screenHeight * 0.025,
-        fontWeight: "bold",
-    },
-    fontNormal: {
-        fontFamily: "Dongle-Bold",
-        fontSize: screenHeight * 0.019,
-    },
-    fontNormal1: {
-        fontFamily: "Dongle",
-        fontSize: screenHeight * 0.025,
-        color: "black",
-    },
-    fontSmall: {
-        justifyContent: "center",
-        fontFamily: "Dongle",
-        fontSize: screenHeight * 0.02,
-    },
-    usernameFont: {
-        marginTop: "1.5%",
-        fontFamily: "Dongle-Bold",
-        fontSize: screenHeight * 0.024,
-        fontWeight: "bold",
-        color: "white",
-    },
-    logoSpace: {
-        fontSize: screenHeight * 0.006,
-    },
-    bottomBar: {
-        flex: 1,
-        width: "100%",
-        justifyContent: "flex-end",
-    },
-    bar: {
-        flexDirection: "row",
-        justifyContent: "space-around",
-        alignItems: "center",
-        height: screenHeight * 0.1,
-        backgroundColor: "#fff",
-        borderTopWidth: 1,
-        borderTopColor: "black",
-    },
+	prompt: {
+		width: screenWidth * 0.8,
+		height: screenHeight * 0.1,
+		backgroundColor: "#FFFFFF",
+		opacity: 0.8,
+		margin: screenWidth * 0.025,
+		paddingLeft: screenWidth * 0.05,
+		borderRadius: screenWidth * 0.05,
+		shadowColor: "#000000",
+		shadowOffset: { width: 0, height: 1 },
+		shadowOpacity: 0.5,
+		shadowRadius: 5,
+		fontFamily: "Dongle-Regular",
+		fontSize: screenHeight * 0.03
+	},
+	submitButton: {
+		width: screenWidth * 0.3,
+		height: screenHeight * 0.05,
+		backgroundColor: "#77678C",
+		borderRadius: screenWidth * 0.05,
+		alignItems: "center",
+		justifyContent: "center",
+		marginTop: screenHeight * 0.025
+	},
+	submitText: {
+		color: "#FFFFFF",
+		fontFamily: "Dongle-Light",
+		fontSize: screenHeight * 0.04
+	}
 });
 
 export default EventCreate;

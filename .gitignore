@@ -64,4 +64,3 @@ buck-out/
 # Expo
 .expo
 web-build/
-app.json
