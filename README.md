@@ -1,5 +1,7 @@
 # Welcome to HobNob 🥳
 
+!(HobNob)[./assets/images/HobNobLogo.png]
+
 ## Instructions
 1. Download or clone the repository to a destination of your choosing
 2. Within the downloaded folder, open a terminal and run `npm install`
