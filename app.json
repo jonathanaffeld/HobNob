@@ -1,9 +1,0 @@
-{
-    "expo": {
-        "extra": {
-            "supabaseUrl": "https://atyhlvlelknxikxvyroy.supabase.co",
-            "supabaseKey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF0eWhsdmxlbGtueGlreHZ5cm95Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTUzNzc1MjksImV4cCI6MjAzMDk1MzUyOX0.DFfowmyO0RgS6Rx-Z9f6ILRwrWWDjcFBjMHkRnA5SJA",
-            "openaiKey": "sk-proj-IHhstY4dHV2w8uTCGt3iT3BlbkFJ0dQP7A2EgNxKoFH5Z2sz"
-        }
-    }
-}
