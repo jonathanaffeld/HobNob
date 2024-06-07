@@ -1,28 +1,33 @@
-import React, { useState, useCallback } from 'react';
+import React, { 
+    useCallback, 
+    useState 
+} from "react";
 import { 
-  ActivityIndicator,
-  Dimensions,
-  Image,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View
+    ActivityIndicator,
+    Dimensions,
+    Image,
+    Pressable,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View 
 } from "react-native";
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect } from "@react-navigation/native";
 import { useFonts } from "expo-font";
-import { LinearGradient } from 'expo-linear-gradient';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import BottomBar from './BottomBar';
-import { supabase } from '../supabase';
-import AccountText from '../assets/images/AccountText.png'
+import { LinearGradient } from "expo-linear-gradient";
+import FontAwesome from "react-native-vector-icons/FontAwesome";
 
-const screenWidth = Dimensions.get('window').width;
-const screenHeight = Dimensions.get('window').height;
+import AccountText from "../assets/images/AccountText.png";
+import BottomBar from "./BottomBar";
+import { supabase } from "../supabase";
+
+const screenWidth = Dimensions.get("window").width;
+const screenHeight = Dimensions.get("window").height;
 
 const Account = ({ route, navigation }) => {
     const user_id = route.params.user_id;
+    const event_id = route.params.event_id;
     const [auth_user_id, setAuthUserID] = useState("");
     const [user, setUser] = useState({});
     const [mounting, setMounting] = useState(false);
@@ -42,9 +47,9 @@ const Account = ({ route, navigation }) => {
                 setAuthUserID(auth_uid);
 
                 const { data, error } = await supabase
-                    .from('users')
-                    .select('first_name, last_name, image_url, prompt1, response1, prompt2, response2')
-                    .eq('user_id', user_id);
+                    .from("users")
+                    .select("first_name, last_name, image_url, prompt1, response1, prompt2, response2")
+                    .eq("user_id", user_id);
                 
                 if (error) {
                     console.log(error);
@@ -61,23 +66,23 @@ const Account = ({ route, navigation }) => {
 
     const canEdit = () => {
         return user_id === auth_user_id;
-    }
+    };
 
     const editPhoto = () => {
-        navigation.navigate("UserPhoto")
-    }
+        navigation.navigate("UserPhoto");
+    };
 
     const editName = () => {
-        navigation.navigate("UserName")
-    }
+        navigation.navigate("UserName");
+    };
 
     const editPrompt1 = () => {
         navigation.navigate("UserPrompt1");
-    }
+    };
 
     const editPrompt2 = () => {
         navigation.navigate("UserPrompt2");
-    }
+    };
 
     const handleLogout = async () => {
         setLoading(true);
@@ -90,11 +95,11 @@ const Account = ({ route, navigation }) => {
         }
 
         navigation.navigate("Login");
-    }
+    };
 
     const handleDelete = async () => {
         Alert.alert("Uhoh", "This Feature isn't ready yet!");
-    }
+    };
 
     const [fontsLoaded] = useFonts({
         "Dongle-Bold": require("../assets/fonts/Dongle-Bold.ttf"),
@@ -104,26 +109,51 @@ const Account = ({ route, navigation }) => {
 
     if (!fontsLoaded || mounting) {
         return (
-            <LinearGradient colors={['#A8D0F5', '#D0B4F4']} style={styles.accountContainer}>
-                <ActivityIndicator size="large" />
+            <LinearGradient 
+                colors={["#A8D0F5", "#D0B4F4"]} 
+                style={styles.accountContainer}
+            >
+                <ActivityIndicator 
+                    size="large" 
+                    style={{ 
+                        alignItems: "center", 
+                        justifyContent: "center", 
+                        flex: 1 
+                    }}
+                />
             </LinearGradient>
         );
     }
     
-    return(
-        <LinearGradient colors={['#A8D0F5', '#D0B4F4']} style={styles.accountContainer}>
-            <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-                <Image style={styles.accountText} source={AccountText} />
+    return (
+        <LinearGradient 
+            colors={["#A8D0F5", "#D0B4F4"]} 
+            style={styles.accountContainer}
+        >
+            <ScrollView 
+                contentContainerStyle={styles.scrollContent} 
+                showsVerticalScrollIndicator={false}
+            >
+                <Image 
+                    style={styles.accountText} 
+                    source={AccountText} 
+                />
                 <View style={styles.imageContainer}>
-                    <Image source={{ uri: user.image_url }} style={styles.image} />
+                    <Image 
+                        source={{ uri: user.image_url }} 
+                        style={styles.image} 
+                    />
                     {
                         canEdit() &&
-                        <TouchableOpacity style={styles.imagePressable} onPress={editPhoto}>
+                        <TouchableOpacity 
+                            style={styles.imagePressable} 
+                            onPress={editPhoto}
+                        >
                             <View style={styles.imageEditContainer}>
                                 <FontAwesome
-                                    name='edit'
-                                    size={screenWidth*0.05}
-                                    color={'#FFFFFF'}
+                                    name="edit"
+                                    size={screenWidth * 0.05}
+                                    color="#FFFFFF"
                                 />
                                 <Text style={styles.imageEditText}>Edit </Text>
                             </View>
@@ -131,14 +161,19 @@ const Account = ({ route, navigation }) => {
                     }
                 </View>
                 <View style={styles.nameContainer}>
-                    <Text style={styles.nameText}>{`${user.first_name} ${user.last_name}`}</Text>
+                    <Text style={styles.nameText}>
+                        {`${user.first_name} ${user.last_name}`}
+                    </Text>
                     {
                         canEdit() &&
-                        <Pressable style={styles.nameEditContainer} onPress={editName}>
+                        <Pressable 
+                            style={styles.nameEditContainer} 
+                            onPress={editName}
+                        >
                             <FontAwesome
-                                name='edit'
-                                size={screenWidth*0.05}
-                                color={'#77678C'}
+                                name="edit"
+                                size={screenWidth * 0.05}
+                                color="#77678C"
                             />
                             <Text style={styles.nameEditText}>Edit </Text>
                         </Pressable>
@@ -149,11 +184,14 @@ const Account = ({ route, navigation }) => {
                     <Text style={styles.responseText}>{user.response1}</Text>
                     {
                         canEdit() &&
-                        <Pressable style={styles.promptEditContainer} onPress={editPrompt1}>
+                        <Pressable 
+                            style={styles.promptEditContainer} 
+                            onPress={editPrompt1}
+                        >
                             <FontAwesome
-                                name='edit'
-                                size={screenWidth*0.05}
-                                color={'#77678C'}
+                                name="edit"
+                                size={screenWidth * 0.05}
+                                color="#77678C"
                             />
                             <Text style={styles.promptEditText}>Edit </Text>
                         </Pressable>
@@ -164,11 +202,14 @@ const Account = ({ route, navigation }) => {
                     <Text style={styles.responseText}>{user.response2}</Text>
                     {
                         canEdit() &&
-                        <Pressable style={styles.promptEditContainer} onPress={editPrompt2}>
+                        <Pressable 
+                            style={styles.promptEditContainer} 
+                            onPress={editPrompt2}
+                        >
                             <FontAwesome
-                                name='edit'
-                                size={screenWidth*0.05}
-                                color={'#77678C'}
+                                name="edit"
+                                size={screenWidth * 0.05}
+                                color="#77678C"
                             />
                             <Text style={styles.promptEditText}>Edit </Text>
                         </Pressable>
@@ -181,10 +222,16 @@ const Account = ({ route, navigation }) => {
                             loading ? 
                             <ActivityIndicator style={styles.loading} /> :
                             <View style={styles.buttonContainer}>
-                                <Pressable style={styles.logout} onPress={handleLogout}>
+                                <Pressable 
+                                    style={styles.logout} 
+                                    onPress={handleLogout}
+                                >
                                     <Text style={styles.logoutText}>Logout</Text>
                                 </Pressable>
-                                <Pressable style={styles.delete} onPress={handleDelete}>
+                                <Pressable 
+                                    style={styles.delete} 
+                                    onPress={handleDelete}
+                                >
                                     <Text style={styles.deleteText}>Delete Account</Text>
                                 </Pressable>
                             </View>
@@ -196,7 +243,7 @@ const Account = ({ route, navigation }) => {
             <BottomBar user_id={user_id} navigation={navigation} />
         </LinearGradient>
     );
-}
+};
 
 const styles = StyleSheet.create({
     accountContainer: {
@@ -217,7 +264,7 @@ const styles = StyleSheet.create({
         marginTop: screenHeight * 0.05
     },
     imageContainer: {
-        position: 'relative',
+        position: "relative",
         width: screenWidth * 0.5,
         height: screenWidth * 0.5,
         borderRadius: screenWidth * 0.25,
@@ -232,13 +279,13 @@ const styles = StyleSheet.create({
         borderRadius: screenWidth * 0.25
     },
     imagePressable: {
-        position: 'absolute',
+        position: "absolute",
         bottom: 0,
         width: "100%",
         height: "33%", 
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-        justifyContent: 'center',
-        alignItems: 'center',
+        backgroundColor: "rgba(0, 0, 0, 0.5)",
+        justifyContent: "center",
+        alignItems: "center",
     },
     imageEditContainer: {
         flexDirection: "column",
@@ -247,12 +294,12 @@ const styles = StyleSheet.create({
         marginTop: screenHeight * 0.015
     },
     imageEditText: {
-        color: '#FFFFFF',
+        color: "#FFFFFF",
         fontFamily: "Dongle-Regular",
         fontSize: screenHeight * 0.016,
     },
     nameContainer: {
-        position: 'relative',
+        position: "relative",
         justifyContent: "center",
         alignItems: "center",
         marginBottom: screenHeight * 0.0125
@@ -262,7 +309,7 @@ const styles = StyleSheet.create({
         fontSize: screenHeight * 0.06,
     },
     nameEditContainer: {
-        position: 'absolute',
+        position: "absolute",
         right: 0,
         marginRight: -35,
         flexDirection: "column",
@@ -270,18 +317,18 @@ const styles = StyleSheet.create({
         alignItems: "center",
     },
     nameEditText: {
-        color: '#77678C',
+        color: "#77678C",
         fontFamily: "Dongle-Regular",
         fontSize: screenHeight * 0.016
     },
     promptContainer: {
-        position: 'relative',
+        position: "relative",
         flexDirection: "column",
         width: screenWidth * 0.75,
         backgroundColor: "#FFFFFF",
         opacity: 0.75,
         borderRadius: screenWidth * 0.05,
-        shadowColor: '#000000',
+        shadowColor: "#000000",
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.5,
         shadowRadius: 5,
@@ -299,7 +346,7 @@ const styles = StyleSheet.create({
         lineHeight: screenHeight * 0.03,
     },
     promptEditContainer: {
-        position: 'absolute',
+        position: "absolute",
         right: 0,
         top: 0,
         margin: screenHeight * 0.01,
@@ -308,7 +355,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
     },
     promptEditText: {
-        color: '#77678C',
+        color: "#77678C",
         fontFamily: "Dongle-Regular",
         fontSize: screenHeight * 0.016
     },

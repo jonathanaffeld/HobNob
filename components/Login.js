@@ -1,23 +1,24 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import { 
-  ActivityIndicator,
-  Alert,
-  Dimensions,
-  Image,
-  Pressable,
-  StyleSheet,
-  Text,
-  TextInput,
-  View
+    ActivityIndicator,
+    Alert,
+    Dimensions,
+    Image,
+    Pressable,
+    StyleSheet,
+    Text,
+    TextInput,
+    View 
 } from "react-native";
 import { useFonts } from "expo-font";
-import { LinearGradient } from 'expo-linear-gradient';
+import { LinearGradient } from "expo-linear-gradient";
+
 import HobNobLogo from "../assets/images/HobNobLogo.png";
 import LoginText from "../assets/images/LoginText.png";
-import { supabase } from '../supabase';
+import { supabase } from "../supabase";
 
-const screenWidth = Dimensions.get('window').width;
-const screenHeight = Dimensions.get('window').height;
+const screenWidth = Dimensions.get("window").width;
+const screenHeight = Dimensions.get("window").height;
 
 const Login = ({ navigation }) => {
     const [email, setEmail] = useState("");
@@ -26,11 +27,11 @@ const Login = ({ navigation }) => {
 
     const handleSubmit = async () => {
         if (!email) {
-            Alert.alert("Uhoh", "Email cannot be empty!")
+            Alert.alert("Uhoh", "Email cannot be empty!");
             return;
         }
         if (!password) {
-            Alert.alert("Uhoh", "Password cannot be empty!")
+            Alert.alert("Uhoh", "Password cannot be empty!");
             return;
         }
 
@@ -42,32 +43,31 @@ const Login = ({ navigation }) => {
             if (auth_response.error) throw auth_response.error;
             const user_id = auth_response.data.user.id;
             supabase
-            .from('users')
-            .select('finished_sign_up')
-            .eq('user_id', user_id)
+            .from("users")
+            .select("finished_sign_up")
+            .eq("user_id", user_id)
             .then((response) => {
                 if (response.error) throw response.error;
                 const finished_sign_up = response.data[0].finished_sign_up;
                 setLoading(false);
                 if (finished_sign_up) {
                     navigation.navigate("Home");
-                }
-                else {
+                } else {
                     navigation.navigate("UserName");
                 }
             }).catch((error) => {
                 setLoading(false);
-                Alert.alert("Uhoh", error.message)
+                Alert.alert("Uhoh", error.message);
             });
         }).catch((auth_error) => {
             setLoading(false);
-            Alert.alert("Uhoh", auth_error.message)
+            Alert.alert("Uhoh", auth_error.message);
         });
-    }
+    };
 
     const handleSignup = () => {
-        navigation.navigate("SignUp")
-    }
+        navigation.navigate("SignUp");
+    };
 
     const [fontsLoaded] = useFonts({
         "Dongle-Bold": require("../assets/fonts/Dongle-Bold.ttf"),
@@ -77,44 +77,62 @@ const Login = ({ navigation }) => {
 
     if (!fontsLoaded) {
         return (
-            <LinearGradient colors={['#A8D0F5', '#D0B4F4']} style={styles.loginContainer}>
-                <ActivityIndicator size="large" />
+            <LinearGradient 
+                colors={["#A8D0F5", "#D0B4F4"]} 
+                style={styles.loginContainer}
+            >
+                <ActivityIndicator 
+                    size="large" 
+                    style={{ alignItems: "center", justifyContent: "center", flex: 1 }} 
+                />
             </LinearGradient>
         );
     }
 
-    return(
-        <LinearGradient colors={['#A8D0F5', '#D0B4F4']} style={styles.loginContainer}>
+    return (
+        <LinearGradient 
+            colors={["#A8D0F5", "#D0B4F4"]} 
+            style={styles.loginContainer}
+        >
             <View style={styles.logoContainer}>
-                <Image style={styles.logo} source={HobNobLogo} />
+                <Image 
+                    style={styles.logo} 
+                    source={HobNobLogo} 
+                />
                 <Text style={styles.logoText}>HobNob.</Text>
             </View>
             <View style={styles.textContainer}>
-                <Image style={styles.loginText} source={LoginText} />
+                <Image 
+                    style={styles.loginText} 
+                    source={LoginText} 
+                />
                 <TextInput 
                     style={styles.input} 
                     onChangeText={setEmail} 
                     value={email} 
-                    placeholder='Email'
-                    placeholderTextColor={'#888888'}
-                    autoCapitalize='none'
+                    placeholder="Email"
+                    placeholderTextColor="#888888"
+                    autoCapitalize="none"
                     autoCorrect={false}
                 />
                 <TextInput 
                     style={styles.input} 
                     onChangeText={setPassword} 
                     value={password} 
-                    placeholder='Password' 
-                    placeholderTextColor={'#888888'}
-                    autoCapitalize='none'
+                    placeholder="Password" 
+                    placeholderTextColor="#888888"
+                    autoCapitalize="none"
                     autoCorrect={false}
-                    secureTextEntry={true}
+                    secureTextEntry
                 />
                 <View style={styles.lowerContainer}>
                     {
                         loading ? 
                         <ActivityIndicator /> :
-                        <Pressable style={styles.loginButton} onPress={handleSubmit}>
+                        <Pressable 
+                            style={styles.loginButton} 
+                            onPress={handleSubmit}
+                        >
                             <Text style={styles.submit}>Submit</Text>
                         </Pressable>
                     }
@@ -129,7 +147,7 @@ const Login = ({ navigation }) => {
             </View>
         </LinearGradient>
     );
-}
+};
 
 const styles = StyleSheet.create({
     loginContainer: {
@@ -166,7 +184,7 @@ const styles = StyleSheet.create({
         margin: screenWidth * 0.025,
         paddingLeft: screenWidth * 0.05,
         borderRadius: screenWidth * 0.05,
-        shadowColor: '#000000',
+        shadowColor: "#000000",
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.5,
         shadowRadius: 5,

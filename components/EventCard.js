@@ -1,32 +1,41 @@
-import React from 'react';
-import { StyleSheet, Text, View, Dimensions, Pressable, Image } from "react-native";
-import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
+import React from "react";
+import { 
+    ActivityIndicator, 
+    Dimensions, 
+    Image, 
+    Pressable, 
+    StyleSheet, 
+    Text, 
+    View 
+} from "react-native";
+import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
 import { useFonts } from "expo-font";
+import { LinearGradient } from "expo-linear-gradient";
 
-const screenWidth = Dimensions.get('window').width;
-const screenHeight = Dimensions.get('window').height;
+const screenWidth = Dimensions.get("window").width;
+const screenHeight = Dimensions.get("window").height;
 
 const EventPreview = ({ event, navigation }) => {
     const handleClick = () => {
-        navigation.navigate("Event", { event_id: event.event_id })
-    }
+        navigation.navigate("Event", { event_id: event.event_id });
+    };
 
     const formatDate = (dateString) => {
         const date = new Date(dateString);
 
         let hours = date.getHours();
         const minutes = date.getMinutes();
-        const ampm = hours >= 12 ? 'PM' : 'AM';
+        const ampm = hours >= 12 ? "PM" : "AM";
         hours = hours % 12;
         hours = hours ? hours : 12;
-        const strMinutes = minutes < 10 ? '0' + minutes : minutes;
-    
-        const month = (date.getMonth() + 1).toString().padStart(2, '0');
-        const day = date.getDate().toString().padStart(2, '0');
+        const strMinutes = minutes < 10 ? "0" + minutes : minutes;
+
+        const month = (date.getMonth() + 1).toString().padStart(2, "0");
+        const day = date.getDate().toString().padStart(2, "0");
         const year = date.getFullYear();
-    
+
         return `${month}/${day}/${year} ${hours}:${strMinutes} ${ampm}`;
-    }
+    };
 
     const [fontsLoaded] = useFonts({
         "Dongle-Bold": require("../assets/fonts/Dongle-Bold.ttf"),
@@ -36,25 +45,34 @@ const EventPreview = ({ event, navigation }) => {
 
     if (!fontsLoaded) {
         return (
-            <LinearGradient colors={['#A8D0F5', '#D0B4F4']} style={styles.homeContainer}>
+            <LinearGradient 
+                colors={["#A8D0F5", "#D0B4F4"]} 
+                style={styles.homeContainer}
+            >
                 <ActivityIndicator size="large" />
             </LinearGradient>
         );
     }
 
-    return(
-        <Pressable style={styles.eventCardContainer} onPress={handleClick}>
+    return (
+        <Pressable 
+            style={styles.eventCardContainer} 
+            onPress={handleClick}
+        >
             <View style={styles.topContainer}>
                 <View style={styles.imageContainer}>
-                    <Image source={{uri: event.image_url}} style={styles.image} />
+                    <Image 
+                        source={{ uri: event.image_url }} 
+                        style={styles.image} 
+                    />
                 </View>
                 <View style={styles.infoContainer}>
                     <Text style={styles.titleText}>{event.title}</Text>
                     <View style={styles.locationContainer}>
                         <FontAwesome6
-                            name='location-dot'
-                            size={screenHeight*0.02}
-                            color={"#000000"}
+                            name="location-dot"
+                            size={screenHeight * 0.02}
+                            color="#000000"
                             style={styles.locationIcon}
                         />
                         <Text style={styles.otherText}>{`${event.location}`}</Text>
@@ -63,10 +81,10 @@ const EventPreview = ({ event, navigation }) => {
                     <Text style={styles.otherText}>{`${formatDate(event.start_time)} to ${formatDate(event.end_time)}`}</Text>
                 </View>
             </View>
-            <Text style={styles.otherText}>{event.description}</Text>
+            <Text style={styles.descriptionText}>{event.description}</Text>
         </Pressable>
     );
-}
+};
 
 const styles = StyleSheet.create({
     eventCardContainer: {
@@ -75,9 +93,9 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "center",
         backgroundColor: "#FFFFFF",
-        opacity: 0.8,
+        opacity: 0.75,
         borderRadius: screenWidth * 0.05,
-        shadowColor: '#000000',
+        shadowColor: "#000000",
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.5,
         shadowRadius: 5,
@@ -98,7 +116,7 @@ const styles = StyleSheet.create({
     image: {
         width: "100%",
         borderRadius: screenWidth * 0.05,
-        shadowColor: '#000000',
+        shadowColor: "#000000",
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.5,
         shadowRadius: 5,
@@ -110,9 +128,9 @@ const styles = StyleSheet.create({
         justifyContent: "center",
     },
     titleText: {
-        fontFamily: "Dongle-Regular",
-        fontSize: screenHeight * 0.03,
-        lineHeight: screenHeight * 0.03,
+        fontFamily: "Dongle-Bold",
+        fontSize: screenHeight * 0.04,
+        lineHeight: screenHeight * 0.04,
         alignItems: "center",
         justifyContent: "center",
         textAlign: "center"
@@ -125,6 +143,10 @@ const styles = StyleSheet.create({
         marginRight: screenWidth * 0.02,
     },
     otherText: {
+        fontFamily: "Dongle-Regular",
+        fontSize: screenHeight * 0.02,
+    },
+    descriptionText: {
         fontFamily: "Dongle-Light",
         fontSize: screenHeight * 0.02,
     }

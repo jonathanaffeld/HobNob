@@ -110,7 +110,7 @@ const UserName = ({ navigation }) => {
     if (!fontsLoaded || mounting) {
         return (
             <LinearGradient colors={['#A8D0F5', '#D0B4F4']} style={styles.namesContainer}>
-                <ActivityIndicator size="large" />
+                <ActivityIndicator size="large" style={{alignItems: "center", justifyContent: "center", flex: 1}}/>
             </LinearGradient>
         );
     }
