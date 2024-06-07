@@ -266,7 +266,11 @@ const EventCreate = ({ navigation }) => {
 			colors={["#A8D0F5", "#D0B4F4"]}
 			style={styles.eventCreateContainer}
 		>
-			<ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
+			<ScrollView 
+                contentContainerStyle={styles.scrollContainer} 
+                showsVerticalScrollIndicator={false}
+                keyboardShouldPersistTaps='handled'
+            >
 				<Image
 					source={CreateEventText}
 					style={styles.createEventText}

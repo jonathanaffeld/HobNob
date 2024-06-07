@@ -3,10 +3,12 @@ import {
 	ActivityIndicator,
 	Alert,
 	Dimensions,
+	Keyboard,
 	Pressable,
 	StyleSheet,
 	Text,
 	TextInput,
+	TouchableWithoutFeedback,
 	View
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
@@ -111,43 +113,45 @@ const UserName = ({ navigation }) => {
 	}
 
 	return (
-		<LinearGradient colors={["#A8D0F5", "#D0B4F4"]} style={styles.namesContainer}>
-			<Text style={styles.titleText}>What&apos;s your name?</Text>
-			<TextInput
-				style={styles.input}
-				onChangeText={setFirstName}
-				value={firstName}
-				placeholder="First Name (Required)"
-				placeholderTextColor="#888888"
-				autoCapitalize="words"
-				autoCorrect={false}
-			/>
-			<TextInput
-				style={styles.input}
-				onChangeText={setLastName}
-				value={lastName}
-				placeholder="Last Name"
-				placeholderTextColor="#888888"
-				autoCapitalize="words"
-				autoCorrect={false}
-			/>
-			<View style={styles.lowerContainer}>
-				{loading ? (
-					<ActivityIndicator style={styles.loading} />
-				) : (
-					<View style={styles.buttonContainer}>
-						{finishedSignUp && (
-							<Pressable style={styles.backButton} onPress={handleBack}>
-								<Text style={styles.buttonText}>Back</Text>
+		<TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+			<LinearGradient colors={["#A8D0F5", "#D0B4F4"]} style={styles.namesContainer}>
+				<Text style={styles.titleText}>What&apos;s your name?</Text>
+				<TextInput
+					style={styles.input}
+					onChangeText={setFirstName}
+					value={firstName}
+					placeholder="First Name (Required)"
+					placeholderTextColor="#888888"
+					autoCapitalize="words"
+					autoCorrect={false}
+				/>
+				<TextInput
+					style={styles.input}
+					onChangeText={setLastName}
+					value={lastName}
+					placeholder="Last Name"
+					placeholderTextColor="#888888"
+					autoCapitalize="words"
+					autoCorrect={false}
+				/>
+				<View style={styles.lowerContainer}>
+					{loading ? (
+						<ActivityIndicator style={styles.loading} />
+					) : (
+						<View style={styles.buttonContainer}>
+							{finishedSignUp && (
+								<Pressable style={styles.backButton} onPress={handleBack}>
+									<Text style={styles.buttonText}>Back</Text>
+								</Pressable>
+							)}
+							<Pressable style={styles.button} onPress={handleClick}>
+								<Text style={styles.buttonText}>{finishedSignUp ? "Save" : "Continue"}</Text>
 							</Pressable>
-						)}
-						<Pressable style={styles.button} onPress={handleClick}>
-							<Text style={styles.buttonText}>{finishedSignUp ? "Save" : "Continue"}</Text>
-						</Pressable>
-					</View>
-				)}
-			</View>
-		</LinearGradient>
+						</View>
+					)}
+				</View>
+			</LinearGradient>
+		</TouchableWithoutFeedback>
 	);
 };
 
