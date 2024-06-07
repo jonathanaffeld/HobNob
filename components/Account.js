@@ -92,7 +92,7 @@ const Account = ({ route, navigation }) => {
 		return userId === authUserId;
 	};
 
-	const handleNavigation = destination => {
+	const handleNavigation = (destination) => {
 		navigation.navigate(destination);
 	};
 

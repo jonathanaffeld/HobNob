@@ -40,8 +40,6 @@ const Events = ({ navigation }) => {
 					const id = authResponse.data.user.id;
 					setUserId(id);
 
-					const currentDateTime = new Date().toISOString();
-
 					const eventResponse = await supabase
 						.from("events")
 						.select("event_id, title, description, image_url")
