@@ -247,7 +247,7 @@ const EventCreate = ({ navigation }) => {
 		return (
 			<LinearGradient
 				colors={["#A8D0F5", "#D0B4F4"]}
-				style={styles.discoverContainer}
+				style={styles.eventCreateContainer}
 			>
 				<ActivityIndicator
 					size="large"
