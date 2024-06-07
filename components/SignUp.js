@@ -3,11 +3,13 @@ import {
 	ActivityIndicator,
 	Alert,
 	Dimensions,
+	Keyboard,
 	Image,
 	Pressable,
 	StyleSheet,
 	Text,
 	TextInput,
+	TouchableWithoutFeedback,
 	View
 } from "react-native";
 import { useFonts } from "expo-font";
@@ -88,72 +90,74 @@ const SignUp = ({ navigation }) => {
 	}
 
 	return (
-		<LinearGradient
-			colors={["#A8D0F5", "#D0B4F4"]}
-			style={styles.signUpContainer}
-		>
-			<View style={styles.logoContainer}>
-				<Image
-					style={styles.logo}
-					source={HobNobLogo}
-				/>
-				<Text style={styles.logoText}>HobNob.</Text>
-			</View>
-			<View style={styles.textContainer}>
-				<Image
-					style={styles.createAccountText}
-					source={CreateAccountText}
-				/>
-				<TextInput
-					style={styles.input}
-					onChangeText={setEmail}
-					value={email}
-					placeholder="Email"
-					placeholderTextColor="#888888"
-					autoCapitalize="none"
-					autoCorrect={false}
-				/>
-				<TextInput
-					style={styles.input}
-					onChangeText={setPassword}
-					value={password}
-					placeholder="Password"
-					placeholderTextColor="#888888"
-					autoCapitalize="none"
-					autoCorrect={false}
-					secureTextEntry
-				/>
-				<TextInput
-					style={styles.input}
-					onChangeText={setConfirmPassword}
-					value={confirmPassword}
-					placeholder="Confirm Password"
-					placeholderTextColor="#888888"
-					autoCapitalize="none"
-					autoCorrect={false}
-					secureTextEntry
-				/>
-				<View style={styles.lowerContainer}>
-					{
-						loading ?
-						<ActivityIndicator style={styles.loading} /> :
-						<Pressable
-							style={styles.continueButton}
-							onPress={handleContinue}
-						>
-							<Text style={styles.continue}>Continue</Text>
+		<TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+			<LinearGradient
+				colors={["#A8D0F5", "#D0B4F4"]}
+				style={styles.signUpContainer}
+			>
+				<View style={styles.logoContainer}>
+					<Image
+						style={styles.logo}
+						source={HobNobLogo}
+					/>
+					<Text style={styles.logoText}>HobNob.</Text>
+				</View>
+				<View style={styles.textContainer}>
+					<Image
+						style={styles.createAccountText}
+						source={CreateAccountText}
+					/>
+					<TextInput
+						style={styles.input}
+						onChangeText={setEmail}
+						value={email}
+						placeholder="Email"
+						placeholderTextColor="#888888"
+						autoCapitalize="none"
+						autoCorrect={false}
+					/>
+					<TextInput
+						style={styles.input}
+						onChangeText={setPassword}
+						value={password}
+						placeholder="Password"
+						placeholderTextColor="#888888"
+						autoCapitalize="none"
+						autoCorrect={false}
+						secureTextEntry
+					/>
+					<TextInput
+						style={styles.input}
+						onChangeText={setConfirmPassword}
+						value={confirmPassword}
+						placeholder="Confirm Password"
+						placeholderTextColor="#888888"
+						autoCapitalize="none"
+						autoCorrect={false}
+						secureTextEntry
+					/>
+					<View style={styles.lowerContainer}>
+						{loading ? (
+							<ActivityIndicator style={styles.loading} />
+						) : (
+							<Pressable
+								style={styles.continueButton}
+								onPress={handleContinue}
+							>
+								<Text style={styles.continue}>Continue</Text>
+							</Pressable>
+						)}
+					</View>
+					<View style={styles.loginContainer}>
+						<Text style={styles.loginText}>Already have an account?</Text>
+						<Pressable onPress={handleLogin}>
+							<Text style={styles.loginLink}> Log In</Text>
 						</Pressable>
-					}
+						<Text style={styles.loginText}>.</Text>
+					</View>
 				</View>
-				<View style={styles.loginContainer}>
-					<Text style={styles.loginText}>Already have an account?</Text>
-					<Pressable onPress={handleLogin}>
-						<Text style={styles.loginLink}> Log In</Text>
-					</Pressable>
-					<Text style={styles.loginText}>.</Text>
-				</View>
-			</View>
-		</LinearGradient>
+			</LinearGradient>
+		</TouchableWithoutFeedback>
 	);
 };
 

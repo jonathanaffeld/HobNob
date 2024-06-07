@@ -3,11 +3,13 @@ import {
 	ActivityIndicator,
 	Alert,
 	Dimensions,
+	Keyboard,
 	Image,
 	Pressable,
 	StyleSheet,
 	Text,
 	TextInput,
+	TouchableWithoutFeedback,
 	View
 } from "react-native";
 import { useFonts } from "expo-font";
@@ -86,62 +88,64 @@ const Login = ({ navigation }) => {
 	}
 
 	return (
-		<LinearGradient
-			colors={["#A8D0F5", "#D0B4F4"]}
-			style={styles.loginContainer}
-		>
-			<View style={styles.logoContainer}>
-				<Image
-					style={styles.logo}
-					source={HobNobLogo}
-				/>
-				<Text style={styles.logoText}>HobNob.</Text>
-			</View>
-			<View style={styles.textContainer}>
-				<Image
-					style={styles.loginText}
-					source={LoginText}
-				/>
-				<TextInput
-					style={styles.input}
-					onChangeText={setEmail}
-					value={email}
-					placeholder="Email"
-					placeholderTextColor="#888888"
-					autoCapitalize="none"
-					autoCorrect={false}
-				/>
-				<TextInput
-					style={styles.input}
-					onChangeText={setPassword}
-					value={password}
-					placeholder="Password"
-					placeholderTextColor="#888888"
-					autoCapitalize="none"
-					autoCorrect={false}
-					secureTextEntry
-				/>
-				<View style={styles.lowerContainer}>
-					{
-						loading ?
-						<ActivityIndicator /> :
-						<Pressable
-							style={styles.loginButton}
-							onPress={handleSubmit}
-						>
-							<Text style={styles.submit}>Submit</Text>
+		<TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+			<LinearGradient
+				colors={["#A8D0F5", "#D0B4F4"]}
+				style={styles.loginContainer}
+			>
+				<View style={styles.logoContainer}>
+					<Image
+						style={styles.logo}
+						source={HobNobLogo}
+					/>
+					<Text style={styles.logoText}>HobNob.</Text>
+				</View>
+				<View style={styles.textContainer}>
+					<Image
+						style={styles.loginText}
+						source={LoginText}
+					/>
+					<TextInput
+						style={styles.input}
+						onChangeText={setEmail}
+						value={email}
+						placeholder="Email"
+						placeholderTextColor="#888888"
+						autoCapitalize="none"
+						autoCorrect={false}
+					/>
+					<TextInput
+						style={styles.input}
+						onChangeText={setPassword}
+						value={password}
+						placeholder="Password"
+						placeholderTextColor="#888888"
+						autoCapitalize="none"
+						autoCorrect={false}
+						secureTextEntry
+					/>
+					<View style={styles.lowerContainer}>
+						{loading ? (
+							<ActivityIndicator />
+						) : (
+							<Pressable
+								style={styles.loginButton}
+								onPress={handleSubmit}
+							>
+								<Text style={styles.submit}>Submit</Text>
+							</Pressable>
+						)}
+					</View>
+					<View style={styles.signupContainer}>
+						<Text style={styles.signupText}>New? Create your HobNob account </Text>
+						<Pressable onPress={handleSignup}>
+							<Text style={styles.signupLink}>here</Text>
 						</Pressable>
-					}
+						<Text style={styles.signupText}>.</Text>
+					</View>
 				</View>
-				<View style={styles.signupContainer}>
-					<Text style={styles.signupText}>New? Create your HobNob account </Text>
-					<Pressable onPress={handleSignup}>
-						<Text style={styles.signupLink}>here</Text>
-					</Pressable>
-					<Text style={styles.signupText}>.</Text>
-				</View>
-			</View>
-		</LinearGradient>
+			</LinearGradient>
+		</TouchableWithoutFeedback>
 	);
 };
 
