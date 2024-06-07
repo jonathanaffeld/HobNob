@@ -1,4 +1,6 @@
-# Instructions
+# Welcome to HobNob 🥳
+
+## Instructions
 1. Download or clone the repository to a destination of your choosing
 2. Within the downloaded folder, open a terminal and run `npm install`
 3. Create a file titled **app.json** and paste the api keys necessary from the final project writeup
