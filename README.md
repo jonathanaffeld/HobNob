@@ -1,6 +1,6 @@
 # Welcome to HobNob 🥳
 
-!(HobNob)[./assets/images/HobNobLogo.png]
+![HobNob](./assets/images/HobNobLogo.png)
 
 ## Instructions
 1. Download or clone the repository to a destination of your choosing
