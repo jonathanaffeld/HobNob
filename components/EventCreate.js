@@ -11,6 +11,7 @@ import {
 	TextInput,
 	View
 } from "react-native";
+import { LogBox } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useFocusEffect } from "@react-navigation/native";
 import * as ImagePicker from "expo-image-picker";
@@ -19,9 +20,13 @@ import { useFonts } from "expo-font";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import { decode } from "base64-arraybuffer";
 
+import Constants from 'expo-constants';
+import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import BottomBar from "./BottomBar";
 import CreateEventText from "../assets/images/CreateEventText.png";
 import { supabase } from "../supabase";
+
+LogBox.ignoreAllLogs(); // Ignore all log notifications
 
 const screenWidth = Dimensions.get("window").width;
 const screenHeight = Dimensions.get("window").height;
@@ -344,14 +349,32 @@ const EventCreate = ({ navigation }) => {
 						</Pressable>
 					</View>
 				</View>
-				<TextInput
-					style={styles.location}
-					onChangeText={setLocation}
-					value={location}
-					placeholder="Where is your event?"
-					autoCorrect={false}
-					placeholderTextColor="#888888"
-				/>
+				<Text style={styles.miniTitle}> Where's your event? Start typing below!</Text>
+				<GooglePlacesAutocomplete
+                        placeholder='Search'
+                        fetchDetails={true}
+                        onPress={(data, details = null) => {
+							setLocation(details.formatted_address);
+                        }}
+                        query={{
+                            key: 'AIzaSyDmiWoUYh-B1NadZ9rO2JFyL98qZg0cI28',
+                            language: 'en',
+                        }}
+                        styles={{
+                            textInputContainer: {
+                                backgroundColor: 'transparent',
+                                width: screenWidth * 0.95,
+                                alignSelf: 'center',
+                            },
+                            textInput: {
+                                height: 38,
+                                color: '#5d5d5d',
+                                fontSize: 16,
+                                placeholderTextColor: '#5d5d5d',
+                            },
+                        }}
+
+                    />
 				<View style={styles.dateTimeContainer}>
 					<Text style={styles.dateTimeTitle}>Start Date:</Text>
 					<DateTimePicker style={styles.dateTimeDropdown} value={dateStart} mode="date" display="default" onChange={onChangeStartDate} />
@@ -384,6 +407,12 @@ const EventCreate = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
+	miniTitle: {
+		fontFamily: "Dongle-Regular",
+		fontSize: screenHeight * 0.035,
+		paddingTop: screenHeight * 0.025,
+		flex: 1
+	},
 	eventCreateContainer: {
 		flexDirection: "column",
 		alignItems: "center",
@@ -417,7 +446,6 @@ const styles = StyleSheet.create({
 		fontFamily: "Dongle-Regular",
 		fontSize: screenHeight * 0.04,
 		padding: screenWidth * 0.05,
-		flex: 1
 	},
 	descriptionContainer: {
 		width: screenWidth * 0.8,
