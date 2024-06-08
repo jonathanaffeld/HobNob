@@ -39,16 +39,6 @@ const Events = ({ navigation }) => {
 
 					const id = authResponse.data.user.id;
 					setUserId(id);
-
-					const eventResponse = await supabase
-						.from("events")
-						.select("event_id, title, description, image_url")
-						.eq("owner", id)
-						.order("start_time", { ascending: false });
-
-					if (eventResponse.error) throw eventResponse.error;
-
-					setEvents(eventResponse.data);
 					setMounting(false);
 				} catch (error) {
 					console.log(error);
