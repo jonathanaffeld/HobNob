@@ -38,65 +38,48 @@ const Event = ({ route, navigation }) => {
     const [tab, setTab] = useState("All Users");
     const [users, setUsers] = useState([]);
     const [cluster, setCluster] = useState("");
-    const [mounting, setMounting] = useState(false);
     const [loading, setLoading] = useState(false);
+
+    const fetchEventData = async () => {
+        try {
+            setLoading(true);
+            setTab("All Users");
+            const authResponse = await supabase.auth.getUser();
+            if (authResponse.error) throw authResponse.error;
+
+            const id = authResponse.data.user.id;
+            setUserId(id);
+
+            const { data, error } = await supabase
+                .from('events')
+                .select()
+                .eq('event_id', eventId)
+                .single();
+
+            if (error) {
+                console.log(error);
+                return;
+            }
+
+            setEvent(data);
+            setResponse(data.participants.includes(id) ? data.participant_responses[id] : "");
+        } catch (error) {
+            console.log(error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useFocusEffect(
         useCallback(() => {
-            async function fetchData() {
-                setMounting(true);
-                try {
-                    const authResponse = await supabase.auth.getUser();
-                    if (authResponse.error) throw authResponse.error;
-
-                    const id = authResponse.data.user.id;
-                    setUserId(id);
-
-                    const { data, error } = await supabase
-                        .from('events')
-                        .select()
-                        .eq('event_id', eventId)
-                        .single();
-
-                    if (error) {
-                        console.log(error);
-                        return;
-                    }
-
-                    setEvent(data);
-                    setResponse(data.participants.includes(id) ? data.participant_responses[id] : "");
-                    setTab("All Users");
-
-                    const getUsersPromises = data.participants
-                        .filter(participantId => participantId !== id)
-                        .map(participantId => 
-                            supabase
-                                .from('users')
-                                .select('first_name, last_name, image_url, user_id')
-                                .eq('user_id', participantId)
-                                .single()
-                        );
-
-                    const getUsersResponses = await Promise.all(getUsersPromises);
-                    const getUsers = getUsersResponses
-                        .filter(response => !response.error)
-                        .map(response => response.data);
-
-                    setUsers(getUsers);
-                } catch (error) {
-                    console.log(error);
-                } finally {
-                    setMounting(false);
-                }
-            }
-            fetchData();
+            fetchEventData();
         }, [eventId])
     );
 
     useEffect(() => {
-        async function fetchUsers() {
-            setLoading(true);
+        const fetchUsers = async () => {
             try {
+                setLoading(true);
                 if (tab === "All Users") {
                     const getUsersPromises = event.participants
                         .filter(participantId => participantId !== userId)
@@ -141,6 +124,7 @@ const Event = ({ route, navigation }) => {
                         }, {});
         
                         const aiResponse = await getCluster(clusterData, userId);
+                        console.log(aiResponse.users);
                         setCluster(aiResponse.cluster);
                         setUsers(aiResponse.users);
                     }
@@ -154,33 +138,55 @@ const Event = ({ route, navigation }) => {
             } finally {
                 setLoading(false);
             }
-        }
+        };
     
         if (userId && event && tab) fetchUsers();
     }, [userId, event, tab]);
 
     const getCluster = async (clusterData, userId) => {
         try {
+            const userPrompt = `
+                Analyze the following user data and return a JSON object.
+                Only return a JSON object meaning the first and last characters of the output should be curly brackets.
+                The JSON object has two keys: users and cluster.
+                The value of users is an array of individual users that are JSON Objects.
+                The value of cluster is a string.
+                
+                Find the current user profile by selecting the profile with user_id ${userId} from the user data.
+                Then, select the 2-4 most similar users to the current user by comparing the current user to all other users in the user data.
+                The similar users MUST share something in common with the current user.
+                The similarities should be drawn from the choices of prompts (prompt1, prompt2, event_prompt) and content of the responses (response1, response2, event_response).
+                Select these user profiles and output them as an array of profiles with key "users".
+                Then, create a sentence description describing what these users share in common with the current user.
+                For example, "These users also like cats!" where cats is the similarity.
+                Be specific, draw on the content of their responses or prompt choices, and have the sentence be no more than 100 characters.
+                Don't reference the current user, instead use words like also or similarly to show that the users selected have something in common with the current user.
+                Output this sentence as the value for key "cluster" in the returned JSON Object.
+                
+                Here is the user data: ${JSON.stringify(clusterData)}
+                `;
+
             const response = await axios.post('https://api.openai.com/v1/chat/completions', {
-                model: "gpt-3.5-turbo",
-                messages: [
-                    {
-                        role: "system",
-                        content: "You are a helpful assistant that identifies similarities to a user among all users based on their data."
-                    },
-                    {
-                        role: "user",
-                        content: `Analyze the following user data and return a JSON object. One key is named "users" which will be the 2-4 most similar users to the current user and NOT including the current user: ${userId}. The similar users MUST share something in common with the current user. The similarities should be drawn from the choices of prompts (prompt1, prompt2, event_prompt) and content of the responses (response1, response2, event_response). The other key should be named "cluster" and will be a sentence description describing what the users share in common. For example, "These users also like cats!" where cats is the similarity. Be specific, draw on the content of their responses or prompt choices, and have the sentence be no more than 100 characters. Here is the data: ${JSON.stringify(clusterData)}`
-                    }
-                ]
-            }, {
-                headers: {
-                    'Authorization': `Bearer ${Constants.expoConfig.extra.openaiKey}`,
-                    'Content-Type': 'application/json'
+            model: "gpt-3.5-turbo",
+            messages: [
+                {
+                role: "system",
+                content: "You are a helpful assistant that identifies similarities to a user among all users based on their data."
+                },
+                {
+                role: "user",
+                content: userPrompt
                 }
+            ]
+            }, {
+            headers: {
+                'Authorization': "Bearer " + Constants.expoConfig.extra.openaiKey,
+                'Content-Type': 'application/json'
+            }
             });
 
             const result = response.data.choices[0].message.content;
+            console.log(result);
             return JSON.parse(result);
         } catch (error) {
             console.error("Error calling OpenAI API:", error);
@@ -207,7 +213,8 @@ const Event = ({ route, navigation }) => {
 
     const handleJoin = async () => {
         if (!response) {
-            Alert.alert("Uhoh", "A response is need to join the event!")
+            Alert.alert("Uhoh", "A response is need to join the event!");
+            return;
         }
 
         setLoading(true);
@@ -233,9 +240,9 @@ const Event = ({ route, navigation }) => {
             Alert.alert("Response Updated Successfully!");
         }
         else {
-            Alert.alert("Event joined!")
+            Alert.alert("Event joined!");
         }
-    }
+    };
 
     const renderUsers = () => {
         if (tab === "All Users") {
@@ -279,7 +286,7 @@ const Event = ({ route, navigation }) => {
                 );
             }
         }
-    }
+    };
 
     const renderBottom = () => {
         if (currentDateTime > event.end_time) {
@@ -359,7 +366,7 @@ const Event = ({ route, navigation }) => {
         "Dongle-Light": require("../assets/fonts/Dongle-Light.ttf"),
     });
 
-    if (!fontsLoaded || mounting) {
+    if (!fontsLoaded || loading) {
         return (
             <LinearGradient colors={['#A8D0F5', '#D0B4F4']} style={styles.eventContainer}>
                 <ActivityIndicator size="large" style={{alignItems: "center", justifyContent: "center", flex: 1}}/>
@@ -401,168 +408,165 @@ const Event = ({ route, navigation }) => {
 
 const styles = StyleSheet.create({
     eventContainer: {
-        alignItems: "center",
-        justifyContent: "space-between",
-        width: screenWidth,
-        height: screenHeight,
-        paddingBottom: screenHeight * 0.1
-    },
-    scrollContentContainer: {
-        flexGrow: 1,
-        alignItems: "center",
+      alignItems: "center",
+      justifyContent: "space-between",
+      width: screenWidth,
+      height: screenHeight,
+      paddingBottom: screenHeight * 0.1
     },
     image: {
-        width: screenWidth * 0.5,
-        height: screenWidth * 0.5,
-        borderRadius: screenWidth * 0.05,
-        borderColor: "#000000",
-        borderWidth: 2,
-        marginTop: screenHeight * 0.075,
-        justifyContent: "center",
-        alignItems: "center",
+      width: screenWidth * 0.5,
+      height: screenWidth * 0.5,
+      borderRadius: screenWidth * 0.05,
+      borderColor: "#000000",
+      borderWidth: 2,
+      marginTop: screenHeight * 0.075,
+      justifyContent: "center",
+      alignItems: "center",
     },
     title: {
-        fontFamily: "Dongle-Bold",
-        fontSize: screenHeight * 0.04,
-        lineHeight: screenHeight * 0.04,
-        marginTop: screenHeight * 0.025,
-        textAlign: "center",
-        width: screenWidth * 0.8
+      fontFamily: "Dongle-Bold",
+      fontSize: screenHeight * 0.04,
+      lineHeight: screenHeight * 0.04,
+      marginTop: screenHeight * 0.025,
+      textAlign: "center",
+      width: screenWidth * 0.8
     },
     description: {
-        fontFamily: "Dongle-Light",
-        fontSize: screenHeight * .025,
-        lineHeight: screenHeight * 0.025,
-        textAlign: "center",
-        width: screenWidth * 0.8
+      fontFamily: "Dongle-Light",
+      fontSize: screenHeight * .025,
+      lineHeight: screenHeight * 0.025,
+      textAlign: "center",
+      width: screenWidth * 0.8
     },
     locationContainer: {
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "center",
-        textAlignVertical: "center",
-        width: screenWidth * 0.8,
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
+      textAlignVertical: "center",
+      width: screenWidth * 0.8,
     },
     locationIcon: {
-        marginRight: screenWidth * 0.0125
+      marginRight: screenWidth * 0.0125
     },
     otherText: {
-        fontFamily: "Dongle-Light",
-        fontSize: screenHeight * 0.02,
-        textAlign: "center",
+      fontFamily: "Dongle-Light",
+      fontSize: screenHeight * 0.02,
+      textAlign: "center",
     },
     bottomContainer: {
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        width: screenWidth * 0.8,
-        backgroundColor: "#FFFFFF",
-        opacity: 0.8,
-        borderRadius: screenWidth * 0.05,
-        shadowColor: "#000000",
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.5,
-        shadowRadius: 5,
-        marginVertical: screenHeight * 0.025,
-        paddingTop: screenHeight * 0.05,
-        position: 'relative',
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+      width: screenWidth * 0.8,
+      backgroundColor: "#FFFFFF",
+      opacity: 0.8,
+      borderRadius: screenWidth * 0.05,
+      shadowColor: "#000000",
+      shadowOffset: { width: 0, height: 1 },
+      shadowOpacity: 0.5,
+      shadowRadius: 5,
+      marginVertical: screenHeight * 0.025,
+      paddingTop: screenHeight * 0.05,
+      position: 'relative',
     },
     ended: {
-        fontFamily: "Dongle-Regular",
-        fontSize: screenHeight * 0.04,
-        textAlign: "center"
+      fontFamily: "Dongle-Regular",
+      fontSize: screenHeight * 0.04,
+      textAlign: "center"
     },
     promptContainer: {
-        flexDirection: "column",
-        width: screenWidth * 0.8,
-        height: screenHeight * 0.18,
-        backgroundColor: "#FFFFFF",
-        opacity: 0.8,
-        borderRadius: screenWidth * 0.05,
-        shadowColor: "#000000",
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.5,
-        shadowRadius: 5,
-        padding: screenHeight * 0.025,
-        marginVertical: screenHeight * 0.0125,
-        position: 'relative'
+      flexDirection: "column",
+      width: screenWidth * 0.8,
+      height: screenHeight * 0.18,
+      backgroundColor: "#FFFFFF",
+      opacity: 0.8,
+      borderRadius: screenWidth * 0.05,
+      shadowColor: "#000000",
+      shadowOffset: { width: 0, height: 1 },
+      shadowOpacity: 0.5,
+      shadowRadius: 5,
+      padding: screenHeight * 0.025,
+      marginVertical: screenHeight * 0.0125,
+      position: 'relative'
     },
     promptText: {
-        fontFamily: "Dongle-Light",
-        fontSize: screenHeight * 0.02,
-        lineHeight: screenHeight * 0.02,
+      fontFamily: "Dongle-Light",
+      fontSize: screenHeight * 0.02,
+      lineHeight: screenHeight * 0.02,
     },
     responseText: {
-        fontFamily: "Dongle-Regular",
-        fontSize: screenHeight * 0.03,
-        lineHeight: screenHeight * 0.03
+      fontFamily: "Dongle-Regular",
+      fontSize: screenHeight * 0.03,
+      lineHeight: screenHeight * 0.03
     },
     charactersLeftContainer: {
-        position: 'absolute',
-        bottom: 10,
-        right: 10,
+      position: 'absolute',
+      bottom: 10,
+      right: 10,
     },
     charactersLeft: {
-        fontFamily: "Dongle-Light",
-        fontSize: screenHeight * 0.02,
-        lineHeight: screenHeight * 0.02,
-        color: "#888888",
+      fontFamily: "Dongle-Light",
+      fontSize: screenHeight * 0.02,
+      lineHeight: screenHeight * 0.02,
+      color: "#888888",
     },
     lowerContainer: {
-        alignItems: "center",
-        justifyContent: "center",
-        marginTop: screenHeight * 0.0125
+      alignItems: "center",
+      justifyContent: "center",
+      marginTop: screenHeight * 0.0125
     },
     button: {
-        width: screenWidth * 0.35,
-        backgroundColor: "#77678C",
-        borderRadius: screenWidth * 0.05,
-        alignItems: "center",
-        justifyContent: "center",
+      width: screenWidth * 0.35,
+      backgroundColor: "#77678C",
+      borderRadius: screenWidth * 0.05,
+      alignItems: "center",
+      justifyContent: "center",
     },
     buttonText: {
-        color: "#FFFFFF",
-        fontFamily: "Dongle-Light",
-        fontSize: screenHeight * 0.03
+      color: "#FFFFFF",
+      fontFamily: "Dongle-Light",
+      fontSize: screenHeight * 0.03
     },
     tabContainer: {
-        flexDirection: "row",
-        justifyContent: "center",
-        alignItems: "center",
-        position: 'absolute',
-        top: 0,
-        width: '100%',
-        backgroundColor: "#FFFFFF",
-        borderTopLeftRadius: screenWidth * 0.05,
-        borderTopRightRadius: screenWidth * 0.05,
+      flexDirection: "row",
+      justifyContent: "center",
+      alignItems: "center",
+      position: 'absolute',
+      top: 0,
+      width: '100%',
+      backgroundColor: "#FFFFFF",
+      borderTopLeftRadius: screenWidth * 0.05,
+      borderTopRightRadius: screenWidth * 0.05,
     },
     textOn: {
-        color: "#77678C",
-        textDecorationLine: "underline",
-        textDecorationColor: "#77678C",
-        fontFamily: "Dongle-Regular",
-        fontSize: screenHeight * 0.035,
-        textAlign: "center",
-        marginHorizontal: screenWidth * 0.05
+      color: "#77678C",
+      textDecorationLine: "underline",
+      textDecorationColor: "#77678C",
+      fontFamily: "Dongle-Regular",
+      fontSize: screenHeight * 0.035,
+      textAlign: "center",
+      marginHorizontal: screenWidth * 0.05
     },
     textOff: {
-        color: "#000000",
-        fontFamily: "Dongle-Regular",
-        fontSize: screenHeight * 0.035,
-        textAlign: "center",
-        marginHorizontal: screenWidth * 0.05
+      color: "#000000",
+      fontFamily: "Dongle-Regular",
+      fontSize: screenHeight * 0.035,
+      textAlign: "center",
+      marginHorizontal: screenWidth * 0.05
     },
     scrollContainer: {
-        paddingHorizontal: screenWidth * 0.05,
-        paddingVertical: screenWidth * 0.025,
-        alignItems: 'flex-start',
-        justifyContent: 'flex-start',
+      paddingHorizontal: screenWidth * 0.05,
+      paddingVertical: screenWidth * 0.025,
+      alignItems: 'center',
+      justifyContent: 'flex-start',
+      flexGrow: 1
     },
     cluster: {
-        fontFamily: "Dongle-Regular",
-        fontSize: screenHeight * 0.03,
-        textAlign: "center"
+      fontFamily: "Dongle-Regular",
+      fontSize: screenHeight * 0.03,
+      textAlign: "center"
     },
-});
+  });  
 
 export default Event;
