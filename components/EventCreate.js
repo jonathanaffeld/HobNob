@@ -18,7 +18,8 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useFonts } from "expo-font";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import { decode } from "base64-arraybuffer";
-
+import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
+import Constants from 'expo-constants';
 import BottomBar from "./BottomBar";
 import CreateEventText from "../assets/images/CreateEventText.png";
 import { supabase } from "../supabase";

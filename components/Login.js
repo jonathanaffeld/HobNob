@@ -14,7 +14,7 @@ import {
 } from "react-native";
 import { useFonts } from "expo-font";
 import { LinearGradient } from "expo-linear-gradient";
-
+import * as Font from 'expo-font';
 import HobNobLogo from "../assets/images/HobNobLogo.png";
 import LoginText from "../assets/images/LoginText.png";
 import { supabase } from "../supabase";
@@ -67,13 +67,14 @@ const Login = ({ navigation }) => {
 		navigation.navigate("SignUp");
 	};
 
-	const [fontsLoaded] = useFonts({
-		"Dongle-Bold": require("../assets/fonts/Dongle-Bold.ttf"),
-		"Dongle-Regular": require("../assets/fonts/Dongle-Regular.ttf"),
-		"Dongle-Light": require("../assets/fonts/Dongle-Light.ttf")
+	const [fontsLoaded, fontLoadingError] = Font.useFonts({
+		"Dongle-Bold": "../assets/fonts/Dongle-Bold.ttf",
+		"Dongle-Regular": "../assets/fonts/Dongle-Regular.ttf",
+		"Dongle-Light": "../assets/fonts/Dongle-Light.ttf"
 	});
 
 	if (!fontsLoaded) {
+		console.log("Loading fonts: ", fontLoadingError);
 		return (
 			<LinearGradient
 				colors={["#A8D0F5", "#D0B4F4"]}
